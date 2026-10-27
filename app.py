@@ -6,6 +6,7 @@ Highland Rainfall Project - Main Application
 import streamlit as st
 from dashboard.components import apply_custom_css
 from dashboard.tab_climate import render_tab_climate
+from dashboard.tab_rice_rain import render_tab_rice_rain
 
 # ตั้งค่าหน้าเว็บ Streamlit
 st.set_page_config(
@@ -59,6 +60,6 @@ with st.sidebar:
 if selected_tab == "🛰️ ภาพรวมภูมิอากาศบนพื้นที่สูง (9 จังหวัด)":
     render_tab_climate()
 elif selected_tab == "🌾 ฝนกับผลผลิตข้าวนาปี (5 จังหวัด)":
-    st.info("🌾 กำลังจัดเตรียม: ส่วนวิเคราะห์ข้าวนาปี 5 จังหวัดและฝน ก.พ.–ก.ค. จะพร้อมใช้งานในขั้นตอนที่ 3")
+    render_tab_rice_rain()
 else:
     st.info("📋 กำลังจัดเตรียม: ระเบียบวิธีวิจัย การทดสอบความไว และข้อจำกัดข้อมูล จะพร้อมใช้งานในขั้นตอนที่ 4")
