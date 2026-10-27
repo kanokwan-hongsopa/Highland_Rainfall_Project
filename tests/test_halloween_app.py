@@ -25,12 +25,18 @@ def test_halloween_payload_integrity():
     # 1. โครงสร้างหลัก
     assert "centers" in data, "Missing 'centers' in payload"
     assert "overview_center" in data, "Missing 'overview_center' in payload"
+    assert "province_geojson" in data, "Missing 'province_geojson' in payload"
     assert "stations" in data, "Missing 'stations' in payload"
     assert "tambons" in data, "Missing 'tambons' in payload"
     assert "province_changes" in data, "Missing 'province_changes' in payload"
     assert "correlations" in data, "Missing 'correlations' in payload"
     assert "lopo" in data, "Missing 'lopo' in payload"
     assert "completeness" in data, "Missing 'completeness' in payload"
+
+    # 1.1 ตรวจสอบความถูกต้องของ Real GeoJSON 9 จังหวัด
+    geo = data["province_geojson"]
+    assert geo.get("type") == "FeatureCollection", "province_geojson must be a FeatureCollection"
+    assert len(geo.get("features", [])) == 9, f"Expected 9 GeoJSON province features, got {len(geo.get('features', []))}"
 
     # 2. ตรวจสอบ 9 จังหวัด
     centers = data["centers"]
@@ -109,6 +115,8 @@ def test_halloween_html_structure():
     assert 'id="leafletMap"' in html, "Missing Leaflet map container 'leafletMap'"
     assert "leaflet.js" in html, "Missing Leaflet.js script"
     assert "flyTo" in html, "Missing smooth animated zoom (map.flyTo)"
+    assert "L.geoJSON" in html, "Missing L.geoJSON real boundary layer"
+    assert "flyToBounds" in html, "Missing map.flyToBounds for real province zooming"
 
     # 5. Detail Drawer with Close Button
     assert 'id="detailDrawer"' in html, "Missing slide-in detail drawer 'detailDrawer'"

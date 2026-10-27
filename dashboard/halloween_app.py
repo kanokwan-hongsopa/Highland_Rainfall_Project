@@ -1423,64 +1423,81 @@ def get_halloween_html() -> str:
             return '#3B0764';                 // Deep Purple
         }}
 
-        // Render 9 Province Polygons & Labels
-        const polygonLayers = {{}};
+        // Render Real 9-Province Boundaries from GeoJSON
+        const provinceLayers = {{}};
+        let geojsonLayer = null;
 
-        function renderProvincePolygons() {{
-            const polygons = REAL_DATA.polygons;
-            for (const [pName, coords] of Object.entries(polygons)) {{
-                const pSummary = REAL_DATA.province_summaries[pName] || {{}};
-                const rainVal = (state.selectedYear === '2022') ? pSummary.rain_2022 :
-                                (state.selectedYear === '2023') ? pSummary.rain_2023 : pSummary.rain_all;
+        function getProvinceStyle(feature) {{
+            const pName = feature.properties.pro_th;
+            const pSummary = REAL_DATA.province_summaries[pName] || {{}};
+            const rainVal = (state.selectedYear === '2022') ? pSummary.rain_2022 :
+                            (state.selectedYear === '2023') ? pSummary.rain_2023 : pSummary.rain_all;
 
-                const fillColor = getRainColor(rainVal);
-                const isSelected = (state.selectedProvince === pName);
+            const fillColor = getRainColor(rainVal);
+            const isSelected = (state.selectedProvince === pName);
 
-                const poly = L.polygon(coords, {{
-                    fillColor: fillColor,
-                    fillOpacity: isSelected ? 0.95 : 0.78,
-                    color: isSelected ? '#FF8A32' : 'rgba(167, 120, 232, 0.45)',
-                    weight: isSelected ? 3.5 : 1.2,
-                    className: 'province-polygon'
-                }}).addTo(map);
+            return {{
+                fillColor: fillColor,
+                fillOpacity: isSelected ? 0.95 : (state.selectedProvince === 'all' ? 0.78 : 0.35),
+                color: isSelected ? '#FF8A32' : 'rgba(167, 120, 232, 0.45)',
+                weight: isSelected ? 3.5 : 1.2,
+                className: 'province-real-polygon'
+            }};
+        }}
 
-                poly.on('click', () => {{
-                    if (state.selectedProvince === pName) {{
-                        window.HighlandApp.dispatchFilter({{ province: 'all' }});
-                    }} else {{
-                        window.HighlandApp.dispatchFilter({{ province: pName }});
-                    }}
-                }});
+        function renderProvinceGeoJSON() {{
+            if (geojsonLayer) map.removeLayer(geojsonLayer);
 
-                poly.on('mouseover', () => {{
-                    if (state.selectedProvince !== pName) {{
-                        poly.setStyle({{ fillOpacity: 0.92, color: '#FF8A32', weight: 2.2 }});
-                    }}
-                }});
+            geojsonLayer = L.geoJSON(REAL_DATA.province_geojson, {{
+                style: getProvinceStyle,
+                onEachFeature: function(feature, layer) {{
+                    const pName = feature.properties.pro_th;
+                    provinceLayers[pName] = layer;
 
-                poly.on('mouseout', () => {{
-                    if (state.selectedProvince !== pName) {{
-                        poly.setStyle({{ fillOpacity: 0.78, color: 'rgba(167, 120, 232, 0.45)', weight: 1.2 }});
-                    }}
-                }});
-
-                polygonLayers[pName] = poly;
-
-                // Add Text Label at Center
-                const center = REAL_DATA.centers[pName];
-                if (center) {{
-                    const labelIcon = L.divIcon({{
-                        className: 'leaflet-prov-label',
-                        html: `<div>${{pName}}</div>`,
-                        iconSize: [80, 20],
-                        iconAnchor: [40, 10]
+                    layer.on('mouseover', () => {{
+                        if (state.selectedProvince !== pName) {{
+                            layer.setStyle({{
+                                fillOpacity: 0.92,
+                                color: '#FF8A32',
+                                weight: 2.2
+                            }});
+                        }}
                     }});
-                    L.marker([center.lat, center.lng], {{ icon: labelIcon, interactive: false }}).addTo(map);
+
+                    layer.on('mouseout', () => {{
+                        if (state.selectedProvince !== pName) {{
+                            layer.setStyle({{
+                                fillOpacity: state.selectedProvince === 'all' ? 0.78 : 0.35,
+                                color: 'rgba(167, 120, 232, 0.45)',
+                                weight: 1.2
+                            }});
+                        }}
+                    }});
+
+                    layer.on('click', (e) => {{
+                        L.DomEvent.stopPropagation(e);
+                        if (state.selectedProvince === pName) {{
+                            window.HighlandApp.dispatchFilter({{ province: 'all' }});
+                        }} else {{
+                            window.HighlandApp.dispatchFilter({{ province: pName }});
+                        }}
+                    }});
                 }}
+            }}).addTo(map);
+
+            // Add Text Label at Center of Each Province
+            for (const [pName, center] of Object.entries(REAL_DATA.centers)) {{
+                const labelIcon = L.divIcon({{
+                    className: 'leaflet-prov-label',
+                    html: `<div>${{pName}}</div>`,
+                    iconSize: [80, 20],
+                    iconAnchor: [40, 10]
+                }});
+                L.marker([center.lat, center.lng], {{ icon: labelIcon, interactive: false }}).addTo(map);
             }}
         }}
 
-        renderProvincePolygons();
+        renderProvinceGeoJSON();
 
         // Render 50 Weather Station Markers on Map
         const stationMarkers = [];
@@ -1537,7 +1554,7 @@ def get_halloween_html() -> str:
                 }}
                 closeProvincePopup();
 
-                for (const [name, layer] of Object.entries(polygonLayers)) {{
+                for (const [name, layer] of Object.entries(provinceLayers)) {{
                     const pSummary = REAL_DATA.province_summaries[name] || {{}};
                     const rainVal = (yr === '2022') ? pSummary.rain_2022 :
                                     (yr === '2023') ? pSummary.rain_2023 : pSummary.rain_all;
@@ -1549,36 +1566,42 @@ def get_halloween_html() -> str:
                     }});
                 }}
             }} else {{
-                // Specific Province Zoom (flyTo 1000ms)
-                const c = REAL_DATA.centers[p];
-                if (c && provinceChanged) {{
-                    map.flyTo([c.lat, c.lng], c.zoom, {{ duration: 1.0, easeLinearity: 0.25 }});
+                // Specific Province Smooth flyToBounds Zoom
+                const layer = provinceLayers[p];
+                if (layer && provinceChanged) {{
+                    map.flyToBounds(layer.getBounds(), {{
+                        padding: [35, 35],
+                        maxZoom: 9.5,
+                        duration: 1.0,
+                        easeLinearity: 0.25
+                    }});
                 }}
 
                 // Highlight selected polygon
-                for (const [name, layer] of Object.entries(polygonLayers)) {{
+                for (const [name, l] of Object.entries(provinceLayers)) {{
                     const pSummary = REAL_DATA.province_summaries[name] || {{}};
                     const rainVal = (yr === '2022') ? pSummary.rain_2022 :
                                     (yr === '2023') ? pSummary.rain_2023 : pSummary.rain_all;
                     if (name === p) {{
-                        layer.setStyle({{
+                        l.setStyle({{
                             fillColor: getRainColor(rainVal),
                             color: '#FF8A32',
                             weight: 3.5,
                             fillOpacity: 0.95
                         }});
-                        layer.bringToFront();
+                        l.bringToFront();
                     }} else {{
-                        layer.setStyle({{
+                        l.setStyle({{
                             fillColor: getRainColor(rainVal),
                             color: 'rgba(167, 120, 232, 0.2)',
                             weight: 1,
-                            fillOpacity: 0.4
+                            fillOpacity: 0.35
                         }});
                     }}
                 }}
 
                 // Place Pin
+                const c = REAL_DATA.centers[p];
                 if (currentPin) map.removeLayer(currentPin);
                 if (c) {{
                     const pinIcon = L.divIcon({{
