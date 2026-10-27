@@ -34,19 +34,22 @@ Interactive Dashboard ภาษาไทยสำหรับสำรวจแ�
 
 ```text
 Highland_Rainfall_Project/
-├── app.py                     # จุดเริ่มต้นหลักของ Streamlit Application
+├── app.py                     # จุดเริ่มต้นหลักของ Streamlit Application (สลับระหว่าง Halloween และ Classic ได้)
 ├── requirements.txt           # รายการ Libraries และ Dependencies
 ├── README.md                  # เอกสารแนะนำและคู่มือการใช้งาน
 ├── BRD.md                     # ข้อกำหนดทางธุรกิจและการวิเคราะห์
 ├── HANDOFF.md                 # บันทึกข้อกำหนดส่งต่องาน
 ├── dashboard/                 # โมดูลระบบแดชบอร์ด
 │   ├── __init__.py
+│   ├── halloween_app.py       # Halloween Edition: Standalone SPA (Leaflet.js + Chart.js + Smooth Zoom + Detail Drawer)
+│   ├── halloween_data.py      # Serializer แปลงข้อมูลจริงเป็น JSON สำหรับ Frontend Engine
 │   ├── data_loader.py         # โมดูลอ่านและตรวจสอบข้อมูลจริงพร้อม Caching
 │   ├── components.py          # UI Styling, Metric Cards, Alert Banners, Empty State
-│   ├── tab_climate.py         # แท็บ A: ภาพรวมสภาพภูมิอากาศ 9 จังหวัด (50 สถานี)
-│   ├── tab_rice_rain.py       # แท็บ B: วิเคราะห์ข้าวนาปีและฝน 5 จังหวัด (25 ตำบล)
-│   └── tab_methodology.py     # แท็บ C: ระเบียบวิธีวิจัย การจับคู่พื้นที่ และ QA
+│   ├── tab_climate.py         # Classic แท็บ A: ภาพรวมสภาพภูมิอากาศ 9 จังหวัด (50 สถานี)
+│   ├── tab_rice_rain.py       # Classic แท็บ B: วิเคราะห์ข้าวนาปีและฝน 5 จังหวัด (25 ตำบล)
+│   └── tab_methodology.py     # Classic แท็บ C: ระเบียบวิธีวิจัย การจับคู่พื้นที่ และ QA
 ├── tests/                     # ชุดทดสอบอัตโนมัติ (Automated Unit Tests)
+│   ├── test_halloween_app.py  # ทดสอบ Halloween Edition (JSON payload, Theme, Leaflet, Tabs, Disclaimers)
 │   ├── test_data_loader.py    # ทดสอบ Data Engine & QA Invariants
 │   ├── test_tab_climate.py    # ทดสอบตรรกะและตัวกรองแท็บ A
 │   ├── test_tab_rice_rain.py  # ทดสอบตรรกะและ Invariants แท็บ B
@@ -82,6 +85,9 @@ Highland_Rainfall_Project/
 สามารถตรวจสอบความถูกต้องของข้อมูลตามเกณฑ์ QA Metrics ทุกข้อได้ผ่านคำสั่ง:
 
 ```powershell
+# ทดสอบ Halloween Interactive Dashboard (UI/UX, FlyTo Animation, JSON Integrity, Disclaimers)
+$env:PYTHONIOENCODING="utf-8"; .\.venv\Scripts\python.exe tests/test_halloween_app.py
+
 # ทดสอบโมดูลโหลดข้อมูลและเกณฑ์ QA Metrics 8 ข้อ
 $env:PYTHONIOENCODING="utf-8"; .\.venv\Scripts\python.exe tests/test_data_loader.py
 
