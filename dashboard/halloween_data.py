@@ -74,8 +74,21 @@ def get_halloween_payload() -> str:
         mean_humidity = float(group["HUMIDITY"].mean()) if group["HUMIDITY"].notna().sum() > 0 else 0.0
         mean_wind = float(group["WIND_SPEED"].mean()) if group["WIND_SPEED"].notna().sum() > 0 else 0.0
 
+        # รายเดือน 12 เดือนของแต่ละสถานี (2022 vs 2023)
+        rain_2022_m = []
+        rain_2023_m = []
+        g22 = group[group["year"] == 2022]
+        g23 = group[group["year"] == 2023]
+        for m in range(1, 13):
+            r22 = g22[g22["month"] == m]["rainfall_mm"].values
+            rain_2022_m.append(round(float(r22[0]), 1) if len(r22) > 0 and pd.notna(r22[0]) else None)
+            r23 = g23[g23["month"] == m]["rainfall_mm"].values
+            rain_2023_m.append(round(float(r23[0]), 1) if len(r23) > 0 and pd.notna(r23[0]) else None)
+
         station_list.append({
             "name": sta_name,
+            "code_ref": str(first.get("CODE_REF", "")),
+            "code_sta": str(first.get("CODE_STA", "")),
             "province": prov,
             "amphoe": str(first.get("AMPHOE", "")),
             "tambon": str(first.get("TAMBON", "")),
@@ -84,10 +97,15 @@ def get_halloween_payload() -> str:
             "source": src,
             "records": records_cnt,
             "valid_rain": valid_rain_cnt,
+            "months_2022": int((group["year"] == 2022).sum()),
+            "months_2023": int((group["year"] == 2023).sum()),
+            "total_months": records_cnt,
             "mean_rain": round(mean_rain, 1),
             "mean_temp": round(mean_temp, 1),
             "mean_humidity": round(mean_humidity, 1),
             "mean_wind": round(mean_wind, 2),
+            "monthly_rain_2022": rain_2022_m,
+            "monthly_rain_2023": rain_2023_m
         })
 
     # 2. ข้อมูลรายเดือนสำหรับกราฟแนวโน้ม (2022-2023)
@@ -195,6 +213,8 @@ def get_halloween_payload() -> str:
         prov_summaries[prov_name] = {
             "name": prov_name,
             "station_count": sta_cnt,
+            "active_stations_2022": int(c_p_22["STA_TH"].nunique()) if len(c_p_22) > 0 else 0,
+            "active_stations_2023": int(c_p_23["STA_TH"].nunique()) if len(c_p_23) > 0 else 0,
             "stations": stas_in_p,
             "rain_all": round(rain_all, 1),
             "rain_2022": round(rain_22, 1),
@@ -232,6 +252,21 @@ def get_halloween_payload() -> str:
         "mean_yield": round(float(diff_df[["yield_2022", "yield_2023"]].values.mean()), 1)
     }
 
+    # 10. ตัวอย่างข้อมูลจริง 5 แถวจากแต่ละชุดข้อมูลสำหรับ Tab 5 (Data Sources Preview)
+    raw_dir = Path(__file__).resolve().parent.parent / "data" / "raw"
+    sample_hrdi = []
+    sample_hii = []
+    sample_plant = []
+    try:
+        if (raw_dir / "HRDI_meteo.csv").exists():
+            sample_hrdi = pd.read_csv(raw_dir / "HRDI_meteo.csv", nrows=5).fillna("").to_dict(orient="records")
+        if (raw_dir / "spatial-rain-hii.csv").exists():
+            sample_hii = pd.read_csv(raw_dir / "spatial-rain-hii.csv", nrows=5).fillna("").to_dict(orient="records")
+        if (raw_dir / "plant01_65.csv").exists():
+            sample_plant = pd.read_csv(raw_dir / "plant01_65.csv", nrows=5).fillna("").to_dict(orient="records")
+    except Exception:
+        pass
+
     payload = {
         "centers": PROVINCE_GEO_CENTERS,
         "province_geojson": load_province_geojson(),
@@ -248,6 +283,11 @@ def get_halloween_payload() -> str:
         "province_changes": province_changes,
         "correlations": correlations,
         "lopo": lopo_list,
+        "raw_samples": {
+            "hrdi": sample_hrdi,
+            "hii": sample_hii,
+            "plant": sample_plant
+        },
         "completeness": {
             "num_stations": completeness["num_stations"],
             "expected_station_months": completeness["expected_station_months"],
