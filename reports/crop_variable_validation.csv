@@ -1,0 +1,3 @@
+﻿dataset,rows,area_missing,area_zero,area_negative,production_missing,production_negative,avg_missing,avg_negative,comparable_rows,inconsistent_avg_rows
+CROP_2022,9361,0,1421,0,0,0,1421,0,7940,0
+CROP_2023,5886,0,1849,0,0,0,1849,0,4037,0

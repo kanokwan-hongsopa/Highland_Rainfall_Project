@@ -1,0 +1,5 @@
+﻿dataset,total_rows,rows_in_scope,rows_2022,rows_2023,out_of_scope,missing_cells_in_scope
+HRDI,7463,1039,601,438,6424,3425
+HII,8085,216,108,108,7869,0
+CROP_2022,62148,9361,8399,962,52787,2842
+CROP_2023,50103,5886,0,5886,44217,3698

@@ -1,0 +1,5 @@
+﻿dataset,filename,rows,columns,encoding,duplicate_rows,total_missing_cells
+HRDI,HRDI_meteo.csv,7463,27,utf-8-sig,0,29556
+HII,spatial-rain-hii.csv,8085,7,utf-8-sig,0,0
+CROP_2022,plant01_65.csv,62148,15,utf-8-sig,0,20900
+CROP_2023,5.-01-2566.csv,50103,15,utf-8-sig,0,36165

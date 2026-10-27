@@ -1,0 +1,8 @@
+﻿column,dtype,missing_count,unique_count
+YEAR,int64,0,9
+MONTH,int64,0,12
+PROV_ID,int64,0,77
+PROV_T,str,0,77
+MinRain,float64,0,6003
+MaxRain,float64,0,7174
+AvgRain,float64,0,7852

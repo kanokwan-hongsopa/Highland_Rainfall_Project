@@ -1,0 +1,5 @@
+﻿scenario,year,tambons,rows,median_yield,median_hrdi,median_hii
+all_valid_records,2022,30,30,495.83993354711583,841.06,789.38905855
+all_valid_records,2023,30,30,495.8409785932722,601.57,484.1944782
+exclude_area_flag,2022,30,30,495.83993354711583,841.06,789.38905855
+exclude_area_flag,2023,29,29,500.0,601.57,484.1944782
