@@ -46,4 +46,4 @@ st.markdown("""
 
 # เรนเดอร์ Halloween Interactive Dashboard
 html_code = get_halloween_html()
-components.html(html_code, height=1680, scrolling=True)
+components.html(html_code, height=1850, scrolling=True)
