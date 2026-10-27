@@ -7,6 +7,7 @@ import streamlit as st
 from dashboard.components import apply_custom_css
 from dashboard.tab_climate import render_tab_climate
 from dashboard.tab_rice_rain import render_tab_rice_rain
+from dashboard.tab_methodology import render_tab_methodology
 
 # ตั้งค่าหน้าเว็บ Streamlit
 st.set_page_config(
@@ -62,4 +63,4 @@ if selected_tab == "🛰️ ภาพรวมภูมิอากาศบน�
 elif selected_tab == "🌾 ฝนกับผลผลิตข้าวนาปี (5 จังหวัด)":
     render_tab_rice_rain()
 else:
-    st.info("📋 กำลังจัดเตรียม: ระเบียบวิธีวิจัย การทดสอบความไว และข้อจำกัดข้อมูล จะพร้อมใช้งานในขั้นตอนที่ 4")
+    render_tab_methodology()
