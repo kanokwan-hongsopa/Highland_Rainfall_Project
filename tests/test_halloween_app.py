@@ -77,7 +77,7 @@ def test_halloween_payload_integrity():
     assert abs(corrs["HRDI_province"]["spearman_rho"] - (-0.7000)) < 0.001
     assert abs(corrs["HII_province"]["spearman_rho"] - (-0.9000)) < 0.001
 
-    print("✔ test_halloween_payload_integrity passed successfully!")
+    print("[PASS] test_halloween_payload_integrity passed successfully!")
 
 
 def test_halloween_html_structure():
@@ -123,11 +123,11 @@ def test_halloween_html_structure():
     assert "วิเคราะห์เชิงสำรวจ (Non-causal)" in html, "Missing non-causal exploratory disclaimer"
     assert "หน่วยรอยืนยัน" in html, "Missing unconfirmed unit labels"
 
-    print("✔ test_halloween_html_structure passed successfully!")
+    print("[PASS] test_halloween_html_structure passed successfully!")
 
 
 if __name__ == "__main__":
     print("Running Halloween Dashboard Test Suite...")
     test_halloween_payload_integrity()
     test_halloween_html_structure()
-    print("ALL TESTS PASSED! 🎃✨")
+    print("ALL TESTS PASSED! SUCCESS!")
