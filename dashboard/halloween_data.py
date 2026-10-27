@@ -1,0 +1,293 @@
+"""
+Highland Rainfall Project - Halloween Data Serializer
+แปลงข้อมูลจริงจาก Data Loader ให้เป็น JSON Payload สำหรับ High-Performance Frontend Engine
+"""
+
+import json
+from pathlib import Path
+import pandas as pd
+import numpy as np
+
+from dashboard.data_loader import (
+    load_climate_data,
+    get_climate_completeness_summary,
+    load_rice_tambon_data,
+    load_province_changes_data,
+    load_correlations_data,
+    load_sensitivity_reports,
+    load_tambon_geo_mapping,
+    get_within_tambon_changes,
+    PROVINCE_NAMES,
+)
+
+# พิกัดศูนย์กลางและระดับซูมของ 9 จังหวัดบนพื้นที่สูง
+PROVINCE_GEO_CENTERS = {
+    "เชียงใหม่": {"lat": 18.7904, "lng": 98.9847, "zoom": 8.5, "code": "50"},
+    "เชียงราย": {"lat": 19.9072, "lng": 99.8325, "zoom": 8.5, "code": "57"},
+    "น่าน": {"lat": 18.7756, "lng": 100.7730, "zoom": 8.5, "code": "55"},
+    "ตาก": {"lat": 16.8840, "lng": 99.1258, "zoom": 8.0, "code": "63"},
+    "กำแพงเพชร": {"lat": 16.4828, "lng": 99.5227, "zoom": 8.5, "code": "62"},
+    "พิษณุโลก": {"lat": 16.8211, "lng": 100.2659, "zoom": 8.5, "code": "65"},
+    "เพชรบูรณ์": {"lat": 16.4190, "lng": 101.1567, "zoom": 8.5, "code": "67"},
+    "กาญจนบุรี": {"lat": 14.3000, "lng": 99.1000, "zoom": 8.0, "code": "71"},
+    "แม่ฮ่องสอน": {"lat": 19.3021, "lng": 97.9654, "zoom": 8.5, "code": "58"},
+}
+
+# ขอบเขต Polygon โดยประมาณ (ตามแนวภูมิศาสตร์จริง) สำหรับวาด Choropleth บน Leaflet
+PROVINCE_POLYGONS = {
+    "แม่ฮ่องสอน": [
+        [19.8, 97.9], [19.7, 98.4], [19.2, 98.3], [18.7, 98.1],
+        [18.1, 97.9], [17.8, 97.7], [18.2, 97.4], [18.9, 97.5], [19.5, 97.6]
+    ],
+    "เชียงใหม่": [
+        [20.1, 99.2], [19.7, 99.3], [19.3, 99.4], [18.8, 99.2],
+        [18.3, 98.9], [17.7, 98.7], [17.3, 98.4], [17.6, 98.2],
+        [18.2, 98.3], [18.9, 98.5], [19.5, 98.6], [19.9, 98.9]
+    ],
+    "เชียงราย": [
+        [20.4, 100.0], [20.3, 100.5], [19.9, 100.4], [19.5, 100.2],
+        [19.2, 99.8], [19.3, 99.4], [19.7, 99.5], [20.1, 99.7]
+    ],
+    "น่าน": [
+        [19.6, 101.2], [19.2, 101.3], [18.7, 101.1], [18.1, 100.8],
+        [18.2, 100.5], [18.8, 100.5], [19.3, 100.7]
+    ],
+    "ตาก": [
+        [17.7, 98.6], [17.3, 99.2], [16.8, 99.3], [16.2, 99.1],
+        [15.6, 99.0], [15.5, 98.6], [16.2, 98.4], [17.0, 98.5]
+    ],
+    "กำแพงเพชร": [
+        [16.8, 99.3], [16.6, 99.9], [16.1, 99.8], [15.9, 99.4],
+        [15.9, 99.1], [16.4, 99.1]
+    ],
+    "พิษณุโลก": [
+        [17.5, 100.5], [17.3, 100.9], [16.8, 100.8], [16.5, 100.3],
+        [16.6, 99.9], [17.2, 99.9]
+    ],
+    "เพชรบูรณ์": [
+        [17.1, 101.6], [16.5, 101.6], [15.7, 101.4], [15.4, 101.0],
+        [16.2, 100.9], [17.0, 101.1]
+    ],
+    "กาญจนบุรี": [
+        [15.4, 99.1], [14.8, 99.5], [14.0, 99.4], [13.9, 98.8],
+        [14.6, 98.4], [15.3, 98.4]
+    ]
+}
+
+OVERVIEW_CENTER = {"lat": 17.5, "lng": 99.5, "zoom": 6.4}
+
+
+def get_halloween_payload() -> str:
+    """
+    เตรียมข้อมูลจริงทั้งหมดในรูปแบบ JSON ปลอดภัย
+    """
+    climate_df = load_climate_data()
+    completeness = get_climate_completeness_summary(climate_df)
+    rice_df = load_rice_tambon_data()
+    prov_changes_df = load_province_changes_data()
+    corr_df = load_correlations_data()
+    sens_reports = load_sensitivity_reports()
+    geo_df = load_tambon_geo_mapping()
+    diff_df = get_within_tambon_changes(rice_df, geo_df)
+
+    # 1. รายชื่อสถานี 50 แห่งพร้อมพิกัดและค่าเฉลี่ย
+    station_list = []
+    for sta_name, group in climate_df.groupby("STA_TH"):
+        first = group.iloc[0]
+        prov = first["province_clean"]
+        lat = float(first["LAT"])
+        lng = float(first["LONG"])
+        src = str(first["source_type"])
+        records_cnt = len(group)
+        valid_rain_cnt = int(group["rainfall_mm"].notna().sum())
+        mean_rain = float(group["rainfall_mm"].mean()) if valid_rain_cnt > 0 else 0.0
+        mean_temp = float(group["TEMP"].mean()) if group["TEMP"].notna().sum() > 0 else 0.0
+        mean_humidity = float(group["HUMIDITY"].mean()) if group["HUMIDITY"].notna().sum() > 0 else 0.0
+        mean_wind = float(group["WIND_SPEED"].mean()) if group["WIND_SPEED"].notna().sum() > 0 else 0.0
+
+        station_list.append({
+            "name": sta_name,
+            "province": prov,
+            "amphoe": str(first.get("AMPHOE", "")),
+            "tambon": str(first.get("TAMBON", "")),
+            "lat": round(lat, 5),
+            "lng": round(lng, 5),
+            "source": src,
+            "records": records_cnt,
+            "valid_rain": valid_rain_cnt,
+            "mean_rain": round(mean_rain, 1),
+            "mean_temp": round(mean_temp, 1),
+            "mean_humidity": round(mean_humidity, 1),
+            "mean_wind": round(mean_wind, 2),
+        })
+
+    # 2. ข้อมูลรายเดือนสำหรับกราฟแนวโน้ม (2022-2023)
+    monthly_trends = []
+    for (ym, prov), grp in climate_df.groupby(["year_month", "province_clean"]):
+        monthly_trends.append({
+            "year_month": ym,
+            "province": prov,
+            "mean_rain": round(float(grp["rainfall_mm"].mean()), 2) if grp["rainfall_mm"].notna().any() else None,
+            "mean_temp": round(float(grp["TEMP"].mean()), 2) if grp["TEMP"].notna().any() else None,
+            "mean_humidity": round(float(grp["HUMIDITY"].mean()), 2) if grp["HUMIDITY"].notna().any() else None,
+            "mean_wind": round(float(grp["WIND_SPEED"].mean()), 2) if grp["WIND_SPEED"].notna().any() else None,
+            "stations_count": int(grp["STA_TH"].nunique())
+        })
+
+    # 3. ข้อมูลข้าวนาปีรายตำบล 25 ตำบล (Balanced Panel)
+    tambon_items = []
+    for _, row in diff_df.iterrows():
+        tambon_items.append({
+            "tambon_code_6": str(row["tambon_code_6"]),
+            "province_id": str(row["province_id"]),
+            "province_name": str(row["province_name"]),
+            "amphoe_name": str(row.get("amphoe_name", "")),
+            "tambon_name": str(row.get("tambon_name", "")),
+            "label": str(row["label"]),
+            "yield_2022": round(float(row["yield_2022"]), 2),
+            "yield_2023": round(float(row["yield_2023"]), 2),
+            "delta_yield": round(float(row["delta_yield"]), 2),
+            "hrdi_2022": round(float(row["hrdi_2022"]), 2),
+            "hrdi_2023": round(float(row["hrdi_2023"]), 2),
+            "delta_hrdi": round(float(row["delta_hrdi"]), 2),
+            "hii_2022": round(float(row["hii_2022"]), 2),
+            "hii_2023": round(float(row["hii_2023"]), 2),
+            "delta_hii": round(float(row["delta_hii"]), 2),
+            "direction": str(row["yield_change_direction"])
+        })
+
+    # 4. ข้อมูลการเปลี่ยนแปลงระดับจังหวัด 5 จังหวัด
+    province_changes = []
+    for _, row in prov_changes_df.iterrows():
+        province_changes.append({
+            "province_id": str(row["province_id"]),
+            "province_name": str(row["province_name"]),
+            "tambons": int(row["tambons"]),
+            "mean_yield_change": round(float(row["mean_yield_change"]), 2),
+            "mean_hrdi_change": round(float(row["mean_hrdi_change"]), 2),
+            "hii_change": round(float(row["hii_change"]), 2),
+        })
+
+    # 5. สหสัมพันธ์ Spearman
+    correlations = []
+    for _, row in corr_df.iterrows():
+        correlations.append({
+            "analysis": str(row["analysis"]),
+            "n": int(row["n"]),
+            "spearman_rho": round(float(row["spearman_rho"]), 6),
+            "analysis_type": str(row.get("analysis_type", "exploratory")),
+            "rain_window": str(row.get("rain_window", "Feb-Jul"))
+        })
+
+    # 6. Sensitivity Reports
+    lopo_list = []
+    if sens_reports["leave_one_province_out"] is not None:
+        for _, row in sens_reports["leave_one_province_out"].iterrows():
+            lopo_list.append({
+                "excluded_province_name": str(row["excluded_province_name"]),
+                "tambons": int(row["tambons"]),
+                "hrdi_tambon_rho": round(float(row["hrdi_tambon_rho"]), 4),
+                "hrdi_province_rho": round(float(row["hrdi_province_rho"]), 4),
+                "hii_province_rho": round(float(row["hii_province_rho"]), 4)
+            })
+
+    # 7. สรุปภาพรวมรายจังหวัดสำหรับ Map Choropleth และ Detail Popup
+    prov_summaries = {}
+    for prov_name in PROVINCE_GEO_CENTERS.keys():
+        c_p = climate_df[climate_df["province_clean"] == prov_name]
+        stas_in_p = sorted(c_p["STA_TH"].unique().tolist())
+        sta_cnt = len(stas_in_p)
+
+        # ค่าเฉลี่ยฝนรายปี (มม./ปี)
+        rain_by_sta_yr = c_p.groupby(["STA_TH", "year"])["rainfall_mm"].sum()
+        rain_all = float(rain_by_sta_yr.mean()) if len(rain_by_sta_yr) > 0 else 0.0
+
+        c_p_22 = c_p[c_p["year"] == 2022]
+        rain_22 = float(c_p_22.groupby("STA_TH")["rainfall_mm"].sum().mean()) if len(c_p_22) > 0 else rain_all
+
+        c_p_23 = c_p[c_p["year"] == 2023]
+        rain_23 = float(c_p_23.groupby("STA_TH")["rainfall_mm"].sum().mean()) if len(c_p_23) > 0 else rain_all
+
+        temp_avg = float(c_p["TEMP"].mean()) if c_p["TEMP"].notna().sum() > 0 else 0.0
+        hum_avg = float(c_p["HUMIDITY"].mean()) if c_p["HUMIDITY"].notna().sum() > 0 else 0.0
+        wind_avg = float(c_p["WIND_SPEED"].mean()) if c_p["WIND_SPEED"].notna().sum() > 0 else 0.0
+
+        # ข้อมูลข้าวและ HII
+        p_chg = prov_changes_df[prov_changes_df["province_name"] == prov_name]
+        t_in_p = diff_df[diff_df["province_name"] == prov_name]
+        tambon_codes = t_in_p["tambon_code_6"].tolist()
+
+        rice_yield_22 = round(float(t_in_p["yield_2022"].mean()), 1) if len(t_in_p) > 0 else None
+        rice_yield_23 = round(float(t_in_p["yield_2023"].mean()), 1) if len(t_in_p) > 0 else None
+        hii_chg = round(float(p_chg["hii_change"].iloc[0]), 1) if len(p_chg) > 0 else None
+        hii_rain_22 = round(float(t_in_p["hii_2022"].mean()), 1) if len(t_in_p) > 0 else None
+        hii_rain_23 = round(float(t_in_p["hii_2023"].mean()), 1) if len(t_in_p) > 0 else None
+
+        prov_summaries[prov_name] = {
+            "name": prov_name,
+            "station_count": sta_cnt,
+            "stations": stas_in_p,
+            "rain_all": round(rain_all, 1),
+            "rain_2022": round(rain_22, 1),
+            "rain_2023": round(rain_23, 1),
+            "temp": round(temp_avg, 1),
+            "humidity": round(hum_avg, 1),
+            "wind": round(wind_avg, 2),
+            "tambon_count": len(tambon_codes),
+            "tambons": tambon_codes,
+            "rice_yield_2022": rice_yield_22,
+            "rice_yield_2023": rice_yield_23,
+            "hii_change": hii_chg,
+            "hii_rain_2022": hii_rain_22,
+            "hii_rain_2023": hii_rain_23
+        }
+
+    # 8. สรุปแนวโน้มรายเดือนทั้งพื้นที่สูง 12 เดือน (2022 vs 2023)
+    monthly_2022 = []
+    monthly_2023 = []
+    c_2022 = climate_df[climate_df["year"] == 2022]
+    c_2023 = climate_df[climate_df["year"] == 2023]
+    for m in range(1, 13):
+        r22 = c_2022[c_2022["month"] == m]["rainfall_mm"].mean()
+        r23 = c_2023[c_2023["month"] == m]["rainfall_mm"].mean()
+        monthly_2022.append(round(float(r22), 1) if pd.notna(r22) else 0.0)
+        monthly_2023.append(round(float(r23), 1) if pd.notna(r23) else 0.0)
+
+    # 9. Overall High-level KPIs
+    rain_per_sta_yr = climate_df.groupby(["STA_TH", "year"])["rainfall_mm"].sum()
+    overall_kpis = {
+        "mean_rain": round(float(rain_per_sta_yr.mean()), 1),
+        "mean_temp": round(float(climate_df["TEMP"].mean()), 1),
+        "mean_humidity": round(float(climate_df["HUMIDITY"].mean()), 1),
+        "mean_wind": round(float(climate_df["WIND_SPEED"].mean()), 2),
+        "mean_yield": round(float(diff_df[["yield_2022", "yield_2023"]].values.mean()), 1)
+    }
+
+    payload = {
+        "centers": PROVINCE_GEO_CENTERS,
+        "polygons": PROVINCE_POLYGONS,
+        "overview_center": OVERVIEW_CENTER,
+        "stations": station_list,
+        "monthly_trends": monthly_trends,
+        "monthly_overall": {
+            "2022": monthly_2022,
+            "2023": monthly_2023
+        },
+        "province_summaries": prov_summaries,
+        "overall_kpis": overall_kpis,
+        "tambons": tambon_items,
+        "province_changes": province_changes,
+        "correlations": correlations,
+        "lopo": lopo_list,
+        "completeness": {
+            "num_stations": completeness["num_stations"],
+            "expected_station_months": completeness["expected_station_months"],
+            "actual_rows": completeness["actual_rows"],
+            "missing_rows": completeness["missing_rows"],
+            "missing_rows_pct": completeness["missing_rows_pct"],
+            "rain_missing_values": completeness["rain_missing_values"],
+            "rain_valid_values": completeness["rain_valid_values"]
+        }
+    }
+
+    return json.dumps(payload, ensure_ascii=False)
