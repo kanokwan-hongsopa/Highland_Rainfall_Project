@@ -61,7 +61,7 @@ def test_halloween_payload_integrity():
     tambons = data["tambons"]
     assert len(tambons) in [25, 921], f"Expected 25 or 921 tambons, got {len(tambons)}"
     if "balanced_tambons" in data:
-        assert len(data["balanced_tambons"]) == 25, f"Expected 25 balanced tambons, got {len(data['balanced_tambons'])}"
+        assert len(data["balanced_tambons"]) == 26, f"Expected 26 balanced tambons, got {len(data['balanced_tambons'])}"
     for t in tambons:
         assert len(t["tambon_code_6"]) == 6, f"Invalid tambon code: {t['tambon_code_6']}"
         assert t["province_name"] in expected_provs, f"Unknown tambon province: {t['province_name']}"
@@ -80,9 +80,9 @@ def test_halloween_payload_integrity():
     assert "HRDI_province" in corrs, "Missing HRDI_province correlation"
     assert "HII_province" in corrs, "Missing HII_province correlation"
     # ตรวจสอบค่า rho ทางทฤษฎี/การคำนวณจริง (May-Aug)
-    assert abs(corrs["HRDI_tambon"]["spearman_rho"] - (-0.027038)) < 0.001
-    assert abs(corrs["HRDI_province"]["spearman_rho"] - (-0.7000)) < 0.001
-    assert abs(corrs["HII_province"]["spearman_rho"] - (0.1000)) < 0.001
+    assert abs(corrs["HRDI_tambon"]["spearman_rho"] - (-0.076513)) < 0.001
+    assert abs(corrs["HRDI_province"]["spearman_rho"] - (-0.371429)) < 0.001
+    assert abs(corrs["HII_province"]["spearman_rho"] - (0.142857)) < 0.001
 
     print("[PASS] test_halloween_payload_integrity passed successfully!")
 

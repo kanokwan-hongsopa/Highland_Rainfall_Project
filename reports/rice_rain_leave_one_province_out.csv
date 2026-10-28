@@ -1,6 +1,7 @@
 ﻿scenario,tambons,provinces,hrdi_tambon_rho,hrdi_province_rho,hii_province_rho,excluded_province
-exclude_province_50,11,4,-0.48747279090867957,-1.0,0.0,50
-exclude_province_55,20,4,0.06671912751482192,-0.4,0.2,55
-exclude_province_57,24,4,-0.04761950204731751,-0.8,0.0,57
-exclude_province_58,22,4,0.07157161859219187,-0.4,0.6,58
-exclude_province_63,23,4,0.042864353574332985,-0.8,-0.4,63
+exclude_province_50,12,5,-0.5008764248619175,-0.4,0.2,50
+exclude_province_55,21,5,-0.007848434699336469,-0.2,0.1,55
+exclude_province_57,25,5,-0.10621940956640946,-0.5,0.1,57
+exclude_province_58,23,5,0.014402941539284286,0.1,0.6,58
+exclude_province_62,25,5,-0.0270376678896315,-0.7,0.1,62
+exclude_province_63,24,5,-0.015475189330586895,-0.5,-0.3,63
