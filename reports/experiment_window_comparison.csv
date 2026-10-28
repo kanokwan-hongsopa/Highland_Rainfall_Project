@@ -1,13 +1,14 @@
 ﻿Metric,Baseline (Feb-Jul),Experiment (May-Aug),Difference / Note
-Sample Size (Tambons),25,25,Exact same 25 tambons
-Sample Size (Provinces),5,5,Exact same 5 provinces
-HRDI Stations,28,28,Exact same 28 stations
-HRDI Tambon Spearman rho,-0.1734,-0.027,+0.1464
-HRDI Province Spearman rho,-0.7,-0.7,+0.0000
-HII Province Spearman rho,-0.9,0.1,+1.0000
-HRDI Rain Direction (Decrease / Increase),Decrease: 25 / Increase: 0,Decrease: 25 / Increase: 0,Rainfall decreased across all 25 tambons in both windows
-HII Rain Direction (Decrease / Increase),Decrease: 25 / Increase: 0,Decrease: 25 / Increase: 0,Rainfall decreased across all 25 tambons in both windows
-Rice Yield Direction (Dec / Inc / Same),Dec: 10 / Inc: 10 / Same: 5,Dec: 10 / Inc: 10 / Same: 5,Identical (same yield data)
-LOPO HRDI Tambon rho range,-0.5285 to 0.0303,-0.4875 to 0.0716,Sensitivity range
-LOPO HRDI Province rho range,-1.0000 to -0.4000,-1.0000 to -0.4000,Sensitivity range
-LOPO HII Province rho range,-1.0000 to -0.8000,-0.4000 to 0.6000,Sensitivity range
+Sample Size (Tambons),26,26,"Same 26 tambons (Balanced Panel 26, excl. RPF zero-rain)"
+Sample Size (Provinces),6,6,Same 6 provinces
+HRDI Stations,29,29,Same 29 stations
+HRDI Tambon Spearman rho,-0.2011,-0.0765,+0.1246
+HRDI Province Spearman rho,-0.6,-0.3714,+0.2286
+HII Province Spearman rho,-0.6,0.1429,+0.7429
+HRDI Tambon rho 95% bootstrap CI,-0.55 to 0.21,-0.47 to 0.36,CI crosses 0 = no reliable relationship
+HRDI Rain Direction (Decrease / Increase),Decrease: 26 / Increase: 0,Decrease: 26 / Increase: 0,
+HII Rain Direction (Decrease / Increase),Decrease: 26 / Increase: 0,Decrease: 26 / Increase: 0,
+Rice Yield Direction (Dec / Inc / Same),Dec: 10 / Inc: 11 / Same: 5,Dec: 10 / Inc: 11 / Same: 5,Identical (same yield data)
+LOPO HRDI Tambon rho range,-0.4974 to -0.0353,-0.5009 to 0.0144,Sensitivity range
+LOPO HRDI Province rho range,-0.9000 to -0.3000,-0.7000 to 0.1000,Sensitivity range
+LOPO HII Province rho range,-0.9000 to -0.3000,-0.3000 to 0.6000,Sensitivity range

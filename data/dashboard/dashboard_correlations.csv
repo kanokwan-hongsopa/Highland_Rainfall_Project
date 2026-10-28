@@ -1,4 +1,4 @@
-﻿analysis,n,spearman_rho,analysis_type,causal_interpretation_allowed,rain_window,crop_season_verified,source_units_verified
-HRDI_tambon,25,-0.0270376678896315,exploratory,False,May-Aug,Vegetative Stage (Planting to Tillering),False
-HRDI_province,5,-0.7,exploratory,False,May-Aug,Vegetative Stage (Planting to Tillering),False
-HII_province,5,0.1,exploratory,False,May-Aug,Vegetative Stage (Planting to Tillering),False
+﻿analysis,n,spearman_rho,ci95_low,ci95_high,analysis_type,causal_interpretation_allowed,rain_window,crop_season_verified,source_units_verified
+HRDI_tambon,26,-0.07652756112061215,-0.4679658197387666,0.35532269922763393,exploratory,False,May-Aug,False,False
+HRDI_province,6,-0.37142857142857144,,,exploratory,False,May-Aug,False,False
+HII_province,6,0.14285714285714285,,,exploratory,False,May-Aug,False,False

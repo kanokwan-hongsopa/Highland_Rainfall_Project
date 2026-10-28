@@ -48,6 +48,18 @@ COMPLETENESS_DIR = Path(__file__).resolve().parent.parent / "data" / "completene
 ANALYSIS_READY_DIR = Path(__file__).resolve().parent.parent / "data" / "analysis_ready"
 
 
+def is_suspect_observed(rain, hist_median) -> bool:
+    """
+    ธงคุณภาพค่าฝนตรวจวัดที่ผิดปกติ (เทียบกับมัธยฐานเดือนเดียวกันของสถานี ปี 2017–2022)
+    - ฝน 0 มม. ในเดือนที่มัธยฐานเกิน 100 มม. (กลางฤดูฝน มักเป็นเซ็นเซอร์ขัดข้องที่บันทึกเป็นศูนย์)
+    - ฝนเกิน 3 เท่าของมัธยฐานและเกิน 500 มม. (spike ผิดปกติ เช่น สถานีสบโขง ส.ค. 2023)
+    """
+    if pd.isna(rain) or pd.isna(hist_median):
+        return False
+    rain, hist_median = float(rain), float(hist_median)
+    return (rain == 0 and hist_median > 100) or (rain > 3 * hist_median and rain > 500)
+
+
 def load_province_geojson() -> dict:
     """โหลดขอบเขตจังหวัดจริงจากไฟล์ GeoJSON (WGS84 EPSG:4326)"""
     if GEOJSON_FILE.exists():
@@ -128,9 +140,15 @@ def get_halloween_payload() -> str:
                 else:
                     rf_exp = row.get("rainfall_for_demo_mm", rf_raw)
 
+                # QA: ค่าตรวจวัดที่ผิดปกติ (ดู is_suspect_observed) ในโหมด 12 เดือนจะแทนด้วยมัธยฐานรายเดือนของสถานี
+                hist_med = row.get("historical_month_median_mm")
+                if c_status == "observed" and is_suspect_observed(rf_raw, hist_med):
+                    c_status = "qa_replaced"
+                    rf_exp = hist_med
+
                 m_status_24.append(c_status)
 
-                # Observed: ต้องเป็นสถานะ 'observed' เท่านั้นและมีค่า ไม่นับ missing หรือ estimated เป็น observed!
+                # Observed: ต้องเป็นสถานะ 'observed' เท่านั้น (ค่าที่ติดธง QA ไม่นับเป็นค่าตรวจวัดที่เชื่อถือได้)
                 if c_status == "observed" and pd.notna(rf_raw):
                     m_obs_24.append(round(float(rf_raw), 1))
                 else:
@@ -150,6 +168,9 @@ def get_halloween_payload() -> str:
             obs_cnt_tot = obs_cnt_22 + obs_cnt_23
             est_cnt_tot = sum(1 for s in m_status_24 if s == "estimated")
             exp_cnt_tot = sum(1 for s in m_status_24 if s == "estimated_exploratory")
+            qa_cnt_tot = sum(1 for s in m_status_24 if s == "qa_replaced")
+            non_obs_22 = sum(1 for s in m_status_24[:12] if s != "observed")
+            non_obs_23 = sum(1 for s in m_status_24[12:24] if s != "observed")
 
             # กฎเหล็กข้อ 7: ในโหมดตรวจวัดจริง ห้ามแสดงผลรวมทั้งปีของสถานีที่ไม่ครบ 12 เดือนโดยเด็ดขาด!
             annual_obs_22 = round(sum(m_obs_24[:12]), 1) if obs_cnt_22 == 12 else None
@@ -169,6 +190,8 @@ def get_halloween_payload() -> str:
                 status_label += f" (DEMO {est_cnt_tot} ด.)"
             if exp_cnt_tot > 0:
                 status_label += f" (Exploratory {exp_cnt_tot} ด.)"
+            if qa_cnt_tot > 0:
+                status_label += f" (ค่าผิดปกติ {qa_cnt_tot} ด.)"
 
             station_list.append({
                 "name": sta_name,
@@ -187,6 +210,9 @@ def get_halloween_payload() -> str:
                 "observed_count_total": obs_cnt_tot,
                 "estimated_count_total": est_cnt_tot,
                 "exploratory_count_total": exp_cnt_tot,
+                "qa_replaced_count_total": qa_cnt_tot,
+                "non_observed_count_2022": non_obs_22,
+                "non_observed_count_2023": non_obs_23,
                 "data_status_label": status_label,
                 "months_2022": 12,
                 "months_2023": 12,
@@ -306,7 +332,7 @@ def get_halloween_payload() -> str:
                 "is_balanced_2yr": has_both
             })
 
-    # 3.1 ข้อมูลข้าว Balanced Panel 25 ตำบล (สำหรับ Tab 4 Correlation & Backward Compatibility)
+    # 3.1 ข้อมูลข้าว Balanced Panel 26 ตำบล (สำหรับ Tab 4 Correlation & Backward Compatibility)
     rice_df = load_rice_tambon_data()
     diff_df = get_within_tambon_changes(rice_df, geo_df)
     balanced_tambon_items = []
@@ -352,7 +378,9 @@ def get_halloween_payload() -> str:
             "n": int(row["n"]),
             "spearman_rho": round(float(row["spearman_rho"]), 6),
             "analysis_type": str(row.get("analysis_type", "exploratory")),
-            "rain_window": str(row.get("rain_window", "Feb-Jul"))
+            "rain_window": str(row.get("rain_window", "May-Aug")),
+            "ci95_low": round(float(row["ci95_low"]), 4) if pd.notna(row.get("ci95_low")) else None,
+            "ci95_high": round(float(row["ci95_high"]), 4) if pd.notna(row.get("ci95_high")) else None,
         })
 
     # 6. Sensitivity Reports
@@ -410,6 +438,9 @@ def get_halloween_payload() -> str:
         m_obs_23_prov = []
         m_exp_22_prov = []
         m_exp_23_prov = []
+        # จำนวนสถานีที่ใช้ค่าประมาณ (ไม่ใช่ค่าตรวจวัดจริง) ในแต่ละเดือน
+        m_est_cnt_22 = [sum(1 for s in p_stas if s["monthly_status_24"][i] != "observed") for i in range(12)]
+        m_est_cnt_23 = [sum(1 for s in p_stas if s["monthly_status_24"][i + 12] != "observed") for i in range(12)]
 
         for m_idx in range(12):
             obs_vals_22 = [s["monthly_obs_2022"][m_idx] for s in p_stas if s["monthly_obs_2022"][m_idx] is not None]
@@ -460,6 +491,10 @@ def get_halloween_payload() -> str:
             "monthly_obs_2023": m_obs_23_prov,
             "monthly_exp_2022": m_exp_22_prov,
             "monthly_exp_2023": m_exp_23_prov,
+            "monthly_est_count_2022": m_est_cnt_22,
+            "monthly_est_count_2023": m_est_cnt_23,
+            "non_observed_count_2022": sum(m_est_cnt_22),
+            "non_observed_count_2023": sum(m_est_cnt_23),
             # HII
             "hii_rain_2022": round(hii_22, 1),
             "hii_rain_2023": round(hii_23, 1),
@@ -515,6 +550,8 @@ def get_halloween_payload() -> str:
         "hrdi_exp_rain_2022": hrdi_exp_22_overall,
         "hrdi_exp_rain_2023": hrdi_exp_23_overall,
         "hrdi_exp_rain_all": hrdi_exp_all_overall,
+        "hrdi_non_observed_2022": sum(s["non_observed_count_2022"] for s in station_list),
+        "hrdi_non_observed_2023": sum(s["non_observed_count_2023"] for s in station_list),
     }
 
     # 10. Sample Previews
@@ -580,7 +617,8 @@ def get_halloween_payload() -> str:
             "exploratory_total_rows": len(hrdi_df),
             "observed_station_months": 977,
             "estimated_station_months": 186,
-            "exploratory_station_months": 37
+            "exploratory_station_months": 37,
+            "qa_replaced_station_months": sum(s["qa_replaced_count_total"] for s in station_list)
         }
     }
 

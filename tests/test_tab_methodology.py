@@ -23,14 +23,14 @@ def test_tambon_mapping_table_integrity():
     rice_df = load_rice_tambon_data()
     tambons_25 = sorted(rice_df["tambon_code_6"].unique().tolist())
     
-    assert len(tambons_25) == 25
+    assert len(tambons_25) == 26
     matched_count = 0
     for t in tambons_25:
         match = geo_df[geo_df["tambon_code_6"] == t]
         if not match.empty:
             matched_count += 1
             
-    assert matched_count == 25, f"Expected all 25 tambons matched, got {matched_count}"
+    assert matched_count == 26, f"Expected all 26 tambons matched, got {matched_count}"
 
 
 def test_sensitivity_reports_in_methodology():
