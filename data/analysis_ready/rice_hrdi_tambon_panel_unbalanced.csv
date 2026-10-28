@@ -1,0 +1,61 @@
+﻿year,province_code,province_name,amphoe_code,amphoe_name,tambon_code_6,tambon_name,plant_area_rai,harvest_area_rai,production_kg,yield_kg_per_rai,is_unharvested_crop_failure,source_file,crop_type,registration_status,data_status,hrdi_may_aug_mean_rain_mm,station_count,station_codes
+2022,50,เชียงใหม่,5001,เมืองเชียงใหม่,500108,สุเทพ,80.0,80.0,64000.0,800.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,635.63,1,PUI
+2022,50,เชียงใหม่,5001,เมืองเชียงใหม่,500109,แม่เหียะ,120.0,120.0,96000.0,800.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,0.0,1,RPF
+2023,50,เชียงใหม่,5001,เมืองเชียงใหม่,500109,แม่เหียะ,143.0,8.25,4950.0,600.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,2.44,1,RPF
+2022,50,เชียงใหม่,5002,จอมทอง,500205,สบเตี๊ยะ,575.0,575.0,451500.0,785.22,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,912.43,1,PKL
+2023,50,เชียงใหม่,5002,จอมทอง,500205,สบเตี๊ยะ,1035.0,1035.0,812000.0,784.54,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,586.13,1,PKL
+2022,50,เชียงใหม่,5003,แม่แจ่ม,500305,แม่นาจร,12270.0,12270.0,6232000.0,507.91,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,994.79,1,MML
+2023,50,เชียงใหม่,5003,แม่แจ่ม,500305,แม่นาจร,10520.0,8860.0,4511000.0,509.14,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,779.36,1,MML
+2022,50,เชียงใหม่,5004,เชียงดาว,500401,เชียงดาว,1650.0,1650.0,745000.0,451.52,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,850.16,2,"FAS, PDN"
+2023,50,เชียงใหม่,5004,เชียงดาว,500401,เชียงดาว,3835.0,3835.0,1590060.0,414.62,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,617.3,2,"FAS, PDN"
+2022,50,เชียงใหม่,5004,เชียงดาว,500404,แม่นะ,650.0,650.0,320000.0,492.31,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,734.27,1,PMO
+2023,50,เชียงใหม่,5004,เชียงดาว,500404,แม่นะ,2020.0,2020.0,786600.0,389.41,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,489.75,1,PMO
+2022,50,เชียงใหม่,5004,เชียงดาว,500405,เมืองคอง,3130.0,3130.0,1500000.0,479.23,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,966.05,1,PKM
+2023,50,เชียงใหม่,5004,เชียงดาว,500405,เมืองคอง,4250.0,4250.0,1629000.0,383.29,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,744.84,1,PKM
+2022,50,เชียงใหม่,5006,แม่แตง,500602,แม่แตง,1100.0,1100.0,880000.0,800.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1008.54,1,PPE
+2023,50,เชียงใหม่,5006,แม่แตง,500602,แม่แตง,1020.0,1020.0,816000.0,800.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,792.45,1,PPE
+2022,50,เชียงใหม่,5006,แม่แตง,500606,สบเปิง,50.0,50.0,40000.0,800.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1367.62,1,TAE
+2023,50,เชียงใหม่,5006,แม่แตง,500606,สบเปิง,2577.0,1690.0,1198400.0,709.11,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1020.42,1,TAE
+2022,50,เชียงใหม่,5006,แม่แตง,500612,กื้ดช้าง,212.0,212.0,169600.0,800.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1008.54,1,PAD
+2023,50,เชียงใหม่,5006,แม่แตง,500612,กื้ดช้าง,1635.0,1635.0,803900.0,491.68,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,792.45,1,PAD
+2022,50,เชียงใหม่,5011,พร้าว,501111,โหล่งขอด,3198.0,3198.0,2008800.0,628.14,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,968.43,1,LKD
+2023,50,เชียงใหม่,5011,พร้าว,501111,โหล่งขอด,3234.0,3234.0,2570400.0,794.81,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,796.7,1,LKD
+2022,50,เชียงใหม่,5018,อมก๋อย,501801,อมก๋อย,12303.0,12303.0,4306050.0,350.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1366.74,1,MRM
+2023,50,เชียงใหม่,5018,อมก๋อย,501801,อมก๋อย,11853.0,11853.0,4148550.0,350.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1116.57,1,MRM
+2022,50,เชียงใหม่,5018,อมก๋อย,501802,ยางเปียง,2834.0,2834.0,991900.0,350.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1303.95,1,MHL
+2023,50,เชียงใหม่,5018,อมก๋อย,501802,ยางเปียง,2587.0,2587.0,905450.0,350.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1213.2,1,MHL
+2022,50,เชียงใหม่,5018,อมก๋อย,501803,แม่ตื่น,12212.0,12212.0,4274200.0,350.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1344.12,2,"KTN, KTN-1"
+2023,50,เชียงใหม่,5018,อมก๋อย,501803,แม่ตื่น,12187.0,12187.0,4265450.0,350.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1116.79,2,"KTN, KTN-1"
+2022,50,เชียงใหม่,5018,อมก๋อย,501806,นาเกียน,5767.0,5767.0,1730100.0,300.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1213.96,1,PPN
+2023,50,เชียงใหม่,5018,อมก๋อย,501806,นาเกียน,5786.0,5786.0,2025100.0,350.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,913.55,1,PPN
+2022,50,เชียงใหม่,5021,ไชยปราการ,502103,แม่ทะลบ,3606.0,3606.0,3281460.0,910.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,696.29,1,HPO
+2023,50,เชียงใหม่,5021,ไชยปราการ,502103,แม่ทะลบ,1800.0,1800.0,1692000.0,940.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,551.07,1,HPO
+2022,55,น่าน,5501,เมืองน่าน,550117,สะเนียน,1025.0,1025.0,665250.0,649.02,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1165.83,1,SNN
+2023,55,น่าน,5501,เมืองน่าน,550117,สะเนียน,700.0,700.0,404700.0,578.14,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1071.85,1,SNN
+2022,55,น่าน,5502,แม่จริม,550206,แม่จริม,252.2,252.2,83800.0,332.28,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,982.13,1,MJR
+2023,55,น่าน,5502,แม่จริม,550206,แม่จริม,558.35,831.31,399260.0,480.28,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,408.31,1,MJR
+2022,55,น่าน,5506,ท่าวังผา,550610,ผาทอง,720.0,720.0,377000.0,523.61,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1148.78,1,NPG
+2023,55,น่าน,5506,ท่าวังผา,550610,ผาทอง,5158.45,5158.45,3788372.0,734.4,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,991.23,1,NPG
+2023,55,น่าน,5510,นาหมื่น,551003,เมืองลี,725.0,575.0,402050.0,699.22,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,746.02,1,NKW
+2023,55,น่าน,5510,นาหมื่น,551004,ปิงหลวง,1312.0,822.0,564800.0,687.1,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,641.41,1,NKM
+2022,55,น่าน,5511,สันติสุข,551101,ดู่พงษ์,1850.0,1850.0,991600.0,536.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1073.23,1,PNG
+2023,55,น่าน,5511,สันติสุข,551101,ดู่พงษ์,1430.0,1430.0,795080.0,556.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,831.47,1,PNG
+2022,55,น่าน,5512,บ่อเกลือ,551205,ดงพญา,558.0,558.0,223200.0,400.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1575.07,1,BKL
+2023,55,น่าน,5512,บ่อเกลือ,551205,ดงพญา,640.0,640.0,258000.0,403.12,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1489.08,1,BKL
+2022,55,น่าน,5513,สองแคว,551301,นาไร่หลวง,8200.0,8200.0,4300000.0,524.39,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1028.49,2,"PAI, TWK"
+2022,57,เชียงราย,5710,แม่สรวย,571006,วาวี,47.0,47.0,32900.0,700.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1140.75,1,VAV
+2023,57,เชียงราย,5710,แม่สรวย,571006,วาวี,12192.0,12192.0,8646250.0,709.17,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,971.25,1,VAV
+2022,58,แม่ฮ่องสอน,5803,ปาย,580307,โป่งสา,2217.0,2217.0,894000.0,403.25,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1012.39,2,"HHA-1, HHA-2"
+2023,58,แม่ฮ่องสอน,5803,ปาย,580307,โป่งสา,2124.0,2124.0,823460.0,387.69,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,804.24,2,"HHA-1, HHA-2"
+2022,58,แม่ฮ่องสอน,5806,สบเมย,580601,สบเมย,1921.0,1921.0,768400.0,400.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1209.06,1,MOI
+2023,58,แม่ฮ่องสอน,5806,สบเมย,580601,สบเมย,240.0,240.0,72000.0,300.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1153.11,1,MOI
+2022,58,แม่ฮ่องสอน,5806,สบเมย,580606,แม่สามแลบ,1999.0,1999.0,799600.0,400.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1137.4,1,LAP
+2023,58,แม่ฮ่องสอน,5806,สบเมย,580606,แม่สามแลบ,140.0,140.0,42000.0,300.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,924.88,1,LAP
+2022,62,กำแพงเพชร,6204,ขาณุวรลักษบุรี,620411,ปางมะค่า,19777.0,19777.0,13843900.0,700.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,797.37,1,KLN
+2023,62,กำแพงเพชร,6204,ขาณุวรลักษบุรี,620411,ปางมะค่า,20290.0,20290.0,14322400.0,705.88,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,432.8,1,KLN
+2022,63,ตาก,6304,แม่ระมาด,630404,แม่ตื่น,8900.0,8900.0,3700000.0,415.73,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1146.72,1,HNY
+2023,63,ตาก,6304,แม่ระมาด,630404,แม่ตื่น,929.0,929.0,464500.0,500.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,860.72,1,HNY
+2022,63,ตาก,6305,ท่าสองยาง,630503,แม่สอง,5000.0,5000.0,2000000.0,400.0,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1246.91,1,MA2
+2023,63,ตาก,6305,ท่าสองยาง,630503,แม่สอง,14000.0,14000.0,5600000.0,400.0,False,data/raw/5.-01-2566.csv,wet_season_lowland_rice_011000,registered_observed,observed,1160.12,1,MA2
+2022,63,ตาก,6309,วังเจ้า,630901,เชียงทอง,9946.0,9946.0,7958200.0,800.14,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1044.76,1,PSK
+2022,71,กาญจนบุรี,7107,ทองผาภูมิ,710706,ห้วยเขย่ง,152.0,152.0,64056.0,421.42,False,data/raw/plant01_65.csv,wet_season_lowland_rice_011000,registered_observed,observed,1383.71,1,KAN

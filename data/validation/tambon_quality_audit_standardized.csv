@@ -1,0 +1,46 @@
+﻿tambon_code_6,province_name,amphoe_name,tambon_name,station_codes,station_count,high_quality_station_count,suspicious_station_count,incomplete_station_count,rice_2022_yield_kg_rai,rice_2023_yield_kg_rai,clean_rain_may_aug_2022,clean_rain_may_aug_2023,raw_mean_rain_may_aug_2022,raw_mean_rain_may_aug_2023,standardized_status,standardized_reason
+500108,เชียงใหม่,เมืองเชียงใหม่,สุเทพ,PUI,1,1,0,0,800.0,,635.63,328.28,635.63,328.28,excluded_rice_incomplete,DOAE Rice missing in one or both years (1/2 observed)
+500109,เชียงใหม่,เมืองเชียงใหม่,แม่เหียะ,RPF,1,0,1,0,800.0,600.0,,,0.0,2.44,excluded_suspicious_rain_dropout,All stations in tambon have suspicious rain dropouts (RPF)
+500205,เชียงใหม่,จอมทอง,สบเตี๊ยะ,PKL,1,1,0,0,785.22,784.54,912.4300000000001,586.13,912.4300000000001,586.13,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PKL
+500305,เชียงใหม่,แม่แจ่ม,แม่นาจร,MML,1,1,0,0,507.91,509.14,994.79,779.3599999999999,994.79,779.3599999999999,qualified_high_quality,Verified DOAE rice + High-quality rainfall from MML
+500307,เชียงใหม่,แม่แจ่ม,ปางหินฝน,FON,1,0,1,0,500.0,500.0,,,410.78,69.71000000000001,excluded_suspicious_rain_dropout,All stations in tambon have suspicious rain dropouts (FON)
+500401,เชียงใหม่,เชียงดาว,เชียงดาว,"FAS, PDN",2,2,0,0,451.52,414.62,850.1600000000001,617.2950000000001,850.1600000000001,617.2950000000001,qualified_high_quality,"Verified DOAE rice + High-quality rainfall from FAS, PDN"
+500404,เชียงใหม่,เชียงดาว,แม่นะ,PMO,1,1,0,0,492.31,389.41,734.27,489.75,734.27,489.75,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PMO
+500405,เชียงใหม่,เชียงดาว,เมืองคอง,PKM,1,1,0,0,479.23,383.29,966.0500000000001,744.84,966.0500000000001,744.84,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PKM
+500407,เชียงใหม่,เชียงดาว,ทุ่งข้าวพวง,PAO,1,0,1,0,479.65,383.81,,,0.0,461.35,excluded_suspicious_rain_dropout,All stations in tambon have suspicious rain dropouts (PAO)
+500602,เชียงใหม่,แม่แตง,แม่แตง,PPE,1,1,0,0,800.0,800.0,1008.54,792.45,1008.54,792.45,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PPE
+500606,เชียงใหม่,แม่แตง,สบเปิง,TAE,1,1,0,0,800.0,709.11,1367.62,1020.42,1367.62,1020.42,qualified_high_quality,Verified DOAE rice + High-quality rainfall from TAE
+500612,เชียงใหม่,แม่แตง,กื้ดช้าง,PAD,1,1,0,0,800.0,491.68,1008.54,792.45,1008.54,792.45,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PAD
+501111,เชียงใหม่,พร้าว,โหล่งขอด,LKD,1,1,0,0,628.14,794.81,968.4300000000001,796.7,968.4300000000001,796.7,qualified_high_quality,Verified DOAE rice + High-quality rainfall from LKD
+501801,เชียงใหม่,อมก๋อย,อมก๋อย,MRM,1,1,0,0,350.0,350.0,1366.7400000000002,1116.57,1366.7400000000002,1116.57,qualified_high_quality,Verified DOAE rice + High-quality rainfall from MRM
+501802,เชียงใหม่,อมก๋อย,ยางเปียง,MHL,1,1,0,0,350.0,350.0,1303.95,1213.2,1303.95,1213.2,qualified_high_quality,Verified DOAE rice + High-quality rainfall from MHL
+501803,เชียงใหม่,อมก๋อย,แม่ตื่น,"KTN, KTN-1",2,2,0,0,350.0,350.0,1344.125,1116.79,1344.125,1116.79,qualified_high_quality,"Verified DOAE rice + High-quality rainfall from KTN, KTN-1"
+501805,เชียงใหม่,อมก๋อย,แม่หลอง,"HNG, OKI",2,1,1,0,312.56,350.0,1366.7400000000002,1116.57,1366.7400000000002,2156.59,qualified_high_quality,Verified DOAE rice + High-quality rainfall from HNG
+501806,เชียงใหม่,อมก๋อย,นาเกียน,PPN,1,1,0,0,300.0,350.0,1213.96,913.55,1213.96,913.55,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PPN
+502103,เชียงใหม่,ไชยปราการ,แม่ทะลบ,HPO,1,1,0,0,910.0,940.0,696.29,551.07,696.29,551.07,qualified_high_quality,Verified DOAE rice + High-quality rainfall from HPO
+550103,น่าน,เมืองน่าน,ผาสิงห์,NAN,1,0,0,1,646.21,600.0,,,,,excluded_rain_incomplete,HRDI Station rainfall missing months in May-August
+550117,น่าน,เมืองน่าน,สะเนียน,SNN,1,1,0,0,649.02,578.14,1165.8300000000002,1071.85,1165.8300000000002,1071.85,qualified_high_quality,Verified DOAE rice + High-quality rainfall from SNN
+550206,น่าน,แม่จริม,แม่จริม,MJR,1,1,0,0,332.28,480.28,982.1300000000001,408.31,982.1300000000001,408.31,qualified_high_quality,Verified DOAE rice + High-quality rainfall from MJR
+550405,น่าน,นาน้อย,สันทะ,KST,1,1,0,0,504.0,500.0,982.3699999999999,312.51,982.3699999999999,312.51,qualified_high_quality,Verified DOAE rice + High-quality rainfall from KST
+550511,น่าน,ปัว,ภูคา,PYA,1,1,0,0,,,1225.4299999999998,1011.8899999999999,1225.4299999999998,1011.8899999999999,excluded_rice_incomplete,DOAE Rice missing in one or both years (0/2 observed)
+550610,น่าน,ท่าวังผา,ผาทอง,NPG,1,1,0,0,523.61,734.4,1148.78,991.23,1148.78,991.23,qualified_high_quality,Verified DOAE rice + High-quality rainfall from NPG
+551003,น่าน,นาหมื่น,เมืองลี,NKW,1,1,0,0,0.0,699.22,935.5899999999999,746.02,935.5899999999999,746.02,excluded_crop_failure,DOAE recorded 0.0 yield / unharvested crop failure in 2022
+551004,น่าน,นาหมื่น,ปิงหลวง,NKM,1,1,0,0,0.0,687.1,827.47,641.41,827.47,641.41,excluded_crop_failure,DOAE recorded 0.0 yield / unharvested crop failure in 2022
+551101,น่าน,สันติสุข,ดู่พงษ์,PNG,1,1,0,0,536.0,556.0,1073.23,831.47,1073.23,831.47,qualified_high_quality,Verified DOAE rice + High-quality rainfall from PNG
+551205,น่าน,บ่อเกลือ,ดงพญา,BKL,1,1,0,0,400.0,403.12,1575.07,1489.08,1575.07,1489.08,qualified_high_quality,Verified DOAE rice + High-quality rainfall from BKL
+551301,น่าน,สองแคว,นาไร่หลวง,"PAI, TWK",2,2,0,0,524.39,,1028.495,567.275,1028.495,567.275,excluded_rice_incomplete,DOAE Rice missing in one or both years (1/2 observed)
+570708,เชียงราย,แม่จัน,ป่าตึง,HKP,1,0,1,0,889.87,780.23,,,0.0,59.48,excluded_suspicious_rain_dropout,All stations in tambon have suspicious rain dropouts (HKP)
+571006,เชียงราย,แม่สรวย,วาวี,VAV,1,1,0,0,700.0,709.17,1140.75,971.25,1140.75,971.25,qualified_high_quality,Verified DOAE rice + High-quality rainfall from VAV
+571503,เชียงราย,แม่ฟ้าหลวง,แม่สลองนอก,MSL,1,0,1,0,300.0,300.0,,,1015.19,178.21,excluded_suspicious_rain_dropout,All stations in tambon have suspicious rain dropouts (MSL)
+580306,แม่ฮ่องสอน,ปาย,เมืองแปง,HHA,1,0,1,0,451.03,385.8,,,824.74,788.8499999999999,excluded_suspicious_rain_dropout,All stations in tambon have suspicious rain dropouts (HHA)
+580307,แม่ฮ่องสอน,ปาย,โป่งสา,"HHA-1, HHA-2",2,2,0,0,403.25,387.69,1012.3900000000001,804.24,1012.3900000000001,804.24,qualified_high_quality,"Verified DOAE rice + High-quality rainfall from HHA-1, HHA-2"
+580601,แม่ฮ่องสอน,สบเมย,สบเมย,MOI,1,1,0,0,400.0,300.0,1209.06,1153.1100000000001,1209.06,1153.1100000000001,qualified_high_quality,Verified DOAE rice + High-quality rainfall from MOI
+580606,แม่ฮ่องสอน,สบเมย,แม่สามแลบ,LAP,1,1,0,0,400.0,300.0,1137.4,924.88,1137.4,924.88,qualified_high_quality,Verified DOAE rice + High-quality rainfall from LAP
+620411,กำแพงเพชร,ขาณุวรลักษบุรี,ปางมะค่า,KLN,1,1,0,0,700.0,705.88,797.3700000000001,432.8,797.3700000000001,432.8,qualified_high_quality,Verified DOAE rice + High-quality rainfall from KLN
+630404,ตาก,แม่ระมาด,แม่ตื่น,HNY,1,1,0,0,415.73,500.0,1146.72,860.72,1146.72,860.72,qualified_high_quality,Verified DOAE rice + High-quality rainfall from HNY
+630503,ตาก,ท่าสองยาง,แม่สอง,MA2,1,1,0,0,400.0,400.0,1246.91,1160.12,1246.91,1160.12,qualified_high_quality,Verified DOAE rice + High-quality rainfall from MA2
+630703,ตาก,พบพระ,คีรีราษฎร์,PPR,1,1,0,0,,,982.9200000000001,767.81,982.9200000000001,767.81,excluded_rice_incomplete,DOAE Rice missing in one or both years (0/2 observed)
+630901,ตาก,วังเจ้า,เชียงทอง,PSK,1,1,0,0,800.14,,1044.76,807.09,1044.76,807.09,excluded_rice_incomplete,DOAE Rice missing in one or both years (1/2 observed)
+650305,พิษณุโลก,ชาติตระการ,บ่อภาค,NPAK,1,0,1,0,499.37,600.0,,,,441.46,excluded_rain_incomplete,HRDI Station rainfall missing months in May-August
+671107,เพชรบูรณ์,เขาค้อ,เข็กน้อย,HNO,1,0,1,0,,,,,1220.18,46.02,excluded_rice_incomplete,DOAE Rice missing in one or both years (0/2 observed)
+710706,กาญจนบุรี,ทองผาภูมิ,ห้วยเขย่ง,KAN,1,0,0,1,421.42,,,,1383.71,,excluded_rice_incomplete,DOAE Rice missing in one or both years (1/2 observed)

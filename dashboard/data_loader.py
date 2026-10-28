@@ -37,6 +37,24 @@ MONTH_NAMES_TH = {
 }
 
 
+ANALYSIS_READY_DIR = DATA_DIR / "analysis_ready"
+
+
+@st.cache_data
+def load_hrdi_exploratory_data() -> pd.DataFrame:
+    """
+    โหลดข้อมูลปริมาณน้ำฝน HRDI 50 สถานี x 12 เดือน x 2 ปี (ชุดข้อมูล Exploratory Analysis-Ready)
+    ไฟล์: data/analysis_ready/HRDI_2022_2023_12months_EXPLORATORY.csv
+    มีคอลัมน์สำคัญ: RAINFALL (observed), rainfall_completed_exploratory_mm (exploratory), completion_status
+    """
+    csv_path = ANALYSIS_READY_DIR / "HRDI_2022_2023_12months_EXPLORATORY.csv"
+    if not csv_path.exists():
+        csv_path = DATA_DIR / "completeness" / "hrdi_all_50_stations_24_months_DEMO.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError(f"ไม่พบไฟล์ข้อมูล HRDI Exploratory: {csv_path}")
+    return pd.read_csv(csv_path, encoding="utf-8-sig")
+
+
 @st.cache_data
 def load_climate_data() -> pd.DataFrame:
     """
@@ -158,8 +176,9 @@ def load_rice_tambon_data() -> pd.DataFrame:
     df["tambon_code_6"] = df["tambon_code_6"].astype(str).str.zfill(6)
     df["year"] = pd.to_numeric(df["year"], errors="coerce").astype(int)
 
-    for col in ["rice_yield_per_harvest_area", "hrdi_feb_jul", "hii_feb_jul"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
+    for col in ["rice_yield_per_harvest_area", "hrdi_may_aug", "hii_may_aug", "hrdi_feb_jul", "hii_feb_jul"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
     # เติมชื่อจังหวัด
     df["province_name"] = df["province_id"].map(PROVINCE_NAMES).fillna("จังหวัด " + df["province_id"])
@@ -283,11 +302,16 @@ def get_within_tambon_changes(rice_df: pd.DataFrame, geo_df: pd.DataFrame = None
     คำนวณการเปลี่ยนแปลงรายตำบล (2023 ลบ 2022) ในตำบลเดิม (Balanced Panel 25 ตำบล)
     """
     piv_yield = rice_df.pivot(index="tambon_code_6", columns="year", values="rice_yield_per_harvest_area")
-    piv_hrdi = rice_df.pivot(index="tambon_code_6", columns="year", values="hrdi_feb_jul")
-    piv_hii = rice_df.pivot(index="tambon_code_6", columns="year", values="hii_feb_jul")
+    
+    # ใช้ May-Aug เป็นช่วงฝนหลัก หากมีในตาราง (คง Feb-Jul ไว้เทียบเคียง)
+    hrdi_col = "hrdi_may_aug" if "hrdi_may_aug" in rice_df.columns else "hrdi_feb_jul"
+    hii_col = "hii_may_aug" if "hii_may_aug" in rice_df.columns else "hii_feb_jul"
+
+    piv_hrdi = rice_df.pivot(index="tambon_code_6", columns="year", values=hrdi_col)
+    piv_hii = rice_df.pivot(index="tambon_code_6", columns="year", values=hii_col)
     prov_series = rice_df.groupby("tambon_code_6")["province_id"].first()
 
-    diff_df = pd.DataFrame({
+    diff_data = {
         "tambon_code_6": piv_yield.index,
         "province_id": prov_series.loc[piv_yield.index].values,
         "yield_2022": piv_yield[2022].values,
@@ -299,7 +323,19 @@ def get_within_tambon_changes(rice_df: pd.DataFrame, geo_df: pd.DataFrame = None
         "hii_2022": piv_hii[2022].values,
         "hii_2023": piv_hii[2023].values,
         "delta_hii": (piv_hii[2023] - piv_hii[2022]).values,
-    })
+    }
+
+    if "hrdi_feb_jul" in rice_df.columns and "hii_feb_jul" in rice_df.columns:
+        piv_hrdi_fj = rice_df.pivot(index="tambon_code_6", columns="year", values="hrdi_feb_jul")
+        piv_hii_fj = rice_df.pivot(index="tambon_code_6", columns="year", values="hii_feb_jul")
+        diff_data["hrdi_feb_jul_2022"] = piv_hrdi_fj[2022].values
+        diff_data["hrdi_feb_jul_2023"] = piv_hrdi_fj[2023].values
+        diff_data["delta_hrdi_feb_jul"] = (piv_hrdi_fj[2023] - piv_hrdi_fj[2022]).values
+        diff_data["hii_feb_jul_2022"] = piv_hii_fj[2022].values
+        diff_data["hii_feb_jul_2023"] = piv_hii_fj[2023].values
+        diff_data["delta_hii_feb_jul"] = (piv_hii_fj[2023] - piv_hii_fj[2022]).values
+
+    diff_df = pd.DataFrame(diff_data)
 
     diff_df["province_name"] = diff_df["province_id"].map(PROVINCE_NAMES).fillna("จังหวัด " + diff_df["province_id"])
 
