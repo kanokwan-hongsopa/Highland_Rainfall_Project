@@ -90,11 +90,14 @@ def get_halloween_html() -> str:
             padding: 0;
         }}
 
+        /* ขนาดฐาน 18px: ทุกขนาดที่เป็น rem ใหญ่ขึ้น ~12% อ่านได้โดยไม่ต้องซูม (เทียบเว็บอ้างอิงที่ใช้ 16px) */
+        html {{ font-size: 18px; }}
+
         body {{
             background-color: var(--bg-night);
             color: var(--text-cream);
             font-family: var(--font-family);
-            font-size: 13.5px;
+            font-size: 16px;
             line-height: 1.5;
             overflow-x: hidden;
             background-image: 
@@ -129,7 +132,7 @@ def get_halloween_html() -> str:
             border-radius: 999px;
             padding: 6px 12px;
             font-family: var(--font-family);
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             cursor: pointer;
         }}
         .link-toast {{
@@ -143,7 +146,7 @@ def get_halloween_html() -> str:
             border: 1px solid rgba(255, 138, 50, 0.55);
             border-radius: 10px;
             padding: 8px 14px;
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.25s, transform 0.25s;
@@ -191,9 +194,9 @@ def get_halloween_html() -> str:
             border-radius: 6px;
             color: var(--text-cream);
             font-family: var(--font-family);
-            font-size: 0.82rem;
+            font-size: 1rem;
             font-weight: 600;
-            padding: 3px 12px;
+            padding: 5px 15px;
             cursor: pointer;
         }}
         .year-pill.active {{
@@ -222,7 +225,7 @@ def get_halloween_html() -> str:
             flex-direction: column;
             gap: 0.7rem;
             margin-top: 0.4rem;
-            font-size: 0.83rem;
+            font-size: 0.91rem;
             line-height: 1.55;
             color: var(--text-muted);
         }}
@@ -264,7 +267,7 @@ def get_halloween_html() -> str:
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.08);
             overflow: hidden;
-            font-size: 0.7rem;
+            font-size: 0.82rem;
             line-height: 16px;
             text-align: center;
             color: #ffffff;
@@ -446,14 +449,14 @@ def get_halloween_html() -> str:
             display: flex;
             align-items: center;
             gap: 0.55rem;
-            padding: 0.65rem 1.35rem;
+            padding: 0.8rem 1.6rem;
             border-radius: 9999px;
-            border: 1px solid rgba(167, 120, 232, 0.28);
-            background: rgba(31, 19, 46, 0.75);
-            color: var(--text-muted);
+            border: 1px solid rgba(167, 120, 232, 0.4);
+            background: rgba(31, 19, 46, 0.85);
+            color: var(--text-cream);
             font-family: var(--font-family);
-            font-size: 0.92rem;
-            font-weight: 500;
+            font-size: 1.05rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
             white-space: nowrap;
@@ -515,8 +518,8 @@ def get_halloween_html() -> str:
         }}
 
         .filter-label {{
-            font-size: 0.84rem;
-            font-weight: 500;
+            font-size: 0.98rem;
+            font-weight: 600;
             color: var(--text-muted);
             white-space: nowrap;
             display: flex;
@@ -529,8 +532,8 @@ def get_halloween_html() -> str:
             border: none;
             color: var(--text-cream);
             font-family: var(--font-family);
-            font-size: 0.88rem;
-            font-weight: 500;
+            font-size: 1.05rem;
+            font-weight: 600;
             cursor: pointer;
             outline: none;
             padding-right: 0.3rem;
@@ -557,7 +560,7 @@ def get_halloween_html() -> str:
             border-radius: 9999px;
             padding: 0.48rem 1.25rem;
             font-family: var(--font-family);
-            font-size: 0.86rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -631,14 +634,14 @@ def get_halloween_html() -> str:
         }}
 
         .kpi-title-text {{
-            font-size: 0.84rem;
+            font-size: 0.92rem;
             font-weight: 500;
             color: var(--text-cream);
             line-height: 1.2;
         }}
 
         .kpi-unit-text {{
-            font-size: 0.72rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             opacity: 0.85;
         }}
@@ -659,7 +662,7 @@ def get_halloween_html() -> str:
         }}
 
         .kpi-delta-pill {{
-            font-size: 0.76rem;
+            font-size: 0.84rem;
             font-weight: 600;
             padding: 0.2rem 0.6rem;
             border-radius: 6px;
@@ -681,7 +684,7 @@ def get_halloween_html() -> str:
         }}
 
         .kpi-subtext {{
-            font-size: 0.74rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
         }}
 
@@ -718,7 +721,7 @@ def get_halloween_html() -> str:
             background: transparent;
             color: var(--text-muted);
             font-family: var(--font-family);
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -786,7 +789,7 @@ def get_halloween_html() -> str:
         }}
 
         .section-subtitle-tag {{
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             color: var(--text-muted);
             margin-left: 0.4rem;
         }}
@@ -801,7 +804,7 @@ def get_halloween_html() -> str:
             border-radius: 9999px;
             padding: 0.45rem 1.15rem;
             font-family: var(--font-family);
-            font-size: 0.84rem;
+            font-size: 0.92rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -866,7 +869,7 @@ def get_halloween_html() -> str:
         }}
 
         .highlight-rank-badge {{
-            font-size: 0.75rem;
+            font-size: 0.83rem;
             font-weight: 700;
             padding: 0.15rem 0.5rem;
             border-radius: 9999px;
@@ -881,7 +884,7 @@ def get_halloween_html() -> str:
         }}
 
         .highlight-sta-count {{
-            font-size: 0.76rem;
+            font-size: 0.84rem;
             color: var(--text-muted);
         }}
 
@@ -899,12 +902,12 @@ def get_halloween_html() -> str:
         }}
 
         .highlight-sub-stat {{
-            font-size: 0.76rem;
+            font-size: 0.84rem;
             color: var(--text-muted);
         }}
 
         .highlight-prov-footer {{
-            font-size: 0.74rem;
+            font-size: 0.82rem;
             color: var(--secondary-lavender);
             margin-top: 0.2rem;
             text-align: right;
@@ -1005,7 +1008,7 @@ def get_halloween_html() -> str:
             padding: 0.6rem 0.85rem;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(10px);
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
@@ -1109,7 +1112,7 @@ def get_halloween_html() -> str:
             padding: 0.35rem 0.65rem;
             color: #ffffff;
             font-family: var(--font-family);
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             outline: none;
         }}
 
@@ -1149,11 +1152,11 @@ def get_halloween_html() -> str:
         .station-name-text {{
             font-weight: 600;
             color: #ffffff;
-            font-size: 0.84rem;
+            font-size: 0.92rem;
         }}
 
         .station-badge {{
-            font-size: 0.7rem;
+            font-size: 0.82rem;
             padding: 0.1rem 0.4rem;
             border-radius: 4px;
             background: rgba(167, 120, 232, 0.2);
@@ -1162,7 +1165,7 @@ def get_halloween_html() -> str:
         }}
 
         .station-meta-sub {{
-            font-size: 0.75rem;
+            font-size: 0.83rem;
             color: var(--text-muted);
             display: flex;
             justify-content: space-between;
@@ -1266,7 +1269,7 @@ def get_halloween_html() -> str:
         }}
 
         .chart-empty-state .empty-desc {{
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             color: #A59DB5;
             max-width: 85%;
             line-height: 1.45;
@@ -1277,7 +1280,7 @@ def get_halloween_html() -> str:
             margin-top: 0.6rem;
             padding: 0.2rem 0.65rem;
             border-radius: 4px;
-            font-size: 0.72rem;
+            font-size: 0.82rem;
             background: rgba(167, 120, 232, 0.18);
             color: #D6BCFA;
             border: 1px solid rgba(167, 120, 232, 0.3);
@@ -1285,7 +1288,7 @@ def get_halloween_html() -> str:
 
         .badge-missing {{
             color: #ef4444;
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             background: rgba(239, 68, 68, 0.15);
             padding: 2px 6px;
             border-radius: 4px;
@@ -1294,7 +1297,7 @@ def get_halloween_html() -> str:
         }}
         .badge-obs {{
             color: #22c55e;
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             background: rgba(34, 197, 94, 0.15);
             padding: 2px 6px;
             border-radius: 4px;
@@ -1303,7 +1306,7 @@ def get_halloween_html() -> str:
         }}
         .badge-demo {{
             color: #f59e0b;
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             background: rgba(245, 158, 11, 0.15);
             padding: 2px 6px;
             border-radius: 4px;
@@ -1328,7 +1331,7 @@ def get_halloween_html() -> str:
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.74rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             border-top: 1px solid rgba(167, 120, 232, 0.15);
             padding-top: 0.5rem;
@@ -1356,7 +1359,7 @@ def get_halloween_html() -> str:
         .styled-table {{
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.83rem;
+            font-size: 0.91rem;
             margin-top: 0.5rem;
         }}
 
@@ -1385,7 +1388,7 @@ def get_halloween_html() -> str:
             border-left: 3.5px solid var(--primary-orange);
             padding: 0.75rem 1rem;
             border-radius: 6px;
-            font-size: 0.84rem;
+            font-size: 0.92rem;
             color: var(--text-cream);
             line-height: 1.55;
         }}
@@ -1397,7 +1400,7 @@ def get_halloween_html() -> str:
             border: 1px solid #FF8A32 !important;
             border-radius: 6px !important;
             font-family: var(--font-family) !important;
-            font-size: 0.8rem !important;
+            font-size: 0.88rem !important;
             box-shadow: 0 4px 12px rgba(0,0,0,0.6) !important;
         }}
 
@@ -1419,7 +1422,7 @@ def get_halloween_html() -> str:
             color: #1a1030;
             font-family: var(--font-family);
             font-weight: 700;
-            font-size: 0.76rem;
+            font-size: 0.84rem;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
         }}
         /* ภาพประกอบสถานีในแผงรายละเอียด */
@@ -1436,7 +1439,7 @@ def get_halloween_html() -> str:
             justify-content: space-between;
             gap: 0.5rem;
             flex-wrap: wrap;
-            font-size: 0.7rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
         }}
         .station-scene-caption a {{ color: var(--primary-orange); white-space: nowrap; }}
@@ -1480,7 +1483,7 @@ def get_halloween_html() -> str:
             border-radius: 999px;
             background: rgba(14, 7, 27, 0.8);
             border: 1px solid rgba(255, 179, 92, 0.35);
-            font-size: 0.75rem;
+            font-size: 0.83rem;
             color: var(--text-muted);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }}
@@ -1491,7 +1494,7 @@ def get_halloween_html() -> str:
             background: transparent;
             color: var(--text-cream);
             font-family: var(--font-family);
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             font-weight: 600;
             cursor: pointer;
         }}
@@ -1545,7 +1548,7 @@ def get_halloween_html() -> str:
         }}
 
         .hrdi-mode-tag {{
-            font-size: 0.75rem;
+            font-size: 0.83rem;
             color: var(--accent-lavender);
             font-weight: 500;
         }}
@@ -1603,19 +1606,19 @@ def get_halloween_html() -> str:
         }}
 
         .mode-name {{
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             font-weight: 600;
         }}
 
         .mode-hint {{
-            font-size: 0.68rem;
+            font-size: 0.82rem;
             opacity: 0.8;
         }}
 
         .hrdi-mode-status-banner {{
             border-radius: 8px;
             padding: 0.6rem 0.95rem;
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             line-height: 1.45;
             display: flex;
             align-items: center;
@@ -1698,7 +1701,7 @@ def get_halloween_html() -> str:
         }}
 
         .insight-badge {{
-            font-size: 0.7rem;
+            font-size: 0.82rem;
             font-weight: 600;
             padding: 2px 7px;
             border-radius: 6px;
@@ -1738,7 +1741,7 @@ def get_halloween_html() -> str:
         }}
 
         .insight-category-title {{
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             color: var(--text-muted);
             font-weight: 500;
         }}
@@ -1763,13 +1766,13 @@ def get_halloween_html() -> str:
         }}
 
         .insight-val-unit {{
-            font-size: 0.75rem;
+            font-size: 0.83rem;
             font-weight: 400;
             color: var(--text-muted);
         }}
 
         .insight-meta-details {{
-            font-size: 0.74rem;
+            font-size: 0.82rem;
             line-height: 1.4;
             color: var(--text-muted);
             border-top: 1px dashed rgba(167, 120, 232, 0.18);
@@ -1784,7 +1787,7 @@ def get_halloween_html() -> str:
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.72rem;
+            font-size: 0.82rem;
             color: var(--primary-orange);
             font-weight: 500;
             padding-top: 0.25rem;
@@ -1795,7 +1798,7 @@ def get_halloween_html() -> str:
             border: 1px solid rgba(255, 138, 50, 0.35);
             border-radius: 8px;
             padding: 0.3rem 0.65rem;
-            font-size: 0.78rem;
+            font-size: 0.86rem;
             font-weight: 600;
             color: #FF8A32;
             display: inline-flex;
@@ -2035,18 +2038,18 @@ def get_halloween_html() -> str:
 
                             <!-- Province Overview Stats -->
                             <div id="drawerProvinceView" style="display:flex; flex-direction:column; gap:0.6rem;">
-                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.8rem;">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.88rem;">
                                     <div style="background:rgba(14,7,27,0.7); padding:0.5rem; border-radius:8px; border:1px solid rgba(167,120,232,0.15);">
-                                        <div style="color:var(--text-muted); font-size:0.75rem;">สถานีทั้งหมด</div>
+                                        <div style="color:var(--text-muted); font-size:0.83rem;">สถานีทั้งหมด</div>
                                         <div style="font-weight:700; color:#fff; font-size:0.95rem;" id="drawerProvStaCount">22 สถานี</div>
                                     </div>
                                     <div style="background:rgba(14,7,27,0.7); padding:0.5rem; border-radius:8px; border:1px solid rgba(167,120,232,0.15);">
-                                        <div style="color:var(--text-muted); font-size:0.75rem;">มีข้อมูลปีที่เลือก</div>
+                                        <div style="color:var(--text-muted); font-size:0.83rem;">มีข้อมูลปีที่เลือก</div>
                                         <div style="font-weight:700; color:var(--primary-orange); font-size:0.95rem;" id="drawerProvActiveCount">22 สถานี</div>
                                     </div>
                                 </div>
 
-                                <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:var(--text-muted); background:rgba(14,7,27,0.4); padding:0.4rem 0.6rem; border-radius:6px;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted); background:rgba(14,7,27,0.4); padding:0.4rem 0.6rem; border-radius:6px;">
                                     <span>ฝนเฉลี่ย: <strong style="color:#fff;" id="drawerProvRain">2,035 มม.</strong></span>
                                     <span>อุณหภูมิ: <strong style="color:#fff;" id="drawerProvTemp">20.8 °C</strong></span>
                                 </div>
@@ -2054,7 +2057,7 @@ def get_halloween_html() -> str:
                                 <!-- Station Search Filter Input -->
                                 <input type="text" id="stationSearchInput" class="station-search-box" placeholder="🔍 ค้นหาชื่อหรือรหัสสถานีในจังหวัดนี้..." />
 
-                                <div style="font-size:0.76rem; color:var(--text-muted); font-weight:600;">รายชื่อสถานี (คลิกเพื่อซูมหาพิกัด):</div>
+                                <div style="font-size:0.84rem; color:var(--text-muted); font-weight:600;">รายชื่อสถานี (คลิกเพื่อซูมหาพิกัด):</div>
 
                                 <!-- Scrollable Station List Container -->
                                 <div id="drawerStationList" style="display:flex; flex-direction:column; gap:0.45rem; max-height:260px; overflow-y:auto; padding-right:2px;">
@@ -2067,11 +2070,11 @@ def get_halloween_html() -> str:
                                 <div class="station-info-col">
                                 <div style="display:flex; align-items:center; justify-content:space-between;">
                                     <strong style="color:var(--primary-orange); font-size:0.92rem;" id="subStaName">สถานี...</strong>
-                                    <button class="btn-tab-reset" id="btnBackToProvList" style="padding:0.2rem 0.65rem; font-size:0.75rem;">⬅️ กลับ</button>
+                                    <button class="btn-tab-reset" id="btnBackToProvList" style="padding:0.2rem 0.65rem; font-size:0.83rem;">⬅️ กลับ</button>
                                 </div>
-                                <div style="font-size:0.76rem; color:var(--text-muted);" id="subStaMeta">อ.เมือง ต.สุเทพ | รหัส: PUI</div>
-                                <div style="font-size:0.76rem; color:var(--text-muted);" id="subStaCoords">พิกัดจริง: 18.814, 98.879 (WGS84)</div>
-                                <div style="font-size:0.76rem; color:var(--text-muted);" id="subStaCompleteness">ความครบถ้วน: 20/24 เดือน</div>
+                                <div style="font-size:0.84rem; color:var(--text-muted);" id="subStaMeta">อ.เมือง ต.สุเทพ | รหัส: PUI</div>
+                                <div style="font-size:0.84rem; color:var(--text-muted);" id="subStaCoords">พิกัดจริง: 18.814, 98.879 (WGS84)</div>
+                                <div style="font-size:0.84rem; color:var(--text-muted);" id="subStaCompleteness">ความครบถ้วน: 20/24 เดือน</div>
                                 <div class="station-scene" id="subStaScene"></div>
                                 <div class="station-scene-caption">
                                     <span>ภาพประกอบ (ไม่ใช่ภาพถ่ายจริง) • ความหนาของฝนตามปริมาณฝนจริงของสถานี</span>
@@ -2080,7 +2083,7 @@ def get_halloween_html() -> str:
 
                                 </div>
                                 <div class="station-chart-col">
-                                <div style="font-size:0.76rem; font-weight:600; color:#fff; margin-top:0.4rem;">💧 ปริมาณฝนรายเดือน (2022 vs 2023):</div>
+                                <div style="font-size:0.84rem; font-weight:600; color:#fff; margin-top:0.4rem;">💧 ปริมาณฝนรายเดือน (2022 vs 2023):</div>
                                 <div style="height: 220px; width: 100%;">
                                     <canvas id="stationMiniChart"></canvas>
                                 </div>
@@ -2113,7 +2116,7 @@ def get_halloween_html() -> str:
                             <div class="chart-card-title">
                                 <span>💧</span> แนวโน้มปริมาณน้ำฝนบนพื้นที่สูง รายเดือน
                             </div>
-                            <div class="chart-legend-pills" style="display:flex; gap:0.6rem; font-size:0.78rem;">
+                            <div class="chart-legend-pills" style="display:flex; gap:0.6rem; font-size:0.86rem;">
                                 <span style="color:#A778E8; font-weight:600;">● 2022</span>
                                 <span style="color:#FF8A32; font-weight:600;">● 2023</span>
                             </div>
@@ -2133,28 +2136,28 @@ def get_halloween_html() -> str:
             <div class="chart-row-split" style="margin-top: 1rem;">
                 <div class="chart-bento-card">
                     <div class="chart-card-header">
-                        <div class="chart-card-title" style="font-size: 0.86rem;">
+                        <div class="chart-card-title" style="font-size: 0.95rem;">
                             <span>💧</span> เปรียบเทียบฝนพื้นที่สูง vs จังหวัด
                         </div>
                     </div>
                     <div class="chart-canvas-container" style="height: 300px;">
                         <canvas id="chartTab1RainCompare"></canvas>
                     </div>
-                    <div class="chart-attribution-card" style="font-size: 0.72rem;">
+                    <div class="chart-attribution-card" style="font-size: 0.82rem;">
                         <span>พื้นที่สูง (สถานี) vs ทั้งจังหวัด (มม.)</span>
                     </div>
                 </div>
 
                 <div class="chart-bento-card">
                     <div class="chart-card-header">
-                        <div class="chart-card-title" style="font-size: 0.86rem;">
+                        <div class="chart-card-title" style="font-size: 0.95rem;">
                             <span>🌾</span> ผลผลิตข้าวนาปีเฉลี่ย รายจังหวัด
                         </div>
                     </div>
                     <div class="chart-canvas-container" style="height: 300px;">
                         <canvas id="chartTab1RiceYield"></canvas>
                     </div>
-                    <div class="chart-attribution-card" style="font-size: 0.72rem;">
+                    <div class="chart-attribution-card" style="font-size: 0.82rem;">
                         <span>กก./ไร่ (2022 vs 2023) | DOAE</span>
                     </div>
                 </div>
@@ -2186,7 +2189,7 @@ def get_halloween_html() -> str:
                 <div class="all-ranking-drawer" id="allRankingDrawer" style="display:none; margin-top: 0.85rem; background: rgba(14, 7, 27, 0.7); padding: 1.15rem; border-radius: 12px; border: 1px solid rgba(167, 120, 232, 0.25);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <strong style="color: #ffffff; font-size: 0.95rem;">📊 อันดับปริมาณฝนสะสมเฉลี่ยครบทั้ง 9 จังหวัดบนพื้นที่สูง (มม./สถานี)</strong>
-                        <span style="font-size: 0.76rem; color: var(--text-muted);">คลิกแท่งกราฟเพื่อเลือกจังหวัด</span>
+                        <span style="font-size: 0.84rem; color: var(--text-muted);">คลิกแท่งกราฟเพื่อเลือกจังหวัด</span>
                     </div>
                     <div class="chart-canvas-container" style="height: 220px;">
                         <canvas id="chartProvinceRank"></canvas>
@@ -2201,8 +2204,8 @@ def get_halloween_html() -> str:
                         <span>🌾</span> ความสัมพันธ์ระหว่างปริมาณน้ำฝนกับผลผลิตข้าวนาปี (Rain–Rice Relationship)
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-                        <span style="font-size: 0.78rem; color: var(--text-muted);">ตัวชี้วัดฝน (แกน X):</span>
-                        <select id="scatterMetricSelect" class="filter-select" style="padding: 0.3rem 0.6rem; font-size: 0.78rem; width: auto;">
+                        <span style="font-size: 0.86rem; color: var(--text-muted);">ตัวชี้วัดฝน (แกน X):</span>
+                        <select id="scatterMetricSelect" class="filter-select" style="padding: 0.3rem 0.6rem; font-size: 0.86rem; width: auto;">
                             <option value="hrdi">ฝนพื้นที่สูง (HRDI เฉลี่ยสถานี, มม.)</option>
                             <option value="hii">ฝนเฉลี่ยทั้งจังหวัด (HII รวม 12 ด., มม.)</option>
                             <option value="seasonal">ฝนฤดูปลูก พ.ค.–ส.ค. (May–Aug, มม.)</option>
@@ -2217,7 +2220,7 @@ def get_halloween_html() -> str:
                     <canvas id="chartRainRiceScatter"></canvas>
                 </div>
 
-                <div class="chart-attribution-card" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.74rem;">
+                <div class="chart-attribution-card" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.82rem;">
                     <span>📌 <strong>จุดข้อมูล:</strong> จังหวัด-ปีที่จับคู่ได้จริง (ปี 2022 <span style="color:#A778E8;">● สีม่วง</span>, ปี 2023 <span style="color:#FF8A32;">● สีส้ม</span>) | ไม่ใช้ข้อมูล HII ซ้ำซ้อนรายตำบล • คลิกจุดเพื่อซูมแผนที่</span>
                     <span>⚠️ <strong>การวิเคราะห์เชิงสำรวจ (Non-causal):</strong> ไม่แสดงผลหากข้อมูลไม่ครบ และไม่อ้างความเป็นเหตุเป็นผลทางเกษตร</span>
                 </div>
@@ -2431,9 +2434,9 @@ def get_halloween_html() -> str:
             <!-- Tab 3 Context KPIs -->
             <div class="kpi-row-grid" style="margin-bottom: 0.95rem;">
                 <div class="kpi-card">
-                    <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ตำบลกลุ่มตัวอย่าง (Balanced)</span></div>
+                    <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ตำบลในทะเบียน DOAE</span></div>
                     <div class="kpi-main-body"><div class="kpi-number" id="tab3_kpiTambonCount">921</div><span class="kpi-subtext">ตำบล (9 จังหวัด)</span></div>
-                    <div class="kpi-subtext">ข้อมูลครบถ้วนทั้ง 2 ปี (50 ระเบียน)</div>
+                    <div class="kpi-subtext">ตามตัวกรองที่เลือก (รวมตำบลที่ไม่มีรายงานบางปี)</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ผลผลิตเฉลี่ยปี 2022</span></div>
@@ -2491,7 +2494,7 @@ def get_halloween_html() -> str:
                         <div class="chart-card-title">
                             <span>🌱</span> Horizontal Dumbbell Plot: ผลผลิตข้าว 2022 vs 2023
                         </div>
-                        <span style="font-size:0.75rem; color:var(--text-muted);">🟣 2022 | 🟠 2023</span>
+                        <span style="font-size:0.83rem; color:var(--text-muted);">🟣 2022 | 🟠 2023</span>
                     </div>
                     <div class="chart-canvas-container" style="height: 480px;">
                         <canvas id="chartRiceDumbbell"></canvas>
@@ -2507,7 +2510,7 @@ def get_halloween_html() -> str:
                         <div class="chart-card-title">
                             <span>📊</span> การเปลี่ยนแปลงผลผลิตข้าวนาปี (Δ กก./ไร่)
                         </div>
-                        <span style="font-size:0.75rem; color:var(--text-muted);">เรียงลำดับมากไปน้อย</span>
+                        <span style="font-size:0.83rem; color:var(--text-muted);">เรียงลำดับมากไปน้อย</span>
                     </div>
                     <div class="chart-canvas-container" style="height: 480px;">
                         <canvas id="chartRiceRankedBar"></canvas>
@@ -2525,7 +2528,7 @@ def get_halloween_html() -> str:
                         <span>📋</span> ตารางข้อมูลผลผลิตข้าวนาปีและฝนรายตำบล (26 ตำบล Balanced Panel)
                     </div>
                     <div style="display:flex; align-items:center; gap:0.75rem;">
-                        <span style="font-size:0.75rem; color:var(--text-muted);">🌧️ ฝนสะสม พ.ค.–ส.ค. (ต้นฤดูปลูก/ระยะแตกกอ)</span>
+                        <span style="font-size:0.83rem; color:var(--text-muted);">🌧️ ฝนสะสม พ.ค.–ส.ค. (ต้นฤดูปลูก/ระยะแตกกอ)</span>
                         <input type="text" id="tambonSearchInput" class="station-search-box" style="width:230px;" placeholder="🔍 ค้นหาตำบล, อำเภอ, จังหวัด..." />
                     </div>
                 </div>
@@ -2617,7 +2620,7 @@ def get_halloween_html() -> str:
                         <span>💡</span> สิ่งที่ข้อมูลบอก <span id="findingsScope">(Balanced Panel 26 ตำบล, ฝน พ.ค.–ส.ค.)</span>
                     </div>
                 </div>
-                <div id="findingsBody" style="font-size:0.88rem; line-height:1.7; color:var(--text-muted); margin-top:0.3rem;"></div>
+                <div id="findingsBody" style="font-size:0.97rem; line-height:1.7; color:var(--text-muted); margin-top:0.3rem;"></div>
             </div>
 
             <!-- Large Primary Scatter Plot (Full-Width) -->
@@ -2626,7 +2629,7 @@ def get_halloween_html() -> str:
                     <div class="chart-card-title">
                         <span>🔗</span> แผนภาพการกระจาย: Δ ฝน พ.ค.–ส.ค. (May–Aug) vs Δ ผลผลิตข้าวนาปี
                     </div>
-                    <span style="font-size:0.78rem; color:var(--text-muted);">💡 ช่วงฝนต้นฤดูปลูกและการเจริญเติบโตทางลำต้น (ไม่ใช่ฤดูปลูกเต็มฤดู) | คลิกเพื่อดูรายละเอียด</span>
+                    <span style="font-size:0.86rem; color:var(--text-muted);">💡 ช่วงฝนต้นฤดูปลูกและการเจริญเติบโตทางลำต้น (ไม่ใช่ฤดูปลูกเต็มฤดู) | คลิกเพื่อดูรายละเอียด</span>
                 </div>
                 <div class="chart-canvas-container" style="height: 460px;">
                     <canvas id="chartScatterPlot"></canvas>
@@ -2687,7 +2690,7 @@ def get_halloween_html() -> str:
                             <span>⚠️</span> ข้อพึงระวังและธรรมาภิบาลข้อมูล (Data Governance)
                         </div>
                     </div>
-                    <div style="font-size:0.86rem; line-height:1.65; color:var(--text-muted); display:flex; flex-direction:column; gap:0.55rem;">
+                    <div style="font-size:0.95rem; line-height:1.65; color:var(--text-muted); display:flex; flex-direction:column; gap:0.55rem;">
                         <div style="background:rgba(255,138,50,0.1); border-left:3.5px solid var(--primary-orange); padding:0.65rem 0.85rem; border-radius:6px; color:var(--text-cream);">
                             <strong>ข้อกำหนดสำคัญ:</strong> การวิเคราะห์นี้เป็นการ<strong>วิเคราะห์เชิงสำรวจ (Non-causal)</strong> บนชุดข้อมูลช่วงสั้น 2 ปี (2022–2023) <strong>ห้ามสรุปว่าฝนเป็นสาเหตุของการเพิ่มหรือลดผลผลิต</strong> และห้ามอ้างว่าปัจจัยอื่นมีอิทธิพลมากกว่าฝนโดยไม่มีการวิเคราะห์รองรับ
                         </div>
@@ -2704,7 +2707,7 @@ def get_halloween_html() -> str:
                     <div class="chart-card-title">
                         <span>⚖️</span> การวิเคราะห์ความไวเปรียบเทียบช่วงเวลาฝน (Sensitivity Window Comparison)
                     </div>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">เปรียบเทียบช่วงวิเคราะห์หลัก (พ.ค.–ส.ค.) กับช่วงอ้างอิงเดิม (ก.พ.–ก.ค.)</span>
+                    <span style="font-size:0.83rem; color:var(--text-muted);">เปรียบเทียบช่วงวิเคราะห์หลัก (พ.ค.–ส.ค.) กับช่วงอ้างอิงเดิม (ก.พ.–ก.ค.)</span>
                 </div>
                 <div style="overflow-x:auto;">
                     <table class="styled-table" id="windowCompTable">
@@ -2764,7 +2767,7 @@ def get_halloween_html() -> str:
                         <span>📋</span> แหล่งข้อมูลทางการ การตรวจสอบคุณภาพ (QA) และระเบียบวิธีวิจัย
                     </div>
                 </div>
-                <div style="font-size:0.85rem; line-height:1.65; color:var(--text-muted); display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:0.4rem;">
+                <div style="font-size:0.94rem; line-height:1.65; color:var(--text-muted); display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:0.4rem;">
                     <div>
                         <h4 style="color:#ffffff; margin-bottom:0.4rem;">1. ความครบถ้วนและการรองรับ Dual Mode (Observed vs Exploratory)</h4>
                         <p>50 สถานี × 24 เดือน = 1,200 สถานี–เดือน (ชุดข้อมูล 9 จังหวัด ภาคเหนือ)</p>
@@ -2821,7 +2824,7 @@ def get_halloween_html() -> str:
         </section>
 
         <!-- Footer Governance Note -->
-        <footer style="background:rgba(22, 13, 34, 0.75); border:1px dashed rgba(255, 138, 50, 0.3); border-radius:10px; padding:0.75rem 1.25rem; font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; justify-content:space-between; margin-top:0.6rem;">
+        <footer style="background:rgba(22, 13, 34, 0.75); border:1px dashed rgba(255, 138, 50, 0.3); border-radius:10px; padding:0.75rem 1.25rem; font-size:0.86rem; color:var(--text-muted); display:flex; align-items:center; justify-content:space-between; margin-top:0.6rem;">
             <span>🌾 <strong>Highland Rainfall Project (2022–2023)</strong> | สำรวจสภาพภูมิอากาศบนพื้นที่สูงและผลผลิตข้าวนาปี</span>
             <span>⚠️ การวิเคราะห์เชิงสำรวจ (Non-causal, No Forecasting) | หน่วยรอยืนยัน</span>
         </footer>
@@ -2831,6 +2834,7 @@ def get_halloween_html() -> str:
     <!-- INJECT RAW JSON DATA SAFELY -->
     <script>
         const REAL_DATA = {data_json};
+        Chart.defaults.font.size = 13;
     </script>
 
     <!-- CLIENT APPLICATION SCRIPT -->
@@ -3152,7 +3156,7 @@ def get_halloween_html() -> str:
             }}
 
             if (stas.length === 0) {{
-                drawerStationList.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted); padding:0.5rem;">ไม่พบสถานีที่ตรงกับคำค้นหา</div>';
+                drawerStationList.innerHTML = '<div style="font-size:0.86rem; color:var(--text-muted); padding:0.5rem;">ไม่พบสถานีที่ตรงกับคำค้นหา</div>';
                 return;
             }}
 
@@ -3169,7 +3173,7 @@ def get_halloween_html() -> str:
                         <span>อ.${{s.amphoe || '-'}} ต.${{s.tambon || '-'}}</span>
                         <span>ความครบถ้วน: <strong>${{s.total_months}}/24 ด.</strong></span>
                     </div>
-                    <div style="font-size:0.74rem; color:var(--primary-orange); display:flex; justify-content:space-between; margin-top:2px;">
+                    <div style="font-size:0.82rem; color:var(--primary-orange); display:flex; justify-content:space-between; margin-top:2px;">
                         <span>ฝนเฉลี่ย: ${{s.mean_rain}} มม.</span>
                         <span style="color:var(--text-cream);">คลิกเพื่อซูม 🔍</span>
                     </div>
@@ -3198,7 +3202,7 @@ def get_halloween_html() -> str:
             document.getElementById('subStaCoords').textContent = `พิกัดจริง: ${{s.lat}}, ${{s.lng}} (WGS84)`;
             document.getElementById('subStaCompleteness').innerHTML = `
                 <div>• ตรวจวัดจริง: 2022 (${{s.observed_count_2022}}/12 ด.) | 2023 (${{s.observed_count_2023}}/12 ด.) | รวม ${{s.observed_count_total}}/24 ด.</div>
-                <div style="margin-top:2px; font-size:0.74rem; color:var(--text-muted);">• ค่าประมาณ: ${{s.non_observed_count_2022 + s.non_observed_count_2023}} ด. (รวมค่าผิดปกติที่แทนด้วยมัธยฐาน ${{s.qa_replaced_count_total}} ด.)</div>
+                <div style="margin-top:2px; font-size:0.82rem; color:var(--text-muted);">• ค่าประมาณ: ${{s.non_observed_count_2022 + s.non_observed_count_2023}} ด. (รวมค่าผิดปกติที่แทนด้วยมัธยฐาน ${{s.qa_replaced_count_total}} ด.)</div>
             `;
             document.getElementById('subStaScene').innerHTML = stationSceneSvg(s);
             document.getElementById('subStaMapLink').href = `https://www.google.com/maps?q=${{s.lat}},${{s.lng}}`;
@@ -3310,7 +3314,7 @@ def get_halloween_html() -> str:
                             position: 'bottom',
                             labels: {{
                                 color: '#F7F0E8',
-                                font: {{ size: 10 }},
+                                font: {{ size: 12 }},
                                 boxWidth: 10,
                                 boxHeight: 10,
                                 padding: 8,
@@ -3335,8 +3339,8 @@ def get_halloween_html() -> str:
                         }}
                     }},
                     scales: {{
-                        x: {{ ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }},
-                        y: {{ ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }}
+                        x: {{ ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }},
+                        y: {{ ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }}
                     }}
                 }}
             }});
@@ -4019,7 +4023,7 @@ def get_halloween_html() -> str:
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {{
-                        legend: {{ display: true, labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 10 }} }} }},
+                        legend: {{ display: true, labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 12 }} }} }},
                         tooltip: {{
                             padding: 8,
                             callbacks: {{
@@ -4086,12 +4090,12 @@ def get_halloween_html() -> str:
                     maintainAspectRatio: false,
                     ...chartDrill(el => () => dispatchTab1Filter({{ province: provNames[el.index] }})),
                     plugins: {{
-                        legend: {{ labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 10 }} }} }},
+                        legend: {{ labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 12 }} }} }},
                         tooltip: {{ padding: 8 }}
                     }},
                     scales: {{
-                        x: {{ grid: {{ display: false }}, ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }},
-                        y: {{ grid: {{ color: 'rgba(167, 120, 232, 0.08)' }}, ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }}
+                        x: {{ grid: {{ display: false }}, ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }},
+                        y: {{ grid: {{ color: 'rgba(167, 120, 232, 0.08)' }}, ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }}
                     }}
                 }}
             }});
@@ -4125,12 +4129,12 @@ def get_halloween_html() -> str:
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {{
-                            legend: {{ labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 10 }} }} }},
+                            legend: {{ labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 12 }} }} }},
                             tooltip: {{ padding: 8 }}
                         }},
                         scales: {{
-                            x: {{ grid: {{ display: false }}, ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }},
-                            y: {{ grid: {{ color: 'rgba(167, 120, 232, 0.08)' }}, ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }}
+                            x: {{ grid: {{ display: false }}, ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }},
+                            y: {{ grid: {{ color: 'rgba(167, 120, 232, 0.08)' }}, ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }}
                         }}
                     }}
                 }});
@@ -4161,12 +4165,12 @@ def get_halloween_html() -> str:
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {{
-                        legend: {{ labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 10 }} }} }},
+                        legend: {{ labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 12 }} }} }},
                         tooltip: {{ padding: 8 }}
                     }},
                     scales: {{
-                        x: {{ grid: {{ display: false }}, ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }},
-                        y: {{ grid: {{ color: 'rgba(167, 120, 232, 0.08)' }}, ticks: {{ color: '#A59DB5', font: {{ size: 9 }} }} }}
+                        x: {{ grid: {{ display: false }}, ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }},
+                        y: {{ grid: {{ color: 'rgba(167, 120, 232, 0.08)' }}, ticks: {{ color: '#A59DB5', font: {{ size: 11 }} }} }}
                     }}
                 }}
             }});
@@ -4193,7 +4197,7 @@ def get_halloween_html() -> str:
                     badgeClass: 'badge-orange',
                     category: 'ฝนพื้นที่สูง HRDI มากที่สุด',
                     prov: '—',
-                    valHtml: '<span style="font-size:0.86rem; color:var(--text-muted); font-weight:500;">ข้อมูลไม่เพียงพอสำหรับจัดอันดับ</span>',
+                    valHtml: '<span style="font-size:0.95rem; color:var(--text-muted); font-weight:500;">ข้อมูลไม่เพียงพอสำหรับจัดอันดับ</span>',
                     metaLines: [
                         `📅 ${{yrLabel}} | ตัวชี้วัด: เฉลี่ยต่อสถานี`,
                         '⚠️ ตรวจวัดจริงไม่ครบ 12 ด. (สูงสุด 9 ด.)',
@@ -4209,7 +4213,7 @@ def get_halloween_html() -> str:
                     badgeClass: 'badge-purple',
                     category: 'ฝนพื้นที่สูง HRDI น้อยที่สุด',
                     prov: '—',
-                    valHtml: '<span style="font-size:0.86rem; color:var(--text-muted); font-weight:500;">ข้อมูลไม่เพียงพอสำหรับจัดอันดับ</span>',
+                    valHtml: '<span style="font-size:0.95rem; color:var(--text-muted); font-weight:500;">ข้อมูลไม่เพียงพอสำหรับจัดอันดับ</span>',
                     metaLines: [
                         `📅 ${{yrLabel}} | ตัวชี้วัด: เฉลี่ยต่อสถานี`,
                         '⚠️ ตรวจวัดจริงไม่ครบ 12 ด. (สูงสุด 9 ด.)',
@@ -4535,7 +4539,7 @@ def get_halloween_html() -> str:
                     maintainAspectRatio: false,
                     plugins: {{
                         legend: {{
-                            labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 11 }} }}
+                            labels: {{ color: '#F7F0E8', font: {{ family: "'Prompt'", size: 13 }} }}
                         }},
                         tooltip: {{
                             backgroundColor: 'rgba(20, 11, 36, 0.95)',
@@ -4572,12 +4576,12 @@ def get_halloween_html() -> str:
                     }},
                     scales: {{
                         x: {{
-                            title: {{ display: true, text: xLabel, color: '#A59DB5', font: {{ family: "'Prompt'", size: 11 }} }},
+                            title: {{ display: true, text: xLabel, color: '#A59DB5', font: {{ family: "'Prompt'", size: 13 }} }},
                             grid: {{ color: 'rgba(167, 120, 232, 0.08)' }},
                             ticks: {{ color: '#A59DB5' }}
                         }},
                         y: {{
-                            title: {{ display: true, text: 'ผลผลิตข้าวนาปี (กก./ไร่) ทะเบียน DOAE', color: '#A59DB5', font: {{ family: "'Prompt'", size: 11 }} }},
+                            title: {{ display: true, text: 'ผลผลิตข้าวนาปี (กก./ไร่) ทะเบียน DOAE', color: '#A59DB5', font: {{ family: "'Prompt'", size: 13 }} }},
                             grid: {{ color: 'rgba(167, 120, 232, 0.08)' }},
                             ticks: {{ color: '#A59DB5' }}
                         }}
@@ -5123,7 +5127,7 @@ def get_halloween_html() -> str:
                     maintainAspectRatio: false,
                     ...drill,
                     plugins: {{ legend: {{ display: false }}, tooltip: {{ callbacks: {{ label: (i) => `${{i.raw}} กก./ไร่` }} }} }},
-                    scales: {{ x: {{ grid: {{ display: false }}, ticks: {{ color: '#F7F0E8', font: {{ size: 10 }} }} }}, y: axis }}
+                    scales: {{ x: {{ grid: {{ display: false }}, ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}, y: axis }}
                 }}
             }});
 
@@ -5148,9 +5152,9 @@ def get_halloween_html() -> str:
                     responsive: true,
                     maintainAspectRatio: false,
                     ...drill,
-                    plugins: {{ legend: {{ labels: {{ color: '#F7F0E8', font: {{ size: 10 }} }} }} }},
+                    plugins: {{ legend: {{ labels: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }} }},
                     scales: {{
-                        x: {{ grid: {{ display: false }}, ticks: {{ color: '#F7F0E8', font: {{ size: 10 }} }} }},
+                        x: {{ grid: {{ display: false }}, ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }},
                         yYield: {{ ...axis, position: 'left', title: {{ display: true, text: 'กก./ไร่', color: '#A59DB5' }} }},
                         yArea: {{ position: 'right', grid: {{ display: false }}, ticks: {{ color: '#FF8A32' }}, title: {{ display: true, text: 'ไร่', color: '#FF8A32' }} }}
                     }}
@@ -5212,7 +5216,7 @@ def get_halloween_html() -> str:
                     plugins: {{ legend: {{ labels: {{ color: '#F7F0E8' }} }} }},
                     scales: {{
                         x: {{ ticks: {{ color: '#A59DB5' }} }},
-                        y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 10 }} }} }}
+                        y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}
                     }}
                 }}
             }});
@@ -5267,7 +5271,7 @@ def get_halloween_html() -> str:
                     plugins: {{ legend: {{ display: false }} }},
                     scales: {{
                         x: {{ ticks: {{ color: '#A59DB5' }} }},
-                        y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 10 }} }} }}
+                        y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}
                     }}
                 }}
             }});
@@ -5412,7 +5416,7 @@ def get_halloween_html() -> str:
                         }};
                     }}),
                     plugins: {{
-                        legend: {{ position: 'right', labels: {{ color: '#F7F0E8', usePointStyle: true, font: {{ size: 11 }} }} }},
+                        legend: {{ position: 'right', labels: {{ color: '#F7F0E8', usePointStyle: true, font: {{ size: 13 }} }} }},
                         tooltip: {{
                             callbacks: {{
                                 title: (c) => `${{c[0].raw.title}} (${{c[0].raw.province}})`,
@@ -5648,7 +5652,7 @@ def get_halloween_html() -> str:
                     <td><strong>${{metric}}</strong></td>
                     <td style="color:#A59DB5;">${{baseVal}}</td>
                     <td style="color:#FF8A32; font-weight:bold;">${{expVal}}</td>
-                    <td style="font-size:0.8rem; color:#d1d5db;">${{note}}</td>
+                    <td style="font-size:0.88rem; color:#d1d5db;">${{note}}</td>
                 `;
                 tbody.appendChild(tr);
             }});
