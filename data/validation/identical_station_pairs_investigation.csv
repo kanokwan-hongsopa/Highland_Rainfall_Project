@@ -1,0 +1,8 @@
+﻿station_1,station_2,description,geographic_relation,common_months_count,max_diff_rainfall_mm,max_diff_humidity_pct,max_diff_temp_c,verdict
+HHA-1,HHA-2,"Pong Sa, Pai, Mae Hong Son",Same Tambon (580307),128,0.0,0.0,2.6000000000000014,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)
+FAS,PKM,Chiang Dao (Chiang Dao vs Mueang Khong),Different Tambons (500401 vs 500405),128,0.0,0.0,2.4300000000000033,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)
+HNG,MRM,Omkoi (Mae Long vs Omkoi),Different Tambons (501805 vs 501801),128,0.0,0.0,1.4100000000000001,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)
+HNY,KTN-1,Phop Phra (Tak) vs Khun Tuen Noi (Chiang Mai),Different Provinces (Tak 63 vs Chiang Mai 50),128,0.0,0.0,3.080000000000002,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)
+NPG,PAI,Pua vs Song Khwae (Nan),Different Tambons (550610 vs 551301),176,538.67,4.640000000000001,0.9600000000000009,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)
+PAD,PPE,Mae Rim vs Mae Chaem (Chiang Mai),Different Tambons (500612 vs 500602),128,0.0,0.75,1.8399999999999999,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)
+PDN,PMO,Chiang Dao vs Mae On (Chiang Mai),Different Tambons (500401 vs 500404),176,0.0,0.28000000000000114,2.8999999999999986,Exact identical rainfall and humidity across all months in raw data (Shared/cloned logger)

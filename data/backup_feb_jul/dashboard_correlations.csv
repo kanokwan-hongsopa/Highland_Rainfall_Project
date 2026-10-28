@@ -1,0 +1,4 @@
+﻿analysis,n,spearman_rho,analysis_type,causal_interpretation_allowed,rain_window,crop_season_verified,source_units_verified
+HRDI_tambon,25,-0.1734273268920649,exploratory,False,Feb-Jul,False,False
+HRDI_province,5,-0.7,exploratory,False,Feb-Jul,False,False
+HII_province,5,-0.8999999999999998,exploratory,False,Feb-Jul,False,False

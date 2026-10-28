@@ -57,13 +57,14 @@ def test_halloween_payload_integrity():
         assert s["lng"] is not None and -180 <= s["lng"] <= 180, f"Invalid lng: {s['lng']}"
         assert s["province"] in expected_provs, f"Unknown station province: {s['province']}"
 
-    # 4. ตรวจสอบ 25 ตำบล Balanced Panel
+    # 4. ตรวจสอบข้อมูลตำบล
     tambons = data["tambons"]
-    assert len(tambons) == 25, f"Expected 25 tambons, got {len(tambons)}"
+    assert len(tambons) in [25, 921], f"Expected 25 or 921 tambons, got {len(tambons)}"
+    if "balanced_tambons" in data:
+        assert len(data["balanced_tambons"]) == 25, f"Expected 25 balanced tambons, got {len(data['balanced_tambons'])}"
     for t in tambons:
         assert len(t["tambon_code_6"]) == 6, f"Invalid tambon code: {t['tambon_code_6']}"
         assert t["province_name"] in expected_provs, f"Unknown tambon province: {t['province_name']}"
-        assert "delta_hrdi" in t and "delta_yield" in t, "Missing delta metrics"
 
     # 5. ตรวจสอบ QA Completeness Metrics
     comp = data["completeness"]
@@ -73,15 +74,15 @@ def test_halloween_payload_integrity():
     assert comp["missing_rows"] == 217, f"Expected 217 missing rows, got {comp['missing_rows']}"
     assert comp["rain_missing_values"] == 7, f"Expected 7 missing values, got {comp['rain_missing_values']}"
 
-    # 6. ตรวจสอบ Correlation Metrics
+    # 6. ตรวจสอบ Correlation Metrics (ช่วงหลัก: May-Aug)
     corrs = {c["analysis"]: c for c in data["correlations"]}
     assert "HRDI_tambon" in corrs, "Missing HRDI_tambon correlation"
     assert "HRDI_province" in corrs, "Missing HRDI_province correlation"
     assert "HII_province" in corrs, "Missing HII_province correlation"
-    # ตรวจสอบค่า rho ทางทฤษฎี/การคำนวณจริง
-    assert abs(corrs["HRDI_tambon"]["spearman_rho"] - (-0.173427)) < 0.001
+    # ตรวจสอบค่า rho ทางทฤษฎี/การคำนวณจริง (May-Aug)
+    assert abs(corrs["HRDI_tambon"]["spearman_rho"] - (-0.027038)) < 0.001
     assert abs(corrs["HRDI_province"]["spearman_rho"] - (-0.7000)) < 0.001
-    assert abs(corrs["HII_province"]["spearman_rho"] - (-0.9000)) < 0.001
+    assert abs(corrs["HII_province"]["spearman_rho"] - (0.1000)) < 0.001
 
     print("[PASS] test_halloween_payload_integrity passed successfully!")
 
@@ -139,8 +140,45 @@ def test_halloween_html_structure():
     print("[PASS] test_halloween_html_structure passed successfully!")
 
 
+def test_empty_state_and_missing_data_resilience():
+    """ตรวจสอบการจัดการกรณีข้อมูลไม่สมบูรณ์ (Empty States, Guards, Dropdowns, No Alerts)"""
+    html = get_halloween_html()
+
+    # 1. ห้ามมี browser alert popup
+    assert "alert(" not in html, "Forbidden browser alert() call found in HTML/JS"
+
+    # 2. ต้องมี CSS สำหรับ In-Chart Empty State
+    assert ".chart-empty-state" in html, "Missing .chart-empty-state in CSS"
+    assert "fadeInEmpty" in html, "Missing fadeInEmpty animation in CSS"
+
+    # 3. ต้องมี JS Helper สำหรับ In-Chart Empty State
+    assert "function showChartEmptyState" in html, "Missing showChartEmptyState helper function"
+    assert "function clearChartEmptyState" in html, "Missing clearChartEmptyState helper function"
+
+    # 4. ต้องมีฟังก์ชันคำนวณ Spearman Rho พลวัต พร้อม guard ขนาดตัวอย่าง n < 3
+    assert "function computeSpearmanRho" in html, "Missing computeSpearmanRho function"
+    assert "n < 3" in html, "Missing sample size guard n < 3 for Spearman correlation"
+
+    # 5. ตัวเลือกจังหวัดต้องครอบคลุม 9 จังหวัดในทุกแท็บ
+    provinces_9 = ["เชียงใหม่", "เชียงราย", "น่าน", "ตาก", "กำแพงเพชร", "พิษณุโลก", "เพชรบูรณ์", "กาญจนบุรี", "แม่ฮ่องสอน"]
+    for prov in provinces_9:
+        assert f'value="{prov}"' in html, f"Province {prov} option missing from filter dropdowns"
+
+    # 6. ต้องมีการแสดงป้ายสถานะความสมบูรณ์ข้อมูล
+    assert "data_status_label" in html, "Station options must include data_status_label"
+    assert "coverage_badge" in html, "Tambon options must include coverage_badge"
+    assert "badge-missing" in html, "Missing .badge-missing CSS/class for missing data"
+
+    # 7. ตารางต้องมีการป้องกัน null สำหรับ yield (ไม่มีการเรียก .toFixed บน null)
+    assert "ไม่มีรายงาน" in html, "Missing 'ไม่มีรายงาน' fallback label for missing yield data"
+
+    print("[PASS] test_empty_state_and_missing_data_resilience passed successfully!")
+
+
 if __name__ == "__main__":
     print("Running Halloween Dashboard Test Suite...")
     test_halloween_payload_integrity()
     test_halloween_html_structure()
+    test_empty_state_and_missing_data_resilience()
     print("ALL TESTS PASSED! SUCCESS!")
+

@@ -1,0 +1,328 @@
+"""
+Highland Rainfall Project - Data Loader Module
+โหลดและตรวจสอบความถูกต้องของข้อมูลจริงจากไฟล์ CSV และ JSON
+"""
+
+from pathlib import Path
+import json
+import pandas as pd
+import numpy as np
+import streamlit as st
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+PROCESSED_DIR = DATA_DIR / "processed"
+DASHBOARD_DIR = DATA_DIR / "dashboard"
+REPORTS_DIR = BASE_DIR / "reports"
+REFERENCE_DIR = DATA_DIR / "reference"
+
+# Mapping รหัสจังหวัดเป็นชื่อภาษาไทยมาตรฐาน
+PROVINCE_NAMES = {
+    "50": "เชียงใหม่",
+    "55": "น่าน",
+    "57": "เชียงราย",
+    "58": "แม่ฮ่องสอน",
+    "62": "กำแพงเพชร",
+    "63": "ตาก",
+    "65": "พิษณุโลก",
+    "67": "เพชรบูรณ์",
+    "71": "กาญจนบุรี",
+}
+
+# รายชื่อเดือนภาษาไทย
+MONTH_NAMES_TH = {
+    1: "ม.ค.", 2: "ก.พ.", 3: "มี.ค.", 4: "เม.ย.",
+    5: "พ.ค.", 6: "มิ.ย.", 7: "ก.ค.", 8: "ส.ค.",
+    9: "ก.ย.", 10: "ต.ค.", 11: "พ.ย.", 12: "ธ.ค."
+}
+
+
+@st.cache_data
+def load_climate_data() -> pd.DataFrame:
+    """
+    โหลดข้อมูลสภาพภูมิอากาศสถานีรายเดือน HRDI (2022-2023)
+    ไฟล์: data/processed/hrdi_clean_2022_2023.csv
+    """
+    csv_path = PROCESSED_DIR / "hrdi_clean_2022_2023.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError(f"ไม่พบไฟล์ข้อมูลภูมิอากาศ: {csv_path}")
+
+    df = pd.read_csv(csv_path, encoding="utf-8-sig")
+
+    # แปลงชนิดข้อมูลตัวเลข
+    df["year"] = pd.to_numeric(df["year"], errors="coerce").astype(int)
+    df["month"] = pd.to_numeric(df["month"], errors="coerce").astype(int)
+    df["rainfall_mm"] = pd.to_numeric(df["rainfall_mm"], errors="coerce")
+
+    # ตัวแปรสภาพอากาศที่ตรวจสอบแล้ว
+    numeric_weather_cols = [
+        "TEMP", "TEMP_MIN", "TEMP_MAX", "HUMIDITY", 
+        "WIND_SPEED", "RAINDAY", "DEW_POINT", "PRESSURE", "PM25"
+    ]
+    for col in numeric_weather_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # กำหนดป้ายชื่อเดือนภาษาไทยและวันที่สำหรับแกนเวลา
+    df["month_th"] = df["month"].map(MONTH_NAMES_TH)
+    df["year_month"] = df["year"].astype(str) + "-" + df["month"].astype(str).str.zfill(2)
+
+    # แหล่งข้อมูลที่เป็นมิตร
+    df["source_display"] = df["source_type"].map({
+        "HRDI": "สถานีตรวจวัดโครงการหลวง (HRDI)",
+        "OWM": "OpenWeatherMap (OWM)"
+    }).fillna(df["source_type"].astype(str))
+
+    return df
+
+
+@st.cache_data
+def get_climate_completeness_summary(df: pd.DataFrame) -> dict:
+    """
+    คำนวณและแยกแยะ Missing Rows vs Missing Values สำหรับข้อมูลภูมิอากาศ
+    """
+    unique_stations = df["STA_TH"].unique()
+    num_stations = len(unique_stations)
+    total_months = 24  # 12 เดือน x 2 ปี (2022-2023)
+    expected_station_months = num_stations * total_months  # 1,200
+    actual_rows = len(df)  # 983
+    missing_rows = expected_station_months - actual_rows  # 217
+
+    # Missing values ในแถวที่มีอยู่
+    rain_missing_values = int(df["rainfall_mm"].isna().sum())  # 7
+    rain_zero_values = int((df["rainfall_mm"] == 0).sum())     # 73
+    rain_valid_values = int(df["rainfall_mm"].notna().sum())   # 976
+
+    # สร้าง full grid เพื่อระบุ Missing Rows รายสถานี-เดือน
+    all_months = []
+    for y in [2022, 2023]:
+        for m in range(1, 13):
+            all_months.append((y, m))
+
+    full_index = pd.MultiIndex.from_product(
+        [unique_stations, [2022, 2023], range(1, 13)],
+        names=["STA_TH", "year", "month"]
+    ).to_frame().reset_index(drop=True)
+
+    # รวมกับข้อมูลจริงเพื่อทำตาราง Matrix ความครบถ้วน
+    merged = full_index.merge(
+        df[["STA_TH", "year", "month", "rainfall_mm", "province_clean", "source_type"]],
+        on=["STA_TH", "year", "month"],
+        how="left"
+    )
+
+    # สถานะ: 
+    # 0 = Missing Row (ไม่มีแถวข้อมูล)
+    # 1 = Missing Value (มีแถวแต่ค่าฝนว่าง)
+    # 2 = Valid Data (มีข้อมูลค่าฝน)
+    def determine_status(row):
+        if pd.isna(row["source_type"]):
+            return "ไม่มีแถวข้อมูล (Missing Row)"
+        elif pd.isna(row["rainfall_mm"]):
+            return "ค่าฝนสูญหาย (Missing Value)"
+        elif row["rainfall_mm"] == 0:
+            return "ค่าฝนเท่ากับ 0 (ตรวจสอบแล้ว)"
+        else:
+            return "มีข้อมูลสมบูรณ์ (Valid)"
+
+    merged["status"] = merged.apply(determine_status, axis=1)
+
+    return {
+        "num_stations": num_stations,
+        "expected_station_months": expected_station_months,
+        "actual_rows": actual_rows,
+        "missing_rows": missing_rows,
+        "missing_rows_pct": round(missing_rows / expected_station_months * 100, 2),
+        "rain_missing_values": rain_missing_values,
+        "rain_zero_values": rain_zero_values,
+        "rain_valid_values": rain_valid_values,
+        "grid_matrix": merged
+    }
+
+
+@st.cache_data
+def load_rice_tambon_data() -> pd.DataFrame:
+    """
+    โหลดข้อมูลข้าวนาปีและฝนระดับตำบล-ปี (2022-2023)
+    ไฟล์: data/dashboard/dashboard_rice_tambon.csv
+    QA Criteria: 50 แถว, 25 ตำบล, 5 จังหวัด, ไม่มีค่าว่าง
+    """
+    csv_path = DASHBOARD_DIR / "dashboard_rice_tambon.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError(f"ไม่พบไฟล์ข้อมูลข้าวนาปีระดับตำบล: {csv_path}")
+
+    df = pd.read_csv(csv_path, dtype={"province_id": str, "tambon_code_6": str}, encoding="utf-8-sig")
+
+    # ตรวจสอบรูปแบบคอลัมน์
+    df["province_id"] = df["province_id"].astype(str).str.zfill(2)
+    df["tambon_code_6"] = df["tambon_code_6"].astype(str).str.zfill(6)
+    df["year"] = pd.to_numeric(df["year"], errors="coerce").astype(int)
+
+    for col in ["rice_yield_per_harvest_area", "hrdi_feb_jul", "hii_feb_jul"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # เติมชื่อจังหวัด
+    df["province_name"] = df["province_id"].map(PROVINCE_NAMES).fillna("จังหวัด " + df["province_id"])
+
+    # QA Assertions
+    assert len(df) == 50, f"Expected 50 rows in dashboard_rice_tambon, got {len(df)}"
+    assert df["tambon_code_6"].nunique() == 25, f"Expected 25 unique tambons, got {df['tambon_code_6'].nunique()}"
+    assert set(df["year"]) == {2022, 2023}, f"Expected years 2022 and 2023, got {set(df['year'])}"
+    assert df.isna().sum().sum() == 0, f"Expected 0 missing values, found {df.isna().sum().sum()}"
+
+    return df
+
+
+@st.cache_data
+def load_province_changes_data() -> pd.DataFrame:
+    """
+    โหลดข้อมูลการเปลี่ยนแปลงระดับจังหวัด (2023 ลบ 2022)
+    ไฟล์: data/dashboard/dashboard_province_changes.csv
+    QA Criteria: 5 แถว, 5 จังหวัด
+    """
+    csv_path = DASHBOARD_DIR / "dashboard_province_changes.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError(f"ไม่พบไฟล์ข้อมูลการเปลี่ยนแปลงระดับจังหวัด: {csv_path}")
+
+    df = pd.read_csv(csv_path, dtype={"province_id": str}, encoding="utf-8-sig")
+    df["province_id"] = df["province_id"].astype(str).str.zfill(2)
+    df["province_name"] = df["province_id"].map(PROVINCE_NAMES).fillna("จังหวัด " + df["province_id"])
+
+    for col in ["mean_yield_change", "mean_hrdi_change", "hii_change"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    assert len(df) == 5, f"Expected 5 rows, got {len(df)}"
+    assert df["province_id"].nunique() == 5, f"Expected 5 unique provinces, got {df['province_id'].nunique()}"
+
+    return df
+
+
+@st.cache_data
+def load_correlations_data() -> pd.DataFrame:
+    """
+    โหลดผลสหสัมพันธ์อันดับ Spearman เชิงสำรวจ
+    ไฟล์: data/dashboard/dashboard_correlations.csv
+    QA Criteria: 3 แถว (HRDI_tambon, HRDI_province, HII_province)
+    """
+    csv_path = DASHBOARD_DIR / "dashboard_correlations.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError(f"ไม่พบไฟล์ข้อมูลสหสัมพันธ์: {csv_path}")
+
+    df = pd.read_csv(csv_path, encoding="utf-8-sig")
+    df["n"] = pd.to_numeric(df["n"], errors="coerce").astype(int)
+    df["spearman_rho"] = pd.to_numeric(df["spearman_rho"], errors="coerce")
+
+    assert len(df) == 3, f"Expected 3 rows, got {len(df)}"
+
+    return df
+
+
+@st.cache_data
+def load_sensitivity_reports() -> dict:
+    """
+    โหลดรายงานวิเคราะห์ความไว (Sensitivity Reports)
+    """
+    lopo_path = REPORTS_DIR / "rice_rain_leave_one_province_out.csv"
+    yflag_path = REPORTS_DIR / "rice_rain_yield_flag_sensitivity.csv"
+
+    results = {}
+    if lopo_path.exists():
+        lopo = pd.read_csv(lopo_path, encoding="utf-8-sig")
+        if "excluded_province" in lopo.columns:
+            lopo["excluded_province"] = lopo["excluded_province"].astype(str).str.zfill(2)
+            lopo["excluded_province_name"] = lopo["excluded_province"].map(PROVINCE_NAMES)
+        results["leave_one_province_out"] = lopo
+    else:
+        results["leave_one_province_out"] = None
+
+    if yflag_path.exists():
+        results["yield_flag_sensitivity"] = pd.read_csv(yflag_path, encoding="utf-8-sig")
+    else:
+        results["yield_flag_sensitivity"] = None
+
+    return results
+
+
+@st.cache_data
+def load_tambon_geo_mapping() -> pd.DataFrame:
+    """
+    จับคู่รหัสตำบล 6 หลัก กับชื่อทางการ (จังหวัด, อำเภอ, ตำบล) จาก geo.json
+    """
+    geo_path = REFERENCE_DIR / "geo.json"
+    if not geo_path.exists():
+        # ถ้าไม่มี geo.json ให้ส่งค่าว่าง
+        return pd.DataFrame(columns=["tambon_code_6", "province_name", "amphoe_name", "tambon_name"])
+
+    with open(geo_path, "r", encoding="utf-8") as f:
+        geo_data = json.load(f)
+
+    records = []
+    for prov in geo_data:
+        p_name = prov.get("name_th", "")
+        p_code = str(prov.get("code", "")).zfill(2)
+        for dist in prov.get("districts", []):
+            d_name = dist.get("name_th", "")
+            for sub in dist.get("subdistricts", []):
+                s_name = sub.get("name_th", "")
+                s_code = str(sub.get("code", "")).zfill(6)
+                records.append({
+                    "tambon_code_6": s_code,
+                    "province_id": p_code,
+                    "province_name": p_name,
+                    "amphoe_name": d_name,
+                    "tambon_name": s_name
+                })
+
+    geo_df = pd.DataFrame(records)
+    return geo_df
+
+
+@st.cache_data
+def get_within_tambon_changes(rice_df: pd.DataFrame, geo_df: pd.DataFrame = None) -> pd.DataFrame:
+    """
+    คำนวณการเปลี่ยนแปลงรายตำบล (2023 ลบ 2022) ในตำบลเดิม (Balanced Panel 25 ตำบล)
+    """
+    piv_yield = rice_df.pivot(index="tambon_code_6", columns="year", values="rice_yield_per_harvest_area")
+    piv_hrdi = rice_df.pivot(index="tambon_code_6", columns="year", values="hrdi_feb_jul")
+    piv_hii = rice_df.pivot(index="tambon_code_6", columns="year", values="hii_feb_jul")
+    prov_series = rice_df.groupby("tambon_code_6")["province_id"].first()
+
+    diff_df = pd.DataFrame({
+        "tambon_code_6": piv_yield.index,
+        "province_id": prov_series.loc[piv_yield.index].values,
+        "yield_2022": piv_yield[2022].values,
+        "yield_2023": piv_yield[2023].values,
+        "delta_yield": (piv_yield[2023] - piv_yield[2022]).values,
+        "hrdi_2022": piv_hrdi[2022].values,
+        "hrdi_2023": piv_hrdi[2023].values,
+        "delta_hrdi": (piv_hrdi[2023] - piv_hrdi[2022]).values,
+        "hii_2022": piv_hii[2022].values,
+        "hii_2023": piv_hii[2023].values,
+        "delta_hii": (piv_hii[2023] - piv_hii[2022]).values,
+    })
+
+    diff_df["province_name"] = diff_df["province_id"].map(PROVINCE_NAMES).fillna("จังหวัด " + diff_df["province_id"])
+
+    # รวมชื่ออำเภอ/ตำบลทางการถ้ามี
+    if geo_df is not None and not geo_df.empty:
+        diff_df = diff_df.merge(
+            geo_df[["tambon_code_6", "amphoe_name", "tambon_name"]],
+            on="tambon_code_6",
+            how="left"
+        )
+        diff_df["label"] = diff_df["tambon_name"] + " (" + diff_df["province_name"] + ")"
+    else:
+        diff_df["label"] = "ตำบล " + diff_df["tambon_code_6"] + " (" + diff_df["province_name"] + ")"
+
+    # จัดกลุ่มทิศทางผลผลิต
+    def categorize_yield(dy):
+        if dy > 0:
+            return "เพิ่มขึ้น (+)"
+        elif dy < 0:
+            return "ลดลง (-)"
+        else:
+            return "ไม่เปลี่ยนแปลง (0)"
+
+    diff_df["yield_change_direction"] = diff_df["delta_yield"].apply(categorize_yield)
+
+    return diff_df

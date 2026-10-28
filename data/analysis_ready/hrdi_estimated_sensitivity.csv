@@ -1,0 +1,8 @@
+﻿station_code,station_name_th,province,amphoe,tambon,tambon_code_6,lat,long,year,month,rainfall_mm,temp_c,temp_min_c,temp_max_c,humidity_pct,wind_speed_ms,rainday_count,data_status,imputation_method,source_file,uncertainty_range_lower,uncertainty_range_upper
+HHA,สถานีตรวจวัดสภาพอากาศห้วยฮะ,แม่ฮ่องสอน,ปาย,เมืองปาย,,19.21686,98.542037,2023,1,0.0,16.53,15.21,17.92,76.5,1.26,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,0.0,3.92
+LAP,สถานีตรวจวัดสภาพอากาศแม่สามแลบ,แม่ฮ่องสอน,สบเมย,แม่สามแลบ,580606.0,17.88409281,97.75602493,2023,1,0.0,21.0,18.9,23.6,75.99,1.2,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,0.0,3.92
+MJR,สถานีตรวจวัดสภาพอากาศแม่จริม,น่าน,แม่จริม,แม่จริม,550206.0,18.843084,101.026176,2022,12,2.0,21.79,20.88,22.4,79.81,1.48,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,0.0,5.92
+PKL,สถานีตรวจวัดสภาพอากาศป่ากล้วย ,เชียงใหม่,จอมทอง,สบเตี๊ยะ,500205.0,18.34474925,98.57240395,2023,1,0.0,16.37,14.24,19.44,75.14,1.27,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,0.0,3.92
+PPR,สถานีตรวจวัดสภาพอากาศพบพระ,ตาก,พบพระ,คีรีราษฎร์,630703.0,16.4850304,98.81421278,2023,1,0.92,19.55,16.62,20.95,76.08,1.7,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,0.0,4.84
+PUI,สถานีตรวจวัดสภาพอากาศดอยปุย,เชียงใหม่,เมืองเชียงใหม่,สุเทพ,500108.0,18.81458349,98.87998024,2023,1,0.0,16.5,14.81,18.36,66.28,1.38,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,0.0,3.92
+PYA,สถานีตรวจวัดสภาพอากาศปางยาง,น่าน,ปัว,ภูคา,550511.0,19.13399698,100.9959846,2023,1,8.24,18.4,17.04,19.55,77.86,1.39,0.0,estimated,provincial_hii_ratio_interpolation,data/raw/spatial-rain-hii.csv,4.2,12.28

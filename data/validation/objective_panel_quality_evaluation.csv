@@ -1,0 +1,7 @@
+﻿panel_name,tambons_count,rows_count,provinces_count,spearman_2022_rho,spearman_2022_pval,spearman_2023_rho,spearman_2023_pval,spearman_pooled_rho,spearman_pooled_pval,spearman_delta_rho,spearman_delta_pval,contains_zero_sensor_rpf,contains_dropout_stations
+1. Baseline 27 (Current Analysis Ready),27,54,6,-0.5044,0.0073,-0.4098,0.0338,-0.4031,0.0025,-0.1675,0.4036,True,False
+2. Baseline 26 (Cleaned: Excl RPF zero rain),26,52,6,-0.4607,0.0179,-0.3974,0.0444,-0.3689,0.0071,-0.0765,0.7102,False,False
+"3. Expanded 30 (Includes MSL, HHA, MaeLong)",30,60,6,-0.4936,0.0056,-0.3121,0.0931,-0.3611,0.0046,-0.1221,0.5204,True,True
+"4. Expanded 31 (Includes MSL, HHA, MaeLong, KST)",31,62,6,-0.4826,0.006,-0.3052,0.095,-0.3526,0.0049,-0.0966,0.6051,True,True
+5. Recommended Clean Panel 27 (26 Clean + MaeLong via HNG),27,54,6,-0.4955,0.0086,-0.4402,0.0216,-0.4023,0.0026,-0.1265,0.5295,False,False
+6. Recommended Clean Panel 28 (26 Clean + MaeLong + KST),28,56,6,-0.48,0.0097,-0.425,0.0242,-0.3888,0.0031,-0.084,0.6708,False,False

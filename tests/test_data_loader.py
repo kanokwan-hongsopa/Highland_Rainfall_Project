@@ -90,7 +90,7 @@ def test_correlations_qa():
     
     hrdi_t = corrs[corrs["analysis"] == "HRDI_tambon"].iloc[0]
     assert hrdi_t["n"] == 25
-    assert abs(hrdi_t["spearman_rho"] - (-0.173427)) < 1e-4
+    assert abs(hrdi_t["spearman_rho"] - (-0.027038)) < 1e-4
 
     hrdi_p = corrs[corrs["analysis"] == "HRDI_province"].iloc[0]
     assert hrdi_p["n"] == 5
@@ -98,7 +98,7 @@ def test_correlations_qa():
 
     hii_p = corrs[corrs["analysis"] == "HII_province"].iloc[0]
     assert hii_p["n"] == 5
-    assert abs(hii_p["spearman_rho"] - (-0.9)) < 1e-4
+    assert abs(hii_p["spearman_rho"] - (0.1)) < 1e-4
 
 
 def test_sensitivity_reports_exist():

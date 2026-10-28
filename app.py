@@ -19,6 +19,11 @@ st.set_page_config(
 # ซ่อน Sidebar และ Header ของ Streamlit 100% เพื่อให้แสดงผลเต็มหน้าจอตามภาพต้นแบบ
 st.markdown("""
     <style>
+        /* ตั้งค่าพื้นหลังสีม่วงเข้มธีมฮาโลวีน ป้องกันหน้าขาววาบขณะโหลด */
+        .stApp, body, html {
+            background-color: #100B1B !important;
+            color: #F8F4FF !important;
+        }
         /* ซ่อน Streamlit Sidebar */
         [data-testid="stSidebar"], section[data-testid="stSidebar"] {
             display: none !important;
@@ -39,11 +44,13 @@ st.markdown("""
         iframe {
             border: none !important;
             width: 100% !important;
+            min-height: 100vh !important;
             display: block;
+            background-color: #100B1B !important;
         }
     </style>
 """, unsafe_allow_html=True)
 
 # เรนเดอร์ Halloween Interactive Dashboard
 html_code = get_halloween_html()
-components.html(html_code, height=1850, scrolling=True)
+components.html(html_code, height=2100, scrolling=True)
