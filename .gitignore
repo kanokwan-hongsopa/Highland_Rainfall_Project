@@ -21,3 +21,5 @@ __pycache__/
 # System files
 .DS_Store
 Thumbs.db
+# Local editor/tool settings
+.claude/
