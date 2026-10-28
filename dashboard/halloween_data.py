@@ -44,6 +44,8 @@ OVERVIEW_CENTER = {"lat": 17.5, "lng": 99.5, "zoom": 6.4}
 
 # ขอบเขตจังหวัด GeoJSON
 GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "thailand_9provinces.geojson"
+# เงาแผนที่ทั้งประเทศ (77 จังหวัด ย่อเส้นแล้ว; src/60_simplify_thailand_provinces.py) ใช้แสดงผลเท่านั้น
+THAILAND_GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "thailand_77provinces_simplified.geojson"
 COMPLETENESS_DIR = Path(__file__).resolve().parent.parent / "data" / "completeness"
 ANALYSIS_READY_DIR = Path(__file__).resolve().parent.parent / "data" / "analysis_ready"
 
@@ -60,10 +62,10 @@ def is_suspect_observed(rain, hist_median) -> bool:
     return (rain == 0 and hist_median > 100) or (rain > 3 * hist_median and rain > 500)
 
 
-def load_province_geojson() -> dict:
+def load_province_geojson(path: Path = GEOJSON_FILE) -> dict:
     """โหลดขอบเขตจังหวัดจริงจากไฟล์ GeoJSON (WGS84 EPSG:4326)"""
-    if GEOJSON_FILE.exists():
-        return json.loads(GEOJSON_FILE.read_text(encoding="utf-8"))
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
     return {"type": "FeatureCollection", "features": []}
 
 
@@ -581,6 +583,7 @@ def get_halloween_payload() -> str:
     payload = {
         "centers": PROVINCE_GEO_CENTERS,
         "province_geojson": load_province_geojson(),
+        "thailand_geojson": load_province_geojson(THAILAND_GEOJSON_FILE),
         "overview_center": OVERVIEW_CENTER,
         "stations": station_list,
         "monthly_trends": monthly_trends,
