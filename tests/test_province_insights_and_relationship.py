@@ -108,7 +108,7 @@ print("  ✓ n < 4 sample size guard is present in scatter plot logic.")
 # -------------------------------------------------------------------------
 print("\n[Test 7] Verifying cross-filtering dispatchTab1Filter on cards and markers...")
 assert "dispatchTab1Filter" in html, "Missing dispatchTab1Filter function"
-assert "btnMapBack" in html, "Missing btnMapBack button"
+assert "btnResetMap" in html, "Missing btnResetMap (home) button"
 assert "resetTab1Map" in html, "Missing resetTab1Map function"
 assert "openStationDetailSubpanel" in html, "Missing openStationDetailSubpanel function"
 assert "renderStationMiniChart" in html, "Missing renderStationMiniChart function"

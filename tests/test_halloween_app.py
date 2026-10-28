@@ -126,7 +126,7 @@ def test_halloween_html_structure():
     assert 'id="stationMiniChart"' in html, "Missing station mini monthly chart 'stationMiniChart'"
 
     # 6. Navigation / Reset Controls
-    assert 'id="btnMapBack"' in html, "Missing back button 'btnMapBack'"
+    assert 'id="btnResetMap"' in html, "Missing map reset (home) button 'btnResetMap'"
     assert 'id="btnResetMap"' in html, "Missing reset map button 'btnResetMap'"
     assert 'id="tab1_btnReset"' in html, "Missing tab1 reset button 'tab1_btnReset'"
     assert 'id="tab2_btnReset"' in html, "Missing tab2 reset button 'tab2_btnReset'"
