@@ -163,7 +163,7 @@ def load_rice_tambon_data() -> pd.DataFrame:
     """
     โหลดข้อมูลข้าวนาปีและฝนระดับตำบล-ปี (2022-2023)
     ไฟล์: data/dashboard/dashboard_rice_tambon.csv
-    QA Criteria: 50 แถว, 25 ตำบล, 5 จังหวัด, ไม่มีค่าว่าง
+    QA Criteria: 52 แถว, 26 ตำบล, 6 จังหวัด, ไม่มีค่าว่าง (src/59_build_dashboard_panel_26.py)
     """
     csv_path = DASHBOARD_DIR / "dashboard_rice_tambon.csv"
     if not csv_path.exists():
@@ -184,8 +184,8 @@ def load_rice_tambon_data() -> pd.DataFrame:
     df["province_name"] = df["province_id"].map(PROVINCE_NAMES).fillna("จังหวัด " + df["province_id"])
 
     # QA Assertions
-    assert len(df) == 50, f"Expected 50 rows in dashboard_rice_tambon, got {len(df)}"
-    assert df["tambon_code_6"].nunique() == 25, f"Expected 25 unique tambons, got {df['tambon_code_6'].nunique()}"
+    assert len(df) == 52, f"Expected 52 rows in dashboard_rice_tambon, got {len(df)}"
+    assert df["tambon_code_6"].nunique() == 26, f"Expected 26 unique tambons, got {df['tambon_code_6'].nunique()}"
     assert set(df["year"]) == {2022, 2023}, f"Expected years 2022 and 2023, got {set(df['year'])}"
     assert df.isna().sum().sum() == 0, f"Expected 0 missing values, found {df.isna().sum().sum()}"
 
@@ -197,7 +197,7 @@ def load_province_changes_data() -> pd.DataFrame:
     """
     โหลดข้อมูลการเปลี่ยนแปลงระดับจังหวัด (2023 ลบ 2022)
     ไฟล์: data/dashboard/dashboard_province_changes.csv
-    QA Criteria: 5 แถว, 5 จังหวัด
+    QA Criteria: 6 แถว, 6 จังหวัด
     """
     csv_path = DASHBOARD_DIR / "dashboard_province_changes.csv"
     if not csv_path.exists():
@@ -210,8 +210,8 @@ def load_province_changes_data() -> pd.DataFrame:
     for col in ["mean_yield_change", "mean_hrdi_change", "hii_change"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    assert len(df) == 5, f"Expected 5 rows, got {len(df)}"
-    assert df["province_id"].nunique() == 5, f"Expected 5 unique provinces, got {df['province_id'].nunique()}"
+    assert len(df) == 6, f"Expected 6 rows, got {len(df)}"
+    assert df["province_id"].nunique() == 6, f"Expected 6 unique provinces, got {df['province_id'].nunique()}"
 
     return df
 
@@ -299,7 +299,7 @@ def load_tambon_geo_mapping() -> pd.DataFrame:
 @st.cache_data
 def get_within_tambon_changes(rice_df: pd.DataFrame, geo_df: pd.DataFrame = None) -> pd.DataFrame:
     """
-    คำนวณการเปลี่ยนแปลงรายตำบล (2023 ลบ 2022) ในตำบลเดิม (Balanced Panel 25 ตำบล)
+    คำนวณการเปลี่ยนแปลงรายตำบล (2023 ลบ 2022) ในตำบลเดิม (Balanced Panel 26 ตำบล)
     """
     piv_yield = rice_df.pivot(index="tambon_code_6", columns="year", values="rice_yield_per_harvest_area")
     

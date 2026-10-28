@@ -50,8 +50,8 @@ def test_climate_missing_rows_vs_missing_values():
 
 def test_rice_tambon_qa_metrics():
     df = load_rice_tambon_data()
-    assert len(df) == 50, "Expected 50 rows in dashboard_rice_tambon"
-    assert df["tambon_code_6"].nunique() == 25, "Expected 25 tambons"
+    assert len(df) == 52, "Expected 52 rows in dashboard_rice_tambon"
+    assert df["tambon_code_6"].nunique() == 26, "Expected 26 tambons"
     assert set(df["year"]) == {2022, 2023}, "Expected years 2022 and 2023"
     assert df.isna().sum().sum() == 0, "Expected 0 missing values"
 
@@ -62,6 +62,7 @@ def test_rice_tambon_qa_metrics():
     assert p_counts.get("58") == 3, f"Expected 3 for Mae Hong Son, got {p_counts.get('58')}"
     assert p_counts.get("63") == 2, f"Expected 2 for Tak, got {p_counts.get('63')}"
     assert p_counts.get("57") == 1, f"Expected 1 for Chiang Rai, got {p_counts.get('57')}"
+    assert p_counts.get("62") == 1, f"Expected 1 for Kamphaeng Phet, got {p_counts.get('62')}"
 
 
 def test_within_tambon_changes_qa():
@@ -69,17 +70,17 @@ def test_within_tambon_changes_qa():
     geo = load_tambon_geo_mapping()
     diff = get_within_tambon_changes(rice, geo)
 
-    assert len(diff) == 25, "Expected 25 tambons in diff"
+    assert len(diff) == 26, "Expected 26 tambons in diff"
     
-    # ฝนลดลงทั้ง 25 ตำบล
-    assert (diff["delta_hrdi"] < 0).all(), "HRDI rain should decrease for all 25 tambons"
-    assert (diff["delta_hii"] < 0).all(), "HII rain should decrease for all 25 tambons"
+    # ฝนลดลงทั้ง 26 ตำบล
+    assert (diff["delta_hrdi"] < 0).all(), "HRDI rain should decrease for all 26 tambons"
+    assert (diff["delta_hii"] < 0).all(), "HII rain should decrease for all 26 tambons"
 
-    # ผลผลิต เพิ่ม 10, ลด 10, เท่าเดิม 5
+    # ผลผลิต เพิ่ม 11, ลด 10, เท่าเดิม 5
     inc = (diff["delta_yield"] > 0).sum()
     dec = (diff["delta_yield"] < 0).sum()
     zero = (diff["delta_yield"] == 0).sum()
-    assert inc == 10, f"Expected 10 yield increases, got {inc}"
+    assert inc == 11, f"Expected 11 yield increases, got {inc}"
     assert dec == 10, f"Expected 10 yield decreases, got {dec}"
     assert zero == 5, f"Expected 5 unchanged yield, got {zero}"
 
@@ -89,22 +90,23 @@ def test_correlations_qa():
     assert len(corrs) == 3
     
     hrdi_t = corrs[corrs["analysis"] == "HRDI_tambon"].iloc[0]
-    assert hrdi_t["n"] == 25
-    assert abs(hrdi_t["spearman_rho"] - (-0.027038)) < 1e-4
+    assert hrdi_t["n"] == 26
+    assert abs(hrdi_t["spearman_rho"] - (-0.076513)) < 1e-4
+    assert hrdi_t["ci95_low"] < 0 < hrdi_t["ci95_high"]
 
     hrdi_p = corrs[corrs["analysis"] == "HRDI_province"].iloc[0]
-    assert hrdi_p["n"] == 5
-    assert abs(hrdi_p["spearman_rho"] - (-0.7)) < 1e-4
+    assert hrdi_p["n"] == 6
+    assert abs(hrdi_p["spearman_rho"] - (-0.371429)) < 1e-4
 
     hii_p = corrs[corrs["analysis"] == "HII_province"].iloc[0]
-    assert hii_p["n"] == 5
-    assert abs(hii_p["spearman_rho"] - (0.1)) < 1e-4
+    assert hii_p["n"] == 6
+    assert abs(hii_p["spearman_rho"] - (0.142857)) < 1e-4
 
 
 def test_sensitivity_reports_exist():
     reports = load_sensitivity_reports()
     assert reports["leave_one_province_out"] is not None
-    assert len(reports["leave_one_province_out"]) == 5
+    assert len(reports["leave_one_province_out"]) == 6
     assert reports["yield_flag_sensitivity"] is not None
     assert len(reports["yield_flag_sensitivity"]) == 2
 
@@ -115,7 +117,7 @@ def test_tambon_geo_mapping():
     rice = load_rice_tambon_data()
     tambons = set(rice["tambon_code_6"].unique())
     geo_tambons = set(geo["tambon_code_6"].unique())
-    # ทั้ง 25 ตำบลต้องอยู่ใน geo_tambons
+    # ทั้ง 26 ตำบลต้องอยู่ใน geo_tambons
     assert tambons.issubset(geo_tambons), f"Missing geo for: {tambons - geo_tambons}"
 
 
