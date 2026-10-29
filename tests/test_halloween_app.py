@@ -111,8 +111,10 @@ def test_halloween_html_structure():
     assert 'data-tab="page3"' in html, "Missing Tab 3 navigation"
     assert 'data-tab="page4"' in html, "Missing Tab 4 navigation"
     assert 'data-tab="page5"' in html, "Missing methods tab navigation"
-    assert 'data-tab="page6"' in html, "Missing yield-change tab navigation"
-    for el in ("vhHeadline", "chartForest", "chartTab6ProvChange", "riceFilterBar"):
+    assert "ปริมาณน้ำฝนบนพื้นที่สูง (HRDI) หรือปริมาณน้ำฝนระดับจังหวัด (HII) มีความสัมพันธ์กับการเปลี่ยนแปลงของผลผลิตข้าวนาปีมากกว่ากันในช่วงปี 2022–2023?" in html
+    assert 'data-tab="page6"' not in html, "Dashboard must have exactly 5 tabs"
+    assert html.count('class="nav-tab-btn') == 5, "Dashboard must have exactly 5 tabs"
+    for el in ("mainResearchQuestion", "vhHeadline", "chartForest", "chartTab6ProvChange", "riceFilterBar", "riceRule", "riceSensTable", "qaRiceTable", "rainSourceTable"):
         assert f'id="{el}"' in html, f"Missing {el}"
 
     # 4. Leaflet Map Container & Script

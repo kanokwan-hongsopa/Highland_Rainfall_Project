@@ -103,6 +103,42 @@ def test_relationship_compare_12m_exploratory():
     print(f"  ✓ 12-month (exploratory) HRDI ρ={get('HRDI').spearman_rho:+.3f} HII ρ={get('HII').spearman_rho:+.3f}")
 
 
+def test_rice_yield_qa_flags_and_sensitivity():
+    fl = pd.read_csv(DATA / "analysis_ready" / "rice_yield_qa_flags.csv", encoding="utf-8-sig")
+    assert fl["qa_flag"].value_counts().to_dict() == {"no_harvest_area": 27, "low_lt50": 14, "high_gt1200": 5}
+    z = fl[fl.qa_flag == "no_harvest_area"]
+    assert (z.harvest_area_rai == 0).all() and (z.production_kg == 0).all()
+    assert z.evidence.str.contains("product_avg ว่าง").all(), "ต้องมีหลักฐานจากต้นทางว่า product_avg ว่าง"
+    sens = pd.read_csv(DATA / "dashboard" / "dashboard_rice_sensitivity.csv", encoding="utf-8-sig").set_index("scenario")
+    assert sens.loc["S0", "rows_excluded"] == 0 and sens.loc["S1", "rows_excluded"] == 27 and sens.loc["S2", "rows_excluded"] == 46
+    # ค่าถ่วงน้ำหนักพื้นที่เก็บเกี่ยวไม่ถูกกระทบจากแถวที่พื้นที่เก็บเกี่ยว = 0
+    assert abs(sens.loc["S0", "weighted_2022"] - sens.loc["S1", "weighted_2022"]) < 1e-6
+    # ชุด 26 ตำบลของผลหลักไม่มีค่าที่ถูกตั้งข้อสงสัย
+    rt = pd.read_csv(DATA / "dashboard" / "dashboard_rice_tambon.csv", encoding="utf-8-sig")
+    assert rt.rice_yield_per_harvest_area.between(50, 1200).all()
+    tb = {(t["tambon_code_6"]) for t in payload["tambons"] if t["qa_flag_2022"] or t["qa_flag_2023"]}
+    assert len(tb) == fl.tambon_code_6.nunique()
+    print("  ✓ rice QA: 27 no-harvest-area, 14 low, 5 high; panel 26 unaffected")
+
+
+def test_rain_station_qa():
+    q = payload["rain_station_qa"]
+    assert [f["name"] for f in q["flagged"]] == ["สถานีตรวจวัดสภาพอากาศอุทยานหลวงราชพฤกษ์"]
+    assert q["before"]["stations"] == 34 and q["after"]["stations"] == 33
+    k = payload["overall_kpis"]
+    assert k["hrdi_obs_station_count"] == 33 and abs(k["hrdi_obs_rain_2022"] - q["after"]["rain_2022"]) < 0.06
+    assert payload["panel_rain_source"]["by_source"].get("HRDI", 0) < 0.05 * payload["panel_rain_source"]["rows"]
+    print("  ✓ rain QA: RPF excluded, 34 -> 33 stations;", q["before"]["rain_2022"], "->", q["after"]["rain_2022"])
+
+
+def test_cluster_ci_present():
+    comp = pd.read_csv(DATA / "dashboard" / "dashboard_relationship_compare.csv", encoding="utf-8-sig")
+    assert comp[["ci95_cluster_low", "ci95_cluster_high"]].notna().all().all()
+    assert (comp.ci95_cluster_low < comp.ci95_cluster_high).all()
+    assert (comp.tambons_sharing_station_set == 0).all()
+    print("  ✓ cluster (province) bootstrap CI present for all rows")
+
+
 def test_unit_status():
     u = payload["unit_verification"]
     assert u["HII"]["status"] == "confirmed"
@@ -113,6 +149,7 @@ def test_unit_status():
 
 if __name__ == "__main__":
     for fn in [test_observed_window_is_jan_aug_paired, test_hii_same_window, test_data_source_disclosed,
-               test_spatial_check, test_relationship_compare_matches_recompute, test_relationship_compare_12m_exploratory, test_unit_status]:
+               test_spatial_check, test_relationship_compare_matches_recompute, test_relationship_compare_12m_exploratory, test_rice_yield_qa_flags_and_sensitivity, test_rain_station_qa,
+               test_cluster_ci_present, test_unit_status]:
         fn()
     print("ALL ACADEMIC REVIEW TESTS PASSED")
