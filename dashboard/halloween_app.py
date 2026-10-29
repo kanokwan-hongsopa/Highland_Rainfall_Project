@@ -183,6 +183,63 @@ def get_halloween_html() -> str:
             box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
         }}
 
+        .match-question {{ color: var(--text-muted); font-size: 0.95rem; margin: 0.2rem 0 0.6rem; }}
+        .match-kpis {{ grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important; }}
+        .match-map-wrap {{ position: relative; height: 460px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(167, 120, 232, 0.25); }}
+        #matchMap {{ width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 40%, #16263d 0%, #0d1626 70%); }}
+        .status-badge {{ display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }}
+        .status-inside {{ background: rgba(34, 197, 94, 0.18); color: #4ade80; }}
+        .status-near_edge {{ background: rgba(234, 179, 8, 0.18); color: #facc15; }}
+        .status-outside_far {{ background: rgba(239, 68, 68, 0.18); color: #f87171; }}
+        .status-confirmed {{ background: rgba(34, 197, 94, 0.18); color: #4ade80; }}
+        .status-partial {{ background: rgba(234, 179, 8, 0.18); color: #facc15; }}
+        .status-unconfirmed {{ background: rgba(239, 68, 68, 0.18); color: #f87171; }}
+
+        .compare-stat {{ font-size: 0.92rem; color: var(--text-muted); margin-bottom: 0.3rem; line-height: 1.5; }}
+        .compare-stat strong {{ color: #ffffff; font-size: 1.05rem; }}
+        .compare-verdict {{ margin: 0.8rem 0; padding: 0.7rem 1rem; border-radius: 10px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.35); color: var(--text-cream); line-height: 1.6; }}
+
+        /* แถบโหมดข้อมูลฝน + หมายเลขแท็บตามคำถามวิจัย */
+        .nav-num {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5em;
+            height: 1.5em;
+            border-radius: 50%;
+            background: rgba(255, 138, 50, 0.2);
+            color: var(--primary-orange);
+            font-weight: 800;
+        }}
+        .nav-tab-btn.active .nav-num {{ background: rgba(26, 15, 43, 0.35); color: #1a0f2b; }}
+        .data-mode-bar {{
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 0 0 1rem 0;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            background: rgba(22, 13, 34, 0.75);
+            border: 1px solid rgba(255, 179, 92, 0.25);
+        }}
+        .data-mode-toggle {{ display: flex; gap: 4px; flex-wrap: wrap; }}
+        .mode-pill {{
+            border: 1px solid rgba(167, 120, 232, 0.4);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-cream);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: var(--font-family);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+        }}
+        .mode-pill.active {{ background: var(--primary-orange); border-color: var(--primary-orange); color: #1a0f2b; }}
+        .data-mode-note {{ flex: 1 1 420px; font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; }}
+        .data-mode-note strong {{ color: #ffffff; }}
+        .src-warn {{ color: #fbbf24; }}
+
         /* ปุ่มเลือกปีแบบแถบปุ่ม (แทน dropdown ปี) */
         .year-pill-group {{
             display: flex;
@@ -1845,21 +1902,30 @@ def get_halloween_html() -> str:
         <!-- 2. NAVIGATION MENU: 5 HORIZONTAL PILL BUTTONS -->
         <nav class="nav-menu-bar" id="navTabs">
             <button class="nav-tab-btn active" data-tab="page1">
-                <span>🏠</span> ภาพรวม
+                <span class="nav-num">1</span> ฝนพื้นที่สูง
             </button>
             <button class="nav-tab-btn" data-tab="page2">
-                <span>📊</span> เปรียบเทียบฝน
+                <span class="nav-num">2</span> HRDI vs HII
             </button>
             <button class="nav-tab-btn" data-tab="page3">
-                <span>🌾</span> ผลผลิตข้าวนาปี
-            </button>
-            <button class="nav-tab-btn" data-tab="page4">
-                <span>🔀</span> ความสัมพันธ์
+                <span class="nav-num">3</span> ผลผลิตข้าวนาปี
             </button>
             <button class="nav-tab-btn" data-tab="page5">
-                <span>📋</span> เกี่ยวกับข้อมูล
+                <span class="nav-num">4</span> จับคู่สถานี–ตำบล
+            </button>
+            <button class="nav-tab-btn" data-tab="page4">
+                <span class="nav-num">5</span> ฝน ↔ ผลผลิต
             </button>
         </nav>
+
+        <!-- โหมดข้อมูลฝน (ค่าเริ่มต้น: ข้อมูลต้นทาง ไม่รวมค่าประมาณ) -->
+        <div class="data-mode-bar">
+            <div class="data-mode-toggle" role="group" aria-label="โหมดข้อมูลฝน">
+                <button type="button" id="btnModeObserved" class="mode-pill active" data-mode="observed">ข้อมูลต้นทาง (ม.ค.–ส.ค. ทั้งสองปี)</button>
+                <button type="button" id="btnModeExploratory" class="mode-pill" data-mode="exploratory">ครบ 12 เดือน (รวมค่าประมาณ)</button>
+            </div>
+            <div class="data-mode-note" id="hrdiModeBannerText"></div>
+        </div>
 
         <!-- ====================================================================
              PAGE 1: OVERVIEW & STATION EXPLORER
@@ -1921,14 +1987,14 @@ def get_halloween_html() -> str:
                         <span class="kpi-icon-circle" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">🌧️</span>
                         <div>
                             <div class="kpi-title-text">ปริมาณน้ำฝนเฉลี่ย</div>
-                            <div class="kpi-unit-text">(มม./ปี)</div>
+                            <div class="kpi-unit-text" id="tab1_kpiRainUnit">(มม.)</div>
                         </div>
                     </div>
                     <div class="kpi-main-body">
-                        <div class="kpi-number" id="tab1_kpiRain">1,842.6</div>
-                        <span class="kpi-delta-pill kpi-delta-up" id="tab1_kpiRainBadge">✓ 12/12 ด.</span>
+                        <div class="kpi-number" id="tab1_kpiRain">—</div>
+                        <span class="kpi-delta-pill kpi-delta-up" id="tab1_kpiRainBadge"></span>
                     </div>
-                    <div class="kpi-subtext" id="tab1_kpiRainSub">ข้อมูลตรวจวัดจริงครบ 12 เดือน</div>
+                    <div class="kpi-subtext" id="tab1_kpiRainSub">กำลังคำนวณ</div>
                 </div>
 
                 <!-- 2. อุณหภูมิเฉลี่ย -->
@@ -2092,7 +2158,7 @@ def get_halloween_html() -> str:
                         </div>
 
                         <!-- Map Legend -->
-                        <div class="map-legend-card">
+                        <div class="map-legend-card" id="mapLegendCard">
                             <div class="map-legend-title">ปริมาณฝนเฉลี่ย (มม./ปี)</div>
                             <div class="legend-scale-item"><div class="legend-color-box" style="background:#FF8A32;"></div><span>&gt; 2,000</span></div>
                             <div class="legend-scale-item"><div class="legend-color-box" style="background:#FA9A55;"></div><span>1,500 – 2,000</span></div>
@@ -2126,7 +2192,7 @@ def get_halloween_html() -> str:
                         </div>
                         <div class="chart-attribution-card">
                             <span id="lblMonthlyScope">ภาพรวม 9 จังหวัด</span>
-                            <span>หน่วยรอยืนยัน (มม./เดือน) | HRDI Meteo</span>
+                            <span>มม./เดือน (หน่วย HRDI รอยืนยัน — metadata ไม่ระบุ) | HRDI / OpenWeatherMap</span>
                         </div>
                     </div>
                 </div>
@@ -2206,12 +2272,12 @@ def get_halloween_html() -> str:
                     <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
                         <span style="font-size: 0.86rem; color: var(--text-muted);">ตัวชี้วัดฝน (แกน X):</span>
                         <select id="scatterMetricSelect" class="filter-select" style="padding: 0.3rem 0.6rem; font-size: 0.86rem; width: auto;">
-                            <option value="hrdi">ฝนพื้นที่สูง (HRDI เฉลี่ยสถานี, มม.)</option>
-                            <option value="hii">ฝนเฉลี่ยทั้งจังหวัด (HII รวม 12 ด., มม.)</option>
-                            <option value="seasonal">ฝนฤดูปลูก พ.ค.–ส.ค. (May–Aug, มม.)</option>
+                            <option value="hrdi">ฝนพื้นที่สูง (HRDI เฉลี่ยสถานี ตามโหมด)</option>
+                            <option value="hii">ฝนทั้งจังหวัด (HII ตามโหมด)</option>
+                            <option value="seasonal">ฝน HRDI พ.ค.–ส.ค. (ช่วงปลูก)</option>
                         </select>
                         <div class="spearman-rho-badge" id="scatterSpearmanBadge">
-                            Spearman ρ = ...
+                            Spearman ρ: กำลังคำนวณ
                         </div>
                     </div>
                 </div>
@@ -2278,23 +2344,23 @@ def get_halloween_html() -> str:
             <div class="kpi-row-grid" style="margin-bottom: 0.95rem;">
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">💧</span><span>ฝนเฉลี่ยพื้นที่สูง (HRDI)</span></div>
-                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiHrdi">987.4</div><span class="kpi-subtext">มม.</span></div>
-                    <div class="kpi-subtext">ฝนสะสมรายปี (เฉลี่ยสถานี)</div>
+                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiHrdi">—</div><span class="kpi-subtext">มม.</span></div>
+                    <div class="kpi-subtext tab2-window-label">ฝนสะสม (เฉลี่ยสถานี)</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">🌧️</span><span>ฝนเฉลี่ยทั้งจังหวัด (HII)</span></div>
-                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiHii">1,186.2</div><span class="kpi-subtext">มม.</span></div>
-                    <div class="kpi-subtext">ฝนสะสมรายปี (เฉลี่ยทั้งจังหวัด)</div>
+                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiHii">—</div><span class="kpi-subtext">มม. (หน่วยยืนยันแล้ว)</span></div>
+                    <div class="kpi-subtext tab2-window-label">ฝนสะสม (เฉลี่ยทั้งจังหวัด)</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">⚖️</span><span>ส่วนต่างฝน (HRDI vs HII)</span></div>
-                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiDiff">-198.8</div><span class="kpi-delta-pill kpi-delta-down">▼ 16.7%</span></div>
-                    <div class="kpi-subtext">สถานียอดดอยต่ำกว่าค่าเฉลี่ยจังหวัด</div>
+                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiDiff">—</div><span class="kpi-delta-pill" id="tab2_kpiDiffPill"></span></div>
+                    <div class="kpi-subtext" id="tab2_kpiDiffNote">HRDI − HII ช่วงเวลาเดียวกัน</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-header"><span class="kpi-icon">🗼</span><span>สถานีใน 6 จังหวัดศึกษา</span></div>
-                    <div class="kpi-main-body"><div class="kpi-number">47</div><span class="kpi-subtext">สถานี</span></div>
-                    <div class="kpi-subtext">จาก 50 สถานีทั้งหมด</div>
+                    <div class="kpi-header"><span class="kpi-icon">🛰️</span><span>ที่มาของฝน "HRDI"</span></div>
+                    <div class="kpi-main-body"><div class="kpi-number" id="tab2_kpiOwm">—</div><span class="kpi-subtext">% OpenWeatherMap</span></div>
+                    <div class="kpi-subtext" id="tab2_kpiOwmNote">สัดส่วนสถานี-เดือนที่เป็นค่าแบบจำลอง</div>
                 </div>
             </div>
 
@@ -2341,7 +2407,7 @@ def get_halloween_html() -> str:
                     <div class="chart-canvas-container" style="height: 330px;">
                         <canvas id="chartTab2RankHrdi"></canvas>
                     </div>
-                    <div class="chart-attribution-card"><span>ฝนสะสมรายปี เฉลี่ยสถานีในจังหวัด (มม.) • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
+                    <div class="chart-attribution-card"><span><span class="tab2-window-text">ฝนสะสม</span> • เฉลี่ยสถานีในจังหวัด (มม. หน่วยรอยืนยัน) • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
                 </div>
                 <div class="chart-bento-card">
                     <div class="chart-card-header">
@@ -2352,7 +2418,7 @@ def get_halloween_html() -> str:
                     <div class="chart-canvas-container" style="height: 330px;">
                         <canvas id="chartTab2RankHii"></canvas>
                     </div>
-                    <div class="chart-attribution-card"><span>ฝนสะสมรายปี เฉลี่ยทั้งพื้นที่จังหวัด (มม.) • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
+                    <div class="chart-attribution-card"><span><span class="tab2-window-text">ฝนสะสม</span> • เฉลี่ยทั้งพื้นที่จังหวัด (มม. ยืนยันจาก metadata สสน.) • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
                 </div>
             </div>
 
@@ -2371,14 +2437,15 @@ def get_halloween_html() -> str:
                                 <th>ชื่อสถานี</th>
                                 <th>จังหวัด</th>
                                 <th>อำเภอ</th>
-                                <th>ฝนรายปี (มม.)</th>
-                                <th>ข้อมูลตรวจวัดจริง</th>
+                                <th class="tab2-window-text">ฝนสะสม (มม.)</th>
+                                <th>ค่าต้นทาง (ไม่ใช่ค่าประมาณ)</th>
+                                <th>แหล่งข้อมูล</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <div class="chart-attribution-card"><span>คลิกแถวเพื่อเปิดสถานีบนแผนที่ (แท็บภาพรวม) • ฝนรายปีในโหมด 12 เดือนรวมค่าประมาณ</span></div>
+                <div class="chart-attribution-card"><span>คลิกแถวเพื่อเปิดสถานีบนแผนที่ (แท็บ 1) • โหมดข้อมูลต้นทาง: ฝนสะสม ม.ค.–ส.ค. เฉพาะสถานีที่ครบ 8 เดือนทั้งสองปี • โหมด 12 เดือน: ทั้งปีรวมค่าประมาณ</span></div>
             </div>
 
             <div class="summary-insight-box">
@@ -2436,17 +2503,17 @@ def get_halloween_html() -> str:
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ตำบลในทะเบียน DOAE</span></div>
                     <div class="kpi-main-body"><div class="kpi-number" id="tab3_kpiTambonCount">921</div><span class="kpi-subtext">ตำบล (9 จังหวัด)</span></div>
-                    <div class="kpi-subtext">ตามตัวกรองที่เลือก (รวมตำบลที่ไม่มีรายงานบางปี)</div>
+                    <div class="kpi-subtext" id="tab3_kpiReportedNote">ตามตัวกรองที่เลือก</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ผลผลิตเฉลี่ยปี 2022</span></div>
                     <div class="kpi-main-body"><div class="kpi-number" id="tab3_kpiYield22">612.8</div><span class="kpi-subtext">กก./ไร่</span></div>
-                    <div class="kpi-subtext">ต่อพื้นที่เก็บเกี่ยว (หน่วยรอยืนยัน)</div>
+                    <div class="kpi-subtext">กก./ไร่ ต่อพื้นที่เก็บเกี่ยว (พื้นที่ยืนยัน, น้ำหนักอนุมาน)</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ผลผลิตเฉลี่ยปี 2023</span></div>
                     <div class="kpi-main-body"><div class="kpi-number" id="tab3_kpiYield23">617.2</div><span class="kpi-subtext">กก./ไร่</span></div>
-                    <div class="kpi-subtext">ต่อพื้นที่เก็บเกี่ยว (หน่วยรอยืนยัน)</div>
+                    <div class="kpi-subtext">กก./ไร่ ต่อพื้นที่เก็บเกี่ยว (พื้นที่ยืนยัน, น้ำหนักอนุมาน)</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-header"><span class="kpi-icon">📈</span><span>ตำบลที่ผลผลิตเพิ่มขึ้น</span></div>
@@ -2492,7 +2559,7 @@ def get_halloween_html() -> str:
                 <div class="chart-bento-card">
                     <div class="chart-card-header">
                         <div class="chart-card-title">
-                            <span>🌱</span> Horizontal Dumbbell Plot: ผลผลิตข้าว 2022 vs 2023
+                            <span>🌱</span> Dumbbell Plot: ผลผลิตต่อไร่ 2022 → 2023 <span id="lblDumbbellScope" style="font-weight:400; color:var(--text-muted); font-size:0.85em;"></span>
                         </div>
                         <span style="font-size:0.83rem; color:var(--text-muted);">🟣 2022 | 🟠 2023</span>
                     </div>
@@ -2613,6 +2680,31 @@ def get_halloween_html() -> str:
                 </div>
             </div>
 
+            <!-- คำถามที่ 5: HRDI vs HII กับผลผลิต บนตำบลชุดเดียวกัน -->
+            <div class="chart-bento-card" style="margin-bottom: 0.95rem;">
+                <div class="chart-card-header">
+                    <div class="chart-card-title"><span>⚖️</span> ฝน HRDI และฝน HII สัมพันธ์กับผลผลิตข้าวนาปีแตกต่างกันหรือไม่?</div>
+                </div>
+                <p class="match-question">ทดสอบแยกกันบน <strong>ตำบลชุดเดียวกัน</strong> ช่วงฝนเดียวกัน (พ.ค.–ส.ค. ค่าต้นทาง) และเกณฑ์เดียวกัน (การเปลี่ยนแปลง 2022→2023) — ผลนี้มาจาก 26 ตำบลใน 6 จังหวัด <strong>ไม่ใช่ตัวแทนทั้ง 9 จังหวัด</strong></p>
+                <div class="chart-row-split">
+                    <div>
+                        <div class="compare-stat" id="cmpStatHrdi"></div>
+                        <div class="chart-canvas-container" style="height: 320px;"><canvas id="chartCmpHrdi"></canvas></div>
+                    </div>
+                    <div>
+                        <div class="compare-stat" id="cmpStatHii"></div>
+                        <div class="chart-canvas-container" style="height: 320px;"><canvas id="chartCmpHii"></canvas></div>
+                    </div>
+                </div>
+                <div class="compare-verdict" id="cmpVerdict"></div>
+                <div class="table-responsive-wrapper">
+                    <table class="styled-table" id="cmpTable">
+                        <thead><tr><th>ชุดตำบล</th><th>แหล่งฝน</th><th>n (ตำบล / จังหวัด)</th><th>ค่าฝนที่ต่างกัน</th><th>Spearman ρ</th><th>95% CI (bootstrap)</th><th>ความหมาย</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- What the data says -->
             <div class="chart-bento-card" style="margin-bottom: 0.95rem; border:1px solid rgba(74, 222, 128, 0.35);">
                 <div class="chart-card-header">
@@ -2696,7 +2788,7 @@ def get_halloween_html() -> str:
                         </div>
                         <p>• <strong>ช่วงเวลาฝน:</strong> ช่วง พ.ค.–ส.ค. เป็นช่วงฝนต้นฤดูปลูกและเจริญเติบโตทางลำต้น (Vegetative Stage) <strong>ไม่ใช่ฤดูปลูกเต็มฤดู</strong> เนื่องจากข้อมูล HRDI 2023 ขาดหายในไตรมาส 4</p>
                         <p>• <strong>การจับคู่พื้นที่:</strong> จับคู่สถานี 29 แห่งกับ 26 ตำบลตามชื่อเขตการปกครอง (Administrative Name Matching) ไม่ใช่การยืนยันพิกัด GPS ในแปลงนาจริง 100%</p>
-                        <p>• <strong>สถานะหน่วยวัด:</strong> หน่วยวัดปริมาณน้ำฝนและผลผลิตข้าวระบุเป็น <strong>"หน่วยรอยืนยัน"</strong> ตามข้อกำหนด BRD</p>
+                        <p>• <strong>สถานะหน่วยวัด:</strong> HII = มม. (ยืนยันจาก metadata) • DOAE พื้นที่ = ไร่ (ยืนยัน), ผลผลิต = กก. (อนุมาน) • HRDI ฝน = รอยืนยัน (คาดว่า มม.) — ดูตารางในแท็บ 4</p>
                     </div>
                 </div>
             </div>
@@ -2731,6 +2823,58 @@ def get_halloween_html() -> str:
              PAGE 5: DATA SOURCES, METHODOLOGY & RAW PREVIEWS
              ==================================================================== -->
         <section id="page5" class="page-view-section">
+            <!-- คำถามที่ 4: พื้นที่ปลูกข้าวที่จับคู่กับสถานี HRDI -->
+            <div class="chart-bento-card" style="margin-bottom:0.95rem;">
+                <div class="chart-card-header">
+                    <div class="chart-card-title"><span>📍</span> การจับคู่สถานี HRDI กับตำบลปลูกข้าว (ตรวจด้วยพิกัดจริง)</div>
+                </div>
+                <p class="match-question">คำถามที่ 4: ตำบลปลูกข้าวที่จับคู่กับสถานีได้มีกี่แห่ง สถานีอยู่ในตำบลนั้นจริงหรือไม่ และมีลักษณะฝนกับผลผลิตอย่างไร</p>
+                <div class="kpi-row-grid match-kpis" id="matchKpis"></div>
+            </div>
+            <div class="chart-row-split" style="margin-bottom:0.95rem;">
+                <div class="chart-bento-card">
+                    <div class="chart-card-header"><div class="chart-card-title"><span>🗺️</span> ขอบเขต 26 ตำบล และตำแหน่งสถานี</div></div>
+                    <div class="match-map-wrap"><div id="matchMap"></div></div>
+                    <div class="chart-attribution-card">
+                        <span>● เขียว = สถานีอยู่ในตำบล • ● เหลือง = นอกเขตไม่เกิน 5 กม. • ● แดง = นอกเขตเกิน 5 กม.</span>
+                        <span>ขอบเขตตำบล: OpenGISData-Thailand • พิกัดสถานี: ไฟล์ HRDI</span>
+                    </div>
+                </div>
+                <div class="chart-bento-card">
+                    <div class="chart-card-header"><div class="chart-card-title"><span>🧭</span> วิธีจับคู่และสิ่งที่พบ</div></div>
+                    <div class="about-list" id="matchMethod"></div>
+                </div>
+            </div>
+            <div class="chart-bento-card" style="margin-bottom:0.95rem;">
+                <div class="chart-card-header"><div class="chart-card-title"><span>📋</span> ตารางคู่สถานี–ตำบล: ระยะห่าง ฝน และผลผลิต</div></div>
+                <div class="table-responsive-wrapper" style="max-height: 460px; overflow-y: auto;">
+                    <table class="styled-table" id="matchTable">
+                        <thead>
+                            <tr>
+                                <th>ตำบล (จังหวัด)</th>
+                                <th>สถานี</th>
+                                <th>สถานะพิกัด</th>
+                                <th>ห่างขอบตำบล (กม.)</th>
+                                <th>ห่างจุดกึ่งกลาง (กม.)</th>
+                                <th>พื้นที่ตำบล (ตร.กม.)</th>
+                                <th>ฝน พ.ค.–ส.ค. 2022 → 2023 (มม.)</th>
+                                <th>ผลผลิต 2022 → 2023 (กก./ไร่)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="chart-attribution-card"><span>ฝนในตารางคือค่าต้นทางของสถานีที่จับคู่ (ไม่ใช้ค่าประมาณ) • ระยะห่างคำนวณจากพิกัดสถานีถึงเส้นขอบ/จุดกึ่งกลางตำบล ไม่ได้สมมติพิกัด</span></div>
+            </div>
+            <div class="chart-bento-card" style="margin-bottom:0.95rem;">
+                <div class="chart-card-header"><div class="chart-card-title"><span>📏</span> สถานะหน่วยวัด (ตรวจจาก metadata บน data.go.th)</div></div>
+                <div class="table-responsive-wrapper">
+                    <table class="styled-table" id="unitTable">
+                        <thead><tr><th>แหล่งข้อมูล</th><th>ตัวแปร</th><th>หน่วย</th><th>สถานะ</th><th>หลักฐาน</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
             <!-- Sources / Analysis Steps / Limitations (3 columns) -->
             <div class="about-3col-grid" style="margin-bottom:0.95rem;">
                 <div class="chart-bento-card">
@@ -2747,7 +2891,7 @@ def get_halloween_html() -> str:
                         <div class="about-item"><span class="about-step">1</span><div><strong>รวบรวมและตรวจสอบข้อมูล</strong><br>ตัดคีย์ซ้ำ ติดธงค่าผิดปกติ <span id="limitQaCount">29</span> สถานี-เดือน</div></div>
                         <div class="about-item"><span class="about-step">2</span><div><strong>จัดทำข้อมูลรายเดือน/รายปี</strong><br>เติมเดือนที่ขาดด้วยค่าประมาณ (แสดงเป็นเส้นประ)</div></div>
                         <div class="about-item"><span class="about-step">3</span><div><strong>จับคู่สถานีกับตำบลปลูกข้าว</strong><br>Balanced Panel 26 ตำบล 29 สถานี 6 จังหวัด</div></div>
-                        <div class="about-item"><span class="about-step">4</span><div><strong>เปรียบเทียบการเปลี่ยนแปลง 2022→2023</strong><br>ฝน พ.ค.–ส.ค. (ค่าตรวจวัดจริงเท่านั้น) กับผลผลิตต่อไร่</div></div>
+                        <div class="about-item"><span class="about-step">4</span><div><strong>เปรียบเทียบการเปลี่ยนแปลง 2022→2023</strong><br>ฝน พ.ค.–ส.ค. (ค่าค่าต้นทางเท่านั้น) กับผลผลิตต่อไร่</div></div>
                         <div class="about-item"><span class="about-step">5</span><div><strong>สหสัมพันธ์ Spearman + ทดสอบความไว</strong><br>95% bootstrap CI และตัดทีละจังหวัด (LOPO)</div></div>
                     </div>
                 </div>
@@ -2771,7 +2915,7 @@ def get_halloween_html() -> str:
                     <div>
                         <h4 style="color:#ffffff; margin-bottom:0.4rem;">1. ความครบถ้วนและการรองรับ Dual Mode (Observed vs Exploratory)</h4>
                         <p>50 สถานี × 24 เดือน = 1,200 สถานี–เดือน (ชุดข้อมูล 9 จังหวัด ภาคเหนือ)</p>
-                        <p>• <strong>🧪 โหมดตรวจวัดจริง (Observed Only):</strong> 977 เดือนตรวจวัดจริง ซึ่ง 29 เดือนติดธงค่าผิดปกติและไม่นับเป็นค่าตรวจวัด (ปี 2022 ครบ 12 ด. 42 สถานี / ปี 2023 ตรวจวัดได้สูงสุด 9 ด. 0 สถานีครบ 12 ด.) ห้ามแสดงผลรวมทั้งปีสำหรับสถานีที่ข้อมูลไม่ครบตามหลักสถิติ</p>
+                        <p>• <strong>🧪 โหมดข้อมูลต้นทาง:</strong> 977 เดือนค่าต้นทาง ซึ่ง 29 เดือนติดธงค่าผิดปกติและไม่นับเป็นค่าตรวจวัด (ปี 2022 ครบ 12 ด. 42 สถานี / ปี 2023 ตรวจวัดได้สูงสุด 9 ด. 0 สถานีครบ 12 ด.) ห้ามแสดงผลรวมทั้งปีสำหรับสถานีที่ข้อมูลไม่ครบตามหลักสถิติ</p>
                         <p>• <strong>🔮 โหมดทดลองวิเคราะห์ (Exploratory 12 ด.):</strong> ไฟล์ <code>data/analysis_ready/HRDI_2022_2023_12months_EXPLORATORY.csv</code> (1,200 แถว ครบ 100% ไม่มีคีย์ซ้ำ) เติมเต็ม 223 สถานี-เดือน ด้วย Donor Station Spatial Correlation และ Historical Medians สำหรับงานวิจัยเชิงสำรวจ</p>
                         
                         <h4 style="color:#ffffff; margin-top:1rem; margin-bottom:0.4rem;">2. แหล่งข้อมูลทางการ (Official Open Datasets)</h4>
@@ -2785,8 +2929,8 @@ def get_halloween_html() -> str:
                         <p>• เชียงใหม่: 14 ตำบล (54%) | น่าน: 5 ตำบล | แม่ฮ่องสอน: 3 ตำบล | ตาก: 2 ตำบล | เชียงราย: 1 ตำบล | กำแพงเพชร: 1 ตำบล</p>
                         
                         <h4 style="color:#ffffff; margin-top:1rem; margin-bottom:0.4rem;">4. Data Dictionary & นิยามข้อมูล</h4>
-                        <p>• <strong>rainfall_mm:</strong> ปริมาณฝนรวมรายเดือน (มม.) — หน่วยรอยืนยัน</p>
-                        <p>• <strong>rice_yield_per_harvest_area:</strong> ผลผลิตต่อพื้นที่เก็บเกี่ยว (กก./ไร่) — หน่วยรอยืนยัน</p>
+                        <p>• <strong>rainfall_mm:</strong> ปริมาณฝนรายเดือนของสถานี HRDI — หน่วยรอยืนยัน (metadata ไม่ระบุ คาดว่า มม.)</p>
+                        <p>• <strong>rice_yield_per_harvest_area:</strong> ผลผลิต ÷ พื้นที่เก็บเกี่ยว (กก./ไร่) — พื้นที่ยืนยันเป็นไร่, น้ำหนักอนุมานเป็น กก.</p>
                         <p>• <strong>hrdi_may_aug:</strong> ฝนสะสม พ.ค.–ส.ค. จากสถานี HRDI (ช่วงวิเคราะห์หลัก: ต้นฤดูปลูก/ระยะแตกกอ)</p>
                         <p>• <strong>hii_may_aug:</strong> ฝนสะสม พ.ค.–ส.ค. เฉลี่ยระดับจังหวัดจาก HII (ช่วงวิเคราะห์หลัก)</p>
                         <p>• <strong>hrdi_feb_jul & hii_feb_jul:</strong> ฝนสะสม ก.พ.–ก.ค. (เก็บไว้สำหรับ Sensitivity Comparison)</p>
@@ -2826,7 +2970,7 @@ def get_halloween_html() -> str:
         <!-- Footer Governance Note -->
         <footer style="background:rgba(22, 13, 34, 0.75); border:1px dashed rgba(255, 138, 50, 0.3); border-radius:10px; padding:0.75rem 1.25rem; font-size:0.86rem; color:var(--text-muted); display:flex; align-items:center; justify-content:space-between; margin-top:0.6rem;">
             <span>🌾 <strong>Highland Rainfall Project (2022–2023)</strong> | สำรวจสภาพภูมิอากาศบนพื้นที่สูงและผลผลิตข้าวนาปี</span>
-            <span>⚠️ การวิเคราะห์เชิงสำรวจ (Non-causal, No Forecasting) | หน่วยรอยืนยัน</span>
+            <span>⚠️ การวิเคราะห์เชิงสำรวจ (Non-causal, No Forecasting) | หน่วยฝน HRDI รอยืนยัน</span>
         </footer>
 
     </main>
@@ -2835,6 +2979,7 @@ def get_halloween_html() -> str:
     <script>
         const REAL_DATA = {data_json};
         Chart.defaults.font.size = 13;
+
     </script>
 
     <!-- CLIENT APPLICATION SCRIPT -->
@@ -2846,7 +2991,7 @@ def get_halloween_html() -> str:
         // -------------------------------------------------------------
         const state = {{
             activeTab: 'page1',
-            hrdiMode: 'exploratory', // 'observed' | 'exploratory' (ค่าเริ่มต้น: ครบ 12 เดือน พร้อมป้ายค่าประมาณ)
+            hrdiMode: 'observed', // 'observed' | 'exploratory' (ค่าเริ่มต้น: ข้อมูลต้นทาง ม.ค.–ส.ค. ทั้งสองปี)
             tab1: {{
                 year: 'all',
                 province: 'all',
@@ -2872,6 +3017,26 @@ def get_halloween_html() -> str:
         }};
 
         // -------------------------------------------------------------
+        // ช่วงเปรียบเทียบตามโหมด: observed = ม.ค.–ส.ค. ที่มีค่าต้นทางทั้งสองปี / exploratory = ทั้งปี (รวมค่าประมาณ)
+        // -------------------------------------------------------------
+        const isObsMode = () => state.hrdiMode === 'observed';
+        const rainWindowLabel = () => isObsMode() ? 'ม.ค.–ส.ค. (ค่าต้นทางทั้งสองปี)' : 'ทั้งปี (รวมค่าประมาณ)';
+        function hrdiRain(sum, yr) {{
+            const k = isObsMode() ? 'obs' : 'exp';
+            const v = yr === '2022' ? sum[`rain_${{k}}_2022`] : yr === '2023' ? sum[`rain_${{k}}_2023`] : sum[`rain_${{k}}_all`];
+            return (v === undefined) ? null : v;
+        }}
+        function hiiYear(sum, y) {{
+            const v = isObsMode() ? sum[`hii_ja_${{y}}`] : sum[`hii_rain_${{y}}`];
+            return (v === undefined) ? null : v;
+        }}
+        function hiiRain(sum, yr) {{
+            if (yr !== 'all') return hiiYear(sum, yr);
+            const a = hiiYear(sum, '2022'), b = hiiYear(sum, '2023');
+            return (a === null || b === null) ? null : (a + b) / 2;
+        }}
+
+        // -------------------------------------------------------------
         // A.1 HRDI DUAL ANALYSIS MODE MANAGEMENT
         // -------------------------------------------------------------
         window.setHrdiMode = function(mode) {{
@@ -2880,30 +3045,18 @@ def get_halloween_html() -> str:
 
             const btnObs = document.getElementById('btnModeObserved');
             const btnExp = document.getElementById('btnModeExploratory');
-            const banner = document.getElementById('hrdiModeBanner');
-            const bannerIcon = document.getElementById('hrdiBannerIcon');
             const bannerText = document.getElementById('hrdiModeBannerText');
-            const modeTag = document.getElementById('hrdiCurrentModeTag');
 
-            if (mode === 'observed') {{
-                if (btnObs) btnObs.classList.add('active');
-                if (btnExp) btnExp.classList.remove('active');
-                if (banner) banner.className = 'hrdi-mode-status-banner banner-observed';
-                if (bannerIcon) bannerIcon.textContent = '🛡️';
-                if (bannerText) {{
-                    bannerText.innerHTML = '<strong>โหมดข้อมูลตรวจวัดจริง (Observed Only):</strong> แสดงเฉพาะข้อมูลจริงจากเซ็นเซอร์ HRDI รายเดือน (เดือนที่ไม่มีข้อมูลแสดงเป็นช่องว่าง ห้ามนำไปคิดเป็นศูนย์ และห้ามแสดงผลรวมทั้งปีสำหรับสถานีที่ข้อมูลไม่ครบ 12 เดือนตามหลักสถิติ)';
-                }}
-                if (modeTag) modeTag.textContent = 'โหมดปัจจุบัน: ตรวจวัดจริง (Observed Only)';
-            }} else {{
-                if (btnObs) btnObs.classList.remove('active');
-                if (btnExp) btnExp.classList.add('active');
-                if (banner) banner.className = 'hrdi-mode-status-banner banner-exploratory';
-                if (bannerIcon) bannerIcon.textContent = '⚠️';
-                if (bannerText) {{
-                    bannerText.innerHTML = `<strong>⚠️ โหมดครบ 12 เดือน (Exploratory):</strong> เดือนที่ไม่มีข้อมูลตรวจวัด (เช่น ต.ค.–ธ.ค. 2023) เติมด้วยค่าประมาณจากมัธยฐานรายเดือนของสถานี 2017–2022 หรือสถานีใกล้เคียง และค่าตรวจวัดผิดปกติ ${{REAL_DATA.completeness.qa_replaced_station_months}} สถานี-เดือน (ฝน 0 มม. กลางฤดูฝน / spike เกิน 3 เท่า) แทนด้วยมัธยฐาน • <strong>เส้นประ/จุดกลวง = ค่าประมาณ</strong> <em>(ไม่ใช่ข้อมูลตรวจวัดจริง ยังไม่ผ่านการตรวจรับรองความแม่นยำ)</em>`;
-                }}
-                if (modeTag) modeTag.textContent = 'โหมดปัจจุบัน: ทดลองวิเคราะห์ (Exploratory 12 ด.)';
+            if (btnObs) btnObs.classList.toggle('active', mode === 'observed');
+            if (btnExp) btnExp.classList.toggle('active', mode === 'exploratory');
+            const k = REAL_DATA.overall_kpis, w = REAL_DATA.obs_compare_window;
+            const srcNote = `ข้อมูลฝน "HRDI" ${{k.rows_openweathermap}} จาก ${{k.rows_total_2022_2023}} สถานี-เดือนมาจาก OpenWeatherMap (ค่าแบบจำลอง ณ พิกัดสถานี ตามคำอธิบายชุดข้อมูลของ สวพส.) ไม่ใช่ค่าที่เครื่องวัดบันทึกได้ทั้งหมด`;
+            if (bannerText) {{
+                bannerText.innerHTML = mode === 'observed'
+                    ? `<strong>ข้อมูลต้นทางเท่านั้น:</strong> เทียบปี 2022 กับ 2023 เฉพาะ <strong>${{w.label}}</strong> ซึ่งมีค่าทั้งสองปี (${{w.stations}} สถานีที่ครบ 8 เดือน) • ปี 2023 ไม่มีข้อมูลหลัง ส.ค. • ไม่รวมค่าประมาณและค่าผิดปกติ ${{REAL_DATA.completeness.qa_replaced_station_months}} สถานี-เดือน<br><span class="src-warn">⚠️ ${{srcNote}}</span>`
+                    : `<strong>ครบ 12 เดือน (รวมค่าประมาณ):</strong> เดือนที่ไม่มีค่า (เช่น ต.ค.–ธ.ค. 2023) เติมด้วยมัธยฐานเดือนเดียวกันปี 2017–2022 ของสถานี หรือสถานีใกล้เคียง และค่าผิดปกติแทนด้วยมัธยฐาน • <strong>เส้นประ/จุดกลวง = ค่าประมาณ</strong> • ใช้ดูภาพรวมเท่านั้น ไม่ใช้สรุปผล<br><span class="src-warn">⚠️ ${{srcNote}}</span>`;
             }}
+            renderMapLegend();
 
             updateTab1Components();
             updateTab2Components();
@@ -2941,12 +3094,23 @@ def get_halloween_html() -> str:
         document.getElementById('btnMapZoomOut').addEventListener('click', () => map.zoomOut());
         document.getElementById('btnResetMap').addEventListener('click', () => resetTab1Map());
 
+        // เกณฑ์สีตามช่วงเวลา: ทั้งปี 500/1000/1500/2000 มม. • ม.ค.–ส.ค. ปรับตามสัดส่วน 8/12 เดือน
+        const RAIN_COLORS = ['#3B0764', '#7C3AED', '#B777CE', '#FA9A55', '#FF8A32'];
+        const rainBreaks = () => (isObsMode() ? [330, 670, 1000, 1330] : [500, 1000, 1500, 2000]);
         function getRainColor(val) {{
-            if (val >= 2000) return '#FF8A32';
-            if (val >= 1500) return '#FA9A55';
-            if (val >= 1000) return '#B777CE';
-            if (val >= 500)  return '#7C3AED';
-            return '#3B0764';
+            if (val === null || val === undefined || isNaN(val)) return '#2a2140';
+            const b = rainBreaks();
+            return RAIN_COLORS[b.filter(x => val >= x).length];
+        }}
+        function renderMapLegend() {{
+            const el = document.getElementById('mapLegendCard');
+            if (!el) return;
+            const b = rainBreaks(), f = (v) => v.toLocaleString();
+            const labels = [`&lt; ${{f(b[0])}}`, `${{f(b[0])}} – ${{f(b[1])}}`, `${{f(b[1])}} – ${{f(b[2])}}`, `${{f(b[2])}} – ${{f(b[3])}}`, `&gt; ${{f(b[3])}}`];
+            el.innerHTML = `<div class="map-legend-title">ฝนเฉลี่ยสถานี (มม.) • ${{rainWindowLabel()}}</div>` +
+                RAIN_COLORS.map((c, i) => ({{ c, l: labels[i] }})).reverse()
+                    .map(x => `<div class="legend-scale-item"><div class="legend-color-box" style="background:${{x.c}};"></div><span>${{x.l}}</span></div>`).join('') +
+                `<div class="legend-scale-item"><div class="legend-color-box" style="background:#2a2140;"></div><span>ไม่มีข้อมูลที่เทียบได้</span></div>`;
         }}
 
         // Render Real 9-Province Boundaries
@@ -2957,8 +3121,7 @@ def get_halloween_html() -> str:
             const pName = feature.properties.pro_th;
             const pSummary = REAL_DATA.province_summaries[pName] || {{}};
             const yr = state.tab1.year;
-            const rainVal = (yr === '2022') ? pSummary.rain_2022 :
-                            (yr === '2023') ? pSummary.rain_2023 : pSummary.rain_all;
+            const rainVal = hrdiRain(pSummary, yr);
             const fillColor = getRainColor(rainVal);
             const isSelected = (state.tab1.province === pName);
 
@@ -3130,12 +3293,17 @@ def get_halloween_html() -> str:
 
             drawerTitle.innerHTML = `🎃 จังหวัด${{pName}}`;
             const yr = state.tab1.year;
-            const rain = (yr === '2022') ? sum.rain_2022 : (yr === '2023') ? sum.rain_2023 : sum.rain_all;
-            const activeCnt = (yr === '2022') ? sum.active_stations_2022 : (yr === '2023') ? sum.active_stations_2023 : sum.station_count;
+            const rain = hrdiRain(sum, yr);
+            const pStations = REAL_DATA.stations.filter(st => st.province === pName);
+            const activeCnt = isObsMode()
+                ? sum.obs_compare_station_count
+                : pStations.filter(st => yr === '2022' ? st.observed_count_2022 > 0 : yr === '2023' ? st.observed_count_2023 > 0 : st.observed_count_total > 0).length;
 
             document.getElementById('drawerProvStaCount').textContent = `${{sum.station_count}} สถานี`;
-            document.getElementById('drawerProvActiveCount').textContent = `${{activeCnt}} สถานี (${{yr === 'all' ? '2022-23' : yr}})`;
-            document.getElementById('drawerProvRain').textContent = `${{rain.toLocaleString()}} มม.`;
+            document.getElementById('drawerProvActiveCount').textContent = isObsMode()
+                ? `${{activeCnt}} สถานี (ครบ ม.ค.–ส.ค. ทั้งสองปี)`
+                : `${{activeCnt}} สถานีที่มีค่าต้นทาง (${{yr === 'all' ? '2022-23' : yr}})`;
+            document.getElementById('drawerProvRain').textContent = rain !== null ? `${{rain.toLocaleString()}} มม. (${{rainWindowLabel()}})` : 'เทียบไม่ได้: ไม่มีสถานีครบ ม.ค.–ส.ค.';
             document.getElementById('drawerProvTemp').textContent = `${{sum.temp}} °C`;
 
             // Populate station list
@@ -3201,7 +3369,7 @@ def get_halloween_html() -> str:
             document.getElementById('subStaMeta').textContent = `อ.${{s.amphoe || '-'}} ต.${{s.tambon || '-'}} | รหัส: ${{codeBadge}} (${{s.source}})`;
             document.getElementById('subStaCoords').textContent = `พิกัดจริง: ${{s.lat}}, ${{s.lng}} (WGS84)`;
             document.getElementById('subStaCompleteness').innerHTML = `
-                <div>• ตรวจวัดจริง: 2022 (${{s.observed_count_2022}}/12 ด.) | 2023 (${{s.observed_count_2023}}/12 ด.) | รวม ${{s.observed_count_total}}/24 ด.</div>
+                <div>• ค่าต้นทาง: 2022 (${{s.observed_count_2022}}/12 ด.) | 2023 (${{s.observed_count_2023}}/12 ด.) | รวม ${{s.observed_count_total}}/24 ด.</div>
                 <div style="margin-top:2px; font-size:0.82rem; color:var(--text-muted);">• ค่าประมาณ: ${{s.non_observed_count_2022 + s.non_observed_count_2023}} ด. (รวมค่าผิดปกติที่แทนด้วยมัธยฐาน ${{s.qa_replaced_count_total}} ด.)</div>
             `;
             document.getElementById('subStaScene').innerHTML = stationSceneSvg(s);
@@ -3319,7 +3487,7 @@ def get_halloween_html() -> str:
                                 boxHeight: 10,
                                 padding: 8,
                                 generateLabels: (chart) => [
-                                    {{ text: 'ตรวจวัดจริง', fillStyle: '#A778E8', strokeStyle: '#A778E8', fontColor: '#F7F0E8' }},
+                                    {{ text: 'ค่าต้นทาง', fillStyle: '#A778E8', strokeStyle: '#A778E8', fontColor: '#F7F0E8' }},
                                     {{ text: 'ค่าประมาณ (มัธยฐาน)', fillStyle: '#fbbf24', strokeStyle: '#fbbf24', fontColor: '#F7F0E8' }},
                                     {{ text: 'ค่าประมาณ (สถานีใกล้เคียง)', fillStyle: '#FF8A32', strokeStyle: '#FF8A32', fontColor: '#F7F0E8' }},
                                     {{ text: 'ค่าผิดปกติ → มัธยฐาน', fillStyle: '#f87171', strokeStyle: '#f87171', fontColor: '#F7F0E8' }}
@@ -3332,7 +3500,7 @@ def get_halloween_html() -> str:
                                 label: (item) => {{
                                     const mIdx = item.dataIndex + (item.datasetIndex === 1 ? 12 : 0);
                                     const st = st24[mIdx] || 'observed';
-                                    const stTh = st === 'observed' ? 'ตรวจวัดจริง' : st === 'estimated' ? 'ค่าประมาณ (มัธยฐาน 2017–2022)' : st === 'qa_replaced' ? (isExp ? 'ค่าผิดปกติ แทนด้วยมัธยฐาน 2017–2022' : 'ค่าดิบผิดปกติ ติดธง QA') : 'ค่าประมาณ Exploratory (สถานีใกล้เคียง)';
+                                    const stTh = st === 'observed' ? 'ค่าต้นทาง' : st === 'estimated' ? 'ค่าประมาณ (มัธยฐาน 2017–2022)' : st === 'qa_replaced' ? (isExp ? 'ค่าผิดปกติ แทนด้วยมัธยฐาน 2017–2022' : 'ค่าดิบผิดปกติ ติดธง QA') : 'ค่าประมาณ Exploratory (สถานีใกล้เคียง)';
                                     return `${{item.dataset.label}}: ${{item.raw !== null ? item.raw + ' มม.' : 'ไม่มีข้อมูล'}} [${{stTh}}]`;
                                 }}
                             }}
@@ -3400,9 +3568,6 @@ def get_halloween_html() -> str:
             `;
             container.appendChild(emptyDiv);
             canvas.style.opacity = '0.06';
-            // ไม่มีข้อมูล → ซ่อนทั้งการ์ด (การ์ดคู่ในแถวเดียวกันจะขยายเต็มแถว)
-            const card = canvas.closest('.chart-bento-card');
-            if (card) card.classList.add('card-no-data');
         }}
 
         function clearChartEmptyState(canvasId) {{
@@ -3413,8 +3578,6 @@ def get_halloween_html() -> str:
                 existing.remove();
             }}
             canvas.style.opacity = '1';
-            const card = canvas.closest('.chart-bento-card');
-            if (card) card.classList.remove('card-no-data');
         }}
 
         // Dynamic Spearman Rho Calculation with Fractional Tie-Ranks
@@ -3763,7 +3926,7 @@ def get_halloween_html() -> str:
             // Compute KPIs
             let rainVal = null;
             let rainBadge = '✓ 12/12 ด.';
-            let rainSub = 'ข้อมูลตรวจวัดจริงครบ 12 เดือน';
+            let rainSub = '';
             let tempVal = REAL_DATA.overall_kpis.mean_temp;
             let humVal = REAL_DATA.overall_kpis.mean_humidity;
             let windVal = REAL_DATA.overall_kpis.mean_wind;
@@ -3780,27 +3943,13 @@ def get_halloween_html() -> str:
                         rainVal = (yr === '2022') ? s.annual_exp_2022 : (yr === '2023') ? s.annual_exp_2023 : s.annual_exp_all;
                         rainBadge = '🔮 ครบ 12 ด.';
                         const nEst = (yr === '2022') ? s.non_observed_count_2022 : (yr === '2023') ? s.non_observed_count_2023 : (s.non_observed_count_2022 + s.non_observed_count_2023);
-                        rainSub = nEst > 0 ? `⚠️ รวมค่าประมาณ ${{nEst}} จาก ${{yr === 'all' ? 24 : 12}} เดือน` : '✓ ตรวจวัดจริงทุกเดือน';
+                        rainSub = nEst > 0 ? `⚠️ รวมค่าประมาณ ${{nEst}} จาก ${{yr === 'all' ? 24 : 12}} เดือน` : '✓ ค่าต้นทางทุกเดือน';
                     }} else {{
-                        if (yr === '2022') {{
-                            if (s.annual_obs_2022 !== null) {{
-                                rainVal = s.annual_obs_2022;
-                                rainBadge = '✓ 12/12 ด.';
-                                rainSub = '✓ ข้อมูลตรวจวัดจริงครบ 12 เดือน';
-                            }} else {{
-                                rainVal = null;
-                                rainBadge = '⚠️ ข้อมูลไม่ครบ';
-                                rainSub = `ตรวจวัดได้ ${{s.observed_count_2022}}/12 ด. (ห้ามคำนวณผลรวมทั้งปี)`;
-                            }}
-                        }} else if (yr === '2023') {{
-                            rainVal = null;
-                            rainBadge = '⚠️ ข้อมูลไม่ครบ';
-                            rainSub = `ตรวจวัดได้ ${{s.observed_count_2023}}/12 ด. (ห้ามคำนวณผลรวมทั้งปี)`;
-                        }} else {{
-                            rainVal = null;
-                            rainBadge = '⚠️ 2023 ไม่ครบ';
-                            rainSub = `ตรวจวัดจริง ${{s.observed_count_total}}/24 ด. (ห้ามรวมยอดปี 2023)`;
-                        }}
+                        rainVal = s.obs_compare_complete ? ((yr === '2022') ? s.annual_obs_2022 : (yr === '2023') ? s.annual_obs_2023 : s.annual_obs_all) : null;
+                        rainBadge = s.obs_compare_complete ? '✓ ม.ค.–ส.ค.' : '⚠️ ไม่ครบ';
+                        rainSub = s.obs_compare_complete
+                            ? `ฝนสะสม ม.ค.–ส.ค. (ค่าต้นทางครบ 8/8 เดือนทั้งสองปี) • แหล่ง: ${{s.data_source_label}}`
+                            : `เทียบไม่ได้: มีค่าต้นทางทั้งสองปีเพียง ${{s.paired_compare_months}}/8 เดือนของ ม.ค.–ส.ค.`;
                     }}
                 }}
             }} else if (p !== 'all') {{
@@ -3818,19 +3967,11 @@ def get_halloween_html() -> str:
                         const nTot = sum.station_count * (yr === 'all' ? 24 : 12);
                         rainSub = `⚠️ ฝนเฉลี่ยสถานี • รวมค่าประมาณ ${{nEst}} จาก ${{nTot}} สถานี-เดือน`;
                     }} else {{
-                        if (yr === '2022') {{
-                            rainVal = sum.rain_obs_2022;
-                            rainBadge = '✓ ตรวจวัดจริง';
-                            rainSub = 'ฝนเฉลี่ยสถานีที่ตรวจวัดครบ 12 เดือน';
-                        }} else if (yr === '2023') {{
-                            rainVal = null;
-                            rainBadge = '⚠️ ข้อมูลไม่ครบ';
-                            rainSub = 'สถานีในจังหวัดตรวจวัดไม่ครบ 12 ด. (ห้ามรวมทั้งปี)';
-                        }} else {{
-                            rainVal = null;
-                            rainBadge = '⚠️ 2023 ไม่ครบ';
-                            rainSub = 'ข้อมูลปี 2023 ตรวจวัดไม่ครบ 12 ด. (แนะนำดูรายเดือน)';
-                        }}
+                        rainVal = hrdiRain(sum, yr);
+                        rainBadge = rainVal !== null ? '✓ ม.ค.–ส.ค.' : '⚠️ ไม่มีสถานีครบ';
+                        rainSub = rainVal !== null
+                            ? `ฝนสะสม ม.ค.–ส.ค. เฉลี่ย ${{sum.obs_compare_station_count}}/${{sum.station_count}} สถานีที่มีค่าต้นทางครบทั้งสองปี`
+                            : `เทียบไม่ได้: ไม่มีสถานีในจังหวัดที่มีค่าต้นทางครบ ม.ค.–ส.ค. ทั้งสองปี`;
                     }}
                 }}
             }} else {{
@@ -3843,19 +3984,10 @@ def get_halloween_html() -> str:
                     const nTot = k.total_stations * (yr === 'all' ? 24 : 12);
                     rainSub = `⚠️ ฝนเฉลี่ย ${{k.total_stations}} สถานี • รวมค่าประมาณ ${{nEst}} จาก ${{nTot}} สถานี-เดือน`;
                 }} else {{
-                    if (yr === '2022') {{
-                        rainVal = REAL_DATA.overall_kpis.hrdi_obs_rain_2022;
-                        rainBadge = '✓ 2022 จริง';
-                        rainSub = `เฉลี่ยสถานีตรวจวัดจริงครบ 12 เดือน (${{REAL_DATA.stations.filter(s => s.annual_obs_2022 !== null).length}} สถานี)`;
-                    }} else if (yr === '2023') {{
-                        rainVal = null;
-                        rainBadge = '⚠️ 2023 ไม่ครบ';
-                        rainSub = 'สถานี HRDI ปี 2023 ตรวจวัดจริงไม่ครบ 12 ด. (ห้ามรวมทั้งปี)';
-                    }} else {{
-                        rainVal = null;
-                        rainBadge = '⚠️ 2023 ไม่ครบ';
-                        rainSub = 'ปี 2023 ตรวจวัดจริงไม่ครบ 12 เดือน (เลือกปี 2022 หรือโหมด Exploratory)';
-                    }}
+                    const k = REAL_DATA.overall_kpis;
+                    rainVal = (yr === '2022') ? k.hrdi_obs_rain_2022 : (yr === '2023') ? k.hrdi_obs_rain_2023 : k.hrdi_obs_rain_all;
+                    rainBadge = '✓ ม.ค.–ส.ค.';
+                    rainSub = `ฝนสะสม ม.ค.–ส.ค. เฉลี่ย ${{k.hrdi_obs_station_count}} สถานีที่มีค่าต้นทางครบทั้งสองปี (ไม่รวมค่าประมาณ)`;
                 }}
             }}
 
@@ -3888,6 +4020,8 @@ def get_halloween_html() -> str:
             const rainEl = document.getElementById('tab1_kpiRain');
             const rainBadgeEl = document.getElementById('tab1_kpiRainBadge');
             const rainSubEl = document.getElementById('tab1_kpiRainSub');
+            const rainUnitEl = document.getElementById('tab1_kpiRainUnit');
+            if (rainUnitEl) rainUnitEl.textContent = isExp ? '(มม./ปี รวมค่าประมาณ)' : '(มม. สะสม ม.ค.–ส.ค.)';
 
             if (rainBadgeEl) rainBadgeEl.textContent = rainBadge;
             if (rainSubEl) rainSubEl.textContent = rainSub;
@@ -3928,12 +4062,19 @@ def get_halloween_html() -> str:
             const sta = state.tab1.station;
             const yr = state.tab1.year;
 
-            let d22 = REAL_DATA.monthly_overall['2022'];
-            let d23 = REAL_DATA.monthly_overall['2023'];
-            let scopeLabel = 'ภาพรวม 9 จังหวัด (HII ฝนเฉลี่ยระดับจังหวัด)';
-
             const isExp = (state.hrdiMode === 'exploratory');
-            // คำอธิบายค่าประมาณรายเดือน (null = ตรวจวัดจริง) ใช้ทำเส้นประ/จุดกลวงในโหมด 12 เดือน
+            // ภาพรวม: ฝนสถานีบนพื้นที่สูง (ไม่ใช่ HII) • observed = เฉลี่ยแบบจับคู่ (สถานีที่มีค่าทั้งสองปีในเดือนนั้น) เฉพาะ ม.ค.–ส.ค.
+            const po = REAL_DATA.monthly_obs_paired_overall;
+            const meanStations = (key) => months.map((_, i) => {{
+                const v = REAL_DATA.stations.map(st => (st[key] || [])[i]).filter(x => x !== null && x !== undefined);
+                return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length * 10) / 10 : null;
+            }});
+            let d22 = isExp ? meanStations('monthly_exp_2022') : po['2022'];
+            let d23 = isExp ? meanStations('monthly_exp_2023') : po['2023'];
+            let scopeLabel = isExp
+                ? `ภาพรวม ${{REAL_DATA.stations.length}} สถานี • ครบ 12 เดือน (รวมค่าประมาณ)`
+                : `ภาพรวมสถานีบนพื้นที่สูง • เฉพาะ ม.ค.–ส.ค. ที่มีค่าต้นทางทั้งสองปี (${{Math.min(...po.n.slice(0, 8))}}–${{Math.max(...po.n)}} สถานีต่อเดือน) • ก.ย.–ธ.ค. ปี 2023 ไม่มีข้อมูล`;
+            // คำอธิบายค่าประมาณรายเดือน (null = ค่าต้นทาง) ใช้ทำเส้นประ/จุดกลวงในโหมด 12 เดือน
             let est22 = new Array(12).fill(null);
             let est23 = new Array(12).fill(null);
             const stLabel = (st) => st === 'estimated' ? 'ค่าประมาณ (มัธยฐาน 2017–2022)' : st === 'qa_replaced' ? 'ค่าผิดปกติ แทนด้วยมัธยฐาน' : 'ค่าประมาณ (สถานีใกล้เคียง)';
@@ -3949,7 +4090,7 @@ def get_halloween_html() -> str:
                         est22 = est22.map((_, i) => staEst(st24[i]));
                         est23 = est23.map((_, i) => staEst(st24[i + 12]));
                     }} else {{
-                        scopeLabel = `สถานี: ${{s.name}} (${{s.province}}) [🧪 โหมดตรวจวัดจริง ${{s.data_status_label}}]`;
+                        scopeLabel = `สถานี: ${{s.name}} (${{s.province}}) • ค่าต้นทาง ${{s.observed_count_2022}}/12 ด. (2022), ${{s.observed_count_2023}}/12 ด. (2023) • แหล่ง: ${{s.data_source_label}}`;
                         d22 = s.monthly_obs_2022 || [];
                         d23 = s.monthly_obs_2023 || [];
                     }}
@@ -3968,7 +4109,7 @@ def get_halloween_html() -> str:
                     est22 = provEst(pSum.monthly_est_count_2022);
                     est23 = provEst(pSum.monthly_est_count_2023);
                 }} else if (pSum) {{
-                    scopeLabel = `จังหวัด: ${{p}} (🧪 ฝนเฉลี่ยสถานี HRDI โหมดตรวจวัดจริง)`;
+                    scopeLabel = `จังหวัด: ${{p}} • เฉลี่ยสถานีแบบจับคู่ เฉพาะ ม.ค.–ส.ค. ที่มีค่าต้นทางทั้งสองปี`;
                     d22 = pSum.monthly_obs_2022;
                     d23 = pSum.monthly_obs_2023;
                 }} else {{
@@ -4030,7 +4171,7 @@ def get_halloween_html() -> str:
                                 label: (item) => {{
                                     const est = (item.dataset.estNotes || [])[item.dataIndex];
                                     const val = item.raw !== null && item.raw !== undefined ? `${{item.raw}} มม.` : 'ไม่มีข้อมูล';
-                                    return `${{item.dataset.label}}: ${{val}} [${{est ? est.note : 'ตรวจวัดจริง'}}]`;
+                                    return `${{item.dataset.label}}: ${{val}} [${{est ? est.note : 'ค่าต้นทาง'}}]`;
                                 }}
                             }}
                         }}
@@ -4066,13 +4207,13 @@ def get_halloween_html() -> str:
                 }} else {{
                     hrdi = (yr === '2022') ? sum.rain_obs_2022 : (yr === '2023') ? sum.rain_obs_2023 : sum.rain_obs_all;
                 }}
-                const hii = (yr === '2022') ? (sum.hii_rain_2022 || 0) : (yr === '2023') ? (sum.hii_rain_2023 || 0) : (((sum.hii_rain_2022 || 0) + (sum.hii_rain_2023 || 0)) / 2);
+                const hii = hiiRain(sum, yr);
                 hrdiData.push(hrdi !== null ? Math.round(hrdi) : null);
                 hiiData.push(Math.round(hii || 0));
             }});
 
             if (!isExp && yr === '2023' && hrdiData.every(x => x === null)) {{
-                showChartEmptyState('chartTab1RainCompare', 'ไม่มีผลรวมตรวจวัดจริงปี 2023 (HRDI)', 'สถานี HRDI ปี 2023 ตรวจวัดจริงไม่ครบ 12 เดือน (สูงสุด 9 เดือน) ตามหลักสถิติจึงไม่แสดงผลรวมทั้งปี แนะนำสลับเป็นโหมดทดลองวิเคราะห์ (Exploratory)', 'HRDI: ตรวจวัดไม่ครบ 12 ด.');
+                showChartEmptyState('chartTab1RainCompare', 'ไม่มีค่าที่เทียบได้', 'ไม่มีจังหวัดที่สถานีมีค่าต้นทางครบ ม.ค.–ส.ค. ทั้งสองปีในตัวกรองนี้', 'ช่วงเทียบ: ม.ค.–ส.ค.');
                 return;
             }}
 
@@ -4081,8 +4222,8 @@ def get_halloween_html() -> str:
                 data: {{
                     labels: provNames,
                     datasets: [
-                        {{ label: isExp ? 'พื้นที่สูง (HRDI เติมเต็ม Exploratory)' : 'พื้นที่สูง (HRDI ตรวจวัดจริง)', data: hrdiData, backgroundColor: '#A778E8', borderRadius: 4 }},
-                        {{ label: 'ทั้งจังหวัด (HII เฉลี่ยพื้นที่)', data: hiiData, backgroundColor: '#FF8A32', borderRadius: 4 }}
+                        {{ label: isExp ? 'พื้นที่สูง (HRDI เติมเต็ม Exploratory)' : `พื้นที่สูง (HRDI ค่าต้นทาง ${{rainWindowLabel()}})`, data: hrdiData, backgroundColor: '#A778E8', borderRadius: 4 }},
+                        {{ label: `ทั้งจังหวัด (HII ${{rainWindowLabel()}})`, data: hiiData, backgroundColor: '#FF8A32', borderRadius: 4 }}
                     ]
                 }},
                 options: {{
@@ -4189,51 +4330,17 @@ def get_halloween_html() -> str:
             const cards = [];
 
             // 1 & 2. Max and Min HRDI Highland Rainfall (ค่าเฉลี่ยต่อสถานี ไม่รวมผลรวมบวกกัน)
-            if (!isExp && (yr === '2023' || yr === 'all')) {{
-                cards.push({{
-                    id: 'card_hrdi_max',
-                    icon: '🌧️',
-                    badge: 'พื้นที่สูง HRDI',
-                    badgeClass: 'badge-orange',
-                    category: 'ฝนพื้นที่สูง HRDI มากที่สุด',
-                    prov: '—',
-                    valHtml: '<span style="font-size:0.95rem; color:var(--text-muted); font-weight:500;">ข้อมูลไม่เพียงพอสำหรับจัดอันดับ</span>',
-                    metaLines: [
-                        `📅 ${{yrLabel}} | ตัวชี้วัด: เฉลี่ยต่อสถานี`,
-                        '⚠️ ตรวจวัดจริงไม่ครบ 12 ด. (สูงสุด 9 ด.)',
-                        '💡 สลับเป็นโหมด Exploratory เพื่อดูอันดับ'
-                    ],
-                    actionText: 'สลับเป็นโหมด Exploratory 🔮',
-                    onClick: () => window.setHrdiMode('exploratory')
-                }});
-                cards.push({{
-                    id: 'card_hrdi_min',
-                    icon: '⛅',
-                    badge: 'พื้นที่สูง HRDI',
-                    badgeClass: 'badge-purple',
-                    category: 'ฝนพื้นที่สูง HRDI น้อยที่สุด',
-                    prov: '—',
-                    valHtml: '<span style="font-size:0.95rem; color:var(--text-muted); font-weight:500;">ข้อมูลไม่เพียงพอสำหรับจัดอันดับ</span>',
-                    metaLines: [
-                        `📅 ${{yrLabel}} | ตัวชี้วัด: เฉลี่ยต่อสถานี`,
-                        '⚠️ ตรวจวัดจริงไม่ครบ 12 ด. (สูงสุด 9 ด.)',
-                        '💡 สลับเป็นโหมด Exploratory เพื่อดูอันดับ'
-                    ],
-                    actionText: 'สลับเป็นโหมด Exploratory 🔮',
-                    onClick: () => window.setHrdiMode('exploratory')
-                }});
-            }} else {{
+            {{
                 const hrdiList = provs.map(p => {{
                     const s = REAL_DATA.province_summaries[p] || {{}};
-                    const r = isExp ? ((yr === '2022') ? s.rain_exp_2022 : (yr === '2023') ? s.rain_exp_2023 : s.rain_exp_all)
-                                   : s.rain_obs_2022;
+                    const r = hrdiRain(s, yr);
                     return {{ name: p, val: r, sum: s }};
                 }}).filter(x => x.val !== null && !isNaN(x.val)).sort((a, b) => b.val - a.val);
 
                 if (hrdiList.length > 0) {{
                     const maxH = hrdiList[0];
                     const minH = hrdiList[hrdiList.length - 1];
-                    const statusTag = isExp ? '⚠️ Exploratory 12 ด.' : '✓ ตรวจวัดจริง 12/12 ด.';
+                    const statusTag = isExp ? '⚠️ Exploratory 12 ด.' : '✓ ค่าต้นทาง ม.ค.–ส.ค.';
 
                     cards.push({{
                         id: 'card_hrdi_max',
@@ -4272,7 +4379,7 @@ def get_halloween_html() -> str:
             // 3. Max HII Provincial Rain (12 months complete across all provinces)
             const hiiList = provs.map(p => {{
                 const s = REAL_DATA.province_summaries[p] || {{}};
-                const r = (yr === '2022') ? (s.hii_rain_2022 || 0) : (yr === '2023') ? (s.hii_rain_2023 || 0) : (((s.hii_rain_2022 || 0) + (s.hii_rain_2023 || 0)) / 2);
+                const r = hiiRain(s, yr);
                 return {{ name: p, val: r, sum: s }};
             }}).sort((a, b) => b.val - a.val);
 
@@ -4288,7 +4395,7 @@ def get_halloween_html() -> str:
                     valHtml: `${{Math.round(maxHii.val).toLocaleString()}} <span class="insight-val-unit">มม./ปี</span>`,
                     metaLines: [
                         `📅 ${{yrLabel}} • ข้อมูลฝนพื้นที่ทั้งจังหวัด (สสน.)`,
-                        '✓ ข้อมูลตรวจวัดจริงครบ 12 เดือน (ครอบคลุมทั้งจังหวัด)'
+                        '✓ ข้อมูล สสน. ครบทุกเดือน (หน่วย มม. ยืนยันแล้ว)'
                     ],
                     actionText: 'คลิกเพื่อเลือกจังหวัดนี้ 🔍',
                     onClick: () => dispatchTab1Filter({{ province: maxHii.name }})
@@ -4343,7 +4450,7 @@ def get_halloween_html() -> str:
             let anomalyProvs = [];
             provs.forEach(p => {{
                 const s = REAL_DATA.province_summaries[p] || {{}};
-                const rDiff = isExp ? ((s.rain_exp_2023 || 0) - (s.rain_exp_2022 || 0)) : ((s.hii_rain_2023 || 0) - (s.hii_rain_2022 || 0));
+                const rDiff = isExp ? ((s.rain_exp_2023 || 0) - (s.rain_exp_2022 || 0)) : ((hiiYear(s, '2023') || 0) - (hiiYear(s, '2022') || 0));
                 const yDiff = (s.rice_yield_2023 && s.rice_yield_2022) ? (s.rice_yield_2023 - s.rice_yield_2022) : 0;
                 if (rDiff > 0 && yDiff < 0) {{
                     anomalyProvs.push({{ name: p, rDiff, yDiff }});
@@ -4448,8 +4555,8 @@ def get_halloween_html() -> str:
                     r22 = isExp ? s.rain_exp_2022 : s.rain_obs_2022;
                     r23 = isExp ? s.rain_exp_2023 : s.rain_obs_2023;
                 }} else if (metric === 'hii') {{
-                    r22 = s.hii_rain_2022;
-                    r23 = s.hii_rain_2023;
+                    r22 = hiiYear(s, '2022');
+                    r23 = hiiYear(s, '2023');
                 }} else if (metric === 'seasonal') {{
                     r22 = isExp ? s.exp_may_aug_2022 : s.obs_may_aug_2022;
                     r23 = isExp ? s.exp_may_aug_2023 : s.obs_may_aug_2023;
@@ -4488,8 +4595,8 @@ def get_halloween_html() -> str:
             const badgeEl = document.getElementById('scatterSpearmanBadge');
 
             if (allPts.length < 4) {{
-                if (badgeEl) badgeEl.textContent = `ข้อมูลไม่เพียงพอ (n = ${{allPts.length}})`;
-                showChartEmptyState('chartRainRiceScatter', 'ข้อมูลไม่เพียงพอสำหรับวิเคราะห์สหสัมพันธ์', `พบข้อมูลที่จับคู่ได้ ${{allPts.length}} จุด (ต้องการอย่างน้อย 4 จุด) เนื่องจากในโหมด Observed Only ฝนปี 2023 ตรวจวัดจริงไม่ครบ 12 เดือน แนะนำสลับเป็นโหมด Exploratory หรือเลือกตัวชี้วัดฝน HII`, 'n < 4');
+                if (badgeEl) badgeEl.textContent = `Spearman ρ: คำนวณไม่ได้ (n = ${{allPts.length}} จังหวัด-ปี, ต้อง ≥ 4)`;
+                showChartEmptyState('chartRainRiceScatter', 'ข้อมูลไม่เพียงพอสำหรับวิเคราะห์สหสัมพันธ์', `พบคู่จังหวัด-ปีที่มีทั้งฝนและผลผลิต ${{allPts.length}} จุด (ต้องการอย่างน้อย 4 จุด) • ช่วงฝน: ${{rainWindowLabel()}}`, 'n < 4');
                 return;
             }}
 
@@ -4500,14 +4607,16 @@ def get_halloween_html() -> str:
             if (badgeEl) {{
                 if (rho !== null) {{
                     const sign = rho > 0 ? '+' : '';
-                    badgeEl.innerHTML = `Spearman ρ = <strong>${{sign}}${{rho.toFixed(4)}}</strong> (n = ${{allPts.length}} จว.-ปี)`;
+                    const win = metric === 'seasonal' ? 'พ.ค.–ส.ค.' : rainWindowLabel();
+                    badgeEl.innerHTML = `Spearman ρ = <strong>${{sign}}${{rho.toFixed(2)}}</strong> • n = ${{allPts.length}} จังหวัด-ปี • ระดับจังหวัด (ค่าระดับ ไม่ใช่การเปลี่ยนแปลง) • ${{win}} • เชิงพรรณนา — ผลหลักดูแท็บ 5`;
                 }} else {{
-                    badgeEl.textContent = `Spearman ρ = N/A (n = ${{allPts.length}})`;
+                    badgeEl.textContent = `Spearman ρ: คำนวณไม่ได้ — ค่าซ้ำกันทั้งหมด (n = ${{allPts.length}})`;
                 }}
             }}
 
             let xLabel = 'ปริมาณน้ำฝนพื้นที่สูง (HRDI เฉลี่ยสถานี, มม.)';
-            if (metric === 'hii') xLabel = 'ปริมาณน้ำฝนทั้งจังหวัด (HII รวม 12 เดือน, มม.)';
+            if (metric === 'hrdi') xLabel = `ฝนพื้นที่สูง HRDI เฉลี่ยสถานี • ${{rainWindowLabel()}} (มม.)`;
+            if (metric === 'hii') xLabel = `ฝนทั้งจังหวัด HII • ${{rainWindowLabel()}} (มม.)`;
             if (metric === 'seasonal') xLabel = 'ปริมาณน้ำฝนฤดูปลูก พ.ค.–ส.ค. (มม.)';
 
             chartRainRiceScatter = new Chart(ctx, {{
@@ -4616,16 +4725,11 @@ def get_halloween_html() -> str:
             const provs = Object.keys(REAL_DATA.centers);
             const yr = state.tab1.year;
 
-            if (!isExp && (yr === '2023' || yr === 'all')) {{
-                showChartEmptyState('chartProvinceRank', 'ไม่มีผลรวมตรวจวัดจริงปี 2023', 'สถานี HRDI ปี 2023 ตรวจวัดจริงไม่ครบ 12 เดือน (สูงสุด 9 เดือน) ตามหลักสถิติจึงไม่แสดงการจัดอันดับผลรวมทั้งปี แนะนำสลับเป็นโหมดทดลองวิเคราะห์ (Exploratory)', 'HRDI: ตรวจวัดไม่ครบ 12 ด.');
-                return;
-            }}
             clearChartEmptyState('chartProvinceRank');
 
             const provRainPairs = provs.map(p => {{
                 const sum = REAL_DATA.province_summaries[p] || {{}};
-                const r = isExp ? ((yr === '2022') ? sum.rain_exp_2022 : (yr === '2023') ? sum.rain_exp_2023 : sum.rain_exp_all)
-                               : sum.rain_obs_2022;
+                const r = hrdiRain(sum, yr);
                 return {{ name: p, rain: r }};
             }}).filter(x => x.rain !== null && !isNaN(x.rain)).sort((a, b) => b.rain - a.rain);
 
@@ -4696,45 +4800,46 @@ def get_halloween_html() -> str:
             const p = state.tab2.province;
             const isExp = (state.hrdiMode === 'exploratory');
 
-            let hrdiMean = isExp ? REAL_DATA.overall_kpis.hrdi_exp_rain_all : REAL_DATA.overall_kpis.hrdi_obs_rain_2022;
-            let hiiMean = 1358.5;
-
-            if (p !== 'all') {{
-                const sum = REAL_DATA.province_summaries[p];
-                if (sum) {{
-                    if (isExp) {{
-                        hrdiMean = (yr === '2022') ? sum.rain_exp_2022 : (yr === '2023') ? sum.rain_exp_2023 : sum.rain_exp_all;
-                    }} else {{
-                        hrdiMean = (yr === '2022') ? sum.rain_obs_2022 : (yr === '2023') ? sum.rain_obs_2023 : sum.rain_obs_all;
-                    }}
-                    hiiMean = (yr === '2022') ? sum.hii_rain_2022 : (yr === '2023') ? sum.hii_rain_2023 : (((sum.hii_rain_2022 || 0) + (sum.hii_rain_2023 || 0)) / 2);
-                }}
-            }} else {{
-                if (yr === '2022') {{
-                    hrdiMean = isExp ? REAL_DATA.overall_kpis.hrdi_exp_rain_2022 : REAL_DATA.overall_kpis.hrdi_obs_rain_2022;
-                    hiiMean = 1420.2;
-                }} else if (yr === '2023') {{
-                    hrdiMean = isExp ? REAL_DATA.overall_kpis.hrdi_exp_rain_2023 : null;
-                    hiiMean = 1296.8;
-                }}
-            }}
+            // ทั้งสองแหล่งใช้ช่วงเวลาเดียวกันตามโหมด (ม.ค.–ส.ค. หรือ ทั้งปี) และเฉลี่ยจังหวัดชุดเดียวกัน
+            const sums = p === 'all' ? Object.values(REAL_DATA.province_summaries) : [REAL_DATA.province_summaries[p]].filter(Boolean);
+            const meanOf = (vals) => {{ const v = vals.filter(x => x !== null && x !== undefined && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }};
+            const pairedSums = sums.filter(sm => hrdiRain(sm, yr) !== null && hiiRain(sm, yr) !== null);
+            const hrdiMean = meanOf(pairedSums.map(sm => hrdiRain(sm, yr)));
+            const hiiMean = meanOf(pairedSums.map(sm => hiiRain(sm, yr)));
 
             const hrdiEl = document.getElementById('tab2_kpiHrdi');
             const hiiEl = document.getElementById('tab2_kpiHii');
             const diffEl = document.getElementById('tab2_kpiDiff');
+            document.querySelectorAll('.tab2-window-label').forEach(el => el.textContent = `${{rainWindowLabel()}} • เฉลี่ย ${{pairedSums.length}} จังหวัดที่มีข้อมูลทั้งสองแหล่ง`);
 
-            if (hrdiEl) {{
-                hrdiEl.textContent = (hrdiMean !== null && !isNaN(hrdiMean)) ? hrdiMean.toFixed(1) : 'ไม่ครบ 12 ด.';
-            }}
-            if (hiiEl) hiiEl.textContent = (hiiMean !== null && !isNaN(hiiMean)) ? hiiMean.toFixed(1) : 'ไม่มีรายงาน';
+            const reason = 'คำนวณไม่ได้: ไม่มีจังหวัดที่มีข้อมูลครบทั้งสองแหล่งในช่วงนี้';
+            if (hrdiEl) hrdiEl.textContent = hrdiMean !== null ? hrdiMean.toFixed(1) : 'N/A';
+            if (hiiEl) hiiEl.textContent = hiiMean !== null ? hiiMean.toFixed(1) : 'N/A';
             if (diffEl) {{
-                if (hrdiMean !== null && hiiMean !== null && !isNaN(hrdiMean) && !isNaN(hiiMean)) {{
+                if (hrdiMean !== null && hiiMean !== null) {{
                     const diff = hrdiMean - hiiMean;
                     diffEl.textContent = `${{diff > 0 ? '+' : ''}}${{diff.toFixed(1)}}`;
                 }} else {{
-                    diffEl.textContent = '—';
+                    diffEl.textContent = 'N/A';
+                    diffEl.title = reason;
                 }}
             }}
+            const k2 = REAL_DATA.overall_kpis;
+            const owmEl = document.getElementById('tab2_kpiOwm');
+            if (owmEl) owmEl.textContent = (k2.rows_openweathermap / k2.rows_total_2022_2023 * 100).toFixed(0);
+            const owmNote = document.getElementById('tab2_kpiOwmNote');
+            if (owmNote) owmNote.textContent = `${{k2.rows_openweathermap}} จาก ${{k2.rows_total_2022_2023}} สถานี-เดือน (2022–2023) มาจาก OpenWeatherMap ตามคำอธิบายชุดข้อมูล สวพส.`;
+            document.querySelectorAll('.tab2-window-text').forEach(el => el.textContent = `ฝนสะสม ${{rainWindowLabel()}}`);
+            const pill = document.getElementById('tab2_kpiDiffPill');
+            if (pill) {{
+                const pct = (hrdiMean !== null && hiiMean) ? (hrdiMean - hiiMean) / hiiMean * 100 : null;
+                pill.textContent = pct === null ? reason.replace('คำนวณไม่ได้: ', '') : `${{pct >= 0 ? '▲' : '▼'}} ${{Math.abs(pct).toFixed(1)}}%`;
+                pill.className = `kpi-delta-pill ${{pct !== null && pct >= 0 ? 'kpi-delta-up' : 'kpi-delta-down'}}`;
+            }}
+            const diffNote = document.getElementById('tab2_kpiDiffNote');
+            if (diffNote) diffNote.textContent = (hrdiMean !== null && hiiMean !== null)
+                ? (hrdiMean >= hiiMean ? 'ฝน ณ จุดสถานีบนพื้นที่สูงมากกว่าค่าเฉลี่ยทั้งจังหวัด' : 'ฝน ณ จุดสถานีบนพื้นที่สูงน้อยกว่าค่าเฉลี่ยทั้งจังหวัด')
+                : reason;
 
             renderTab2Charts();
             renderTab2Rankings();
@@ -4766,7 +4871,7 @@ def get_halloween_html() -> str:
             const hrdiOf = (s) => isExp
                 ? (yr === '2022' ? s.rain_exp_2022 : yr === '2023' ? s.rain_exp_2023 : s.rain_exp_all)
                 : (yr === '2022' ? s.rain_obs_2022 : yr === '2023' ? s.rain_obs_2023 : s.rain_obs_all);
-            const hiiOf = (s) => yr === '2022' ? s.hii_rain_2022 : yr === '2023' ? s.hii_rain_2023 : (s.hii_rain_2022 + s.hii_rain_2023) / 2;
+            const hiiOf = (s) => hiiRain(s, yr);
 
             const draw = (canvasId, prev, valueOf, emptyMsg) => {{
                 if (prev) prev.destroy();
@@ -4806,7 +4911,7 @@ def get_halloween_html() -> str:
                 }});
             }};
 
-            chartTab2RankHrdi = draw('chartTab2RankHrdi', chartTab2RankHrdi, hrdiOf, 'โหมดตรวจวัดจริงไม่มีจังหวัดที่สถานีวัดครบ 12 เดือนในช่วงที่เลือก สลับเป็นโหมด 12 เดือนเพื่อดูอันดับ');
+            chartTab2RankHrdi = draw('chartTab2RankHrdi', chartTab2RankHrdi, hrdiOf, 'โหมดค่าต้นทางไม่มีจังหวัดที่สถานีวัดครบ 12 เดือนในช่วงที่เลือก สลับเป็นโหมด 12 เดือนเพื่อดูอันดับ');
             chartTab2RankHii = draw('chartTab2RankHii', chartTab2RankHii, hiiOf, 'ไม่มีข้อมูล HII');
         }}
 
@@ -4837,8 +4942,9 @@ def get_halloween_html() -> str:
                     <td>${{s.name.replace('สถานีตรวจวัดสภาพอากาศ', '')}}</td>
                     <td>${{s.province}}</td>
                     <td>${{s.amphoe || '-'}}</td>
-                    <td>${{rain !== null && rain !== undefined ? rain.toLocaleString() : '<span class="badge-missing">ไม่ครบ 12 ด.</span>'}}</td>
-                    <td><div class="completeness-bar"><span style="width:${{pct}}%; background:${{barColor}};"></span>${{obs[0]}}/${{obs[1]}} ด. (${{pct}}%)</div></td>`;
+                    <td>${{rain !== null && rain !== undefined ? rain.toLocaleString() : `<span class="badge-missing" title="ต้องมีค่าต้นทางครบ ม.ค.–ส.ค. ทั้งสองปี">เทียบไม่ได้ (${{s.paired_compare_months}}/8 ด.)</span>`}}</td>
+                    <td><div class="completeness-bar"><span style="width:${{pct}}%; background:${{barColor}};"></span>${{obs[0]}}/${{obs[1]}} ด. (${{pct}}%)</div></td>
+                    <td>${{s.data_source_label}}</td>`;
                 tr.addEventListener('click', () => openStationOnMap(s));
                 tbody.appendChild(tr);
             }});
@@ -4877,13 +4983,13 @@ def get_halloween_html() -> str:
                 }} else {{
                     hrdi = (yr === '2022') ? s.rain_obs_2022 : (yr === '2023') ? s.rain_obs_2023 : s.rain_obs_all;
                 }}
-                const hii = (yr === '2022') ? s.hii_rain_2022 : (yr === '2023') ? s.hii_rain_2023 : (((s.hii_rain_2022 || 0) + (s.hii_rain_2023 || 0)) / 2);
+                const hii = hiiRain(s, yr);
                 hrdiVals.push(hrdi !== null ? Math.round(hrdi) : null);
                 hiiVals.push(Math.round(hii || 0));
             }});
 
             if (!isExp && yr === '2023' && hrdiVals.every(x => x === null)) {{
-                showChartEmptyState('chartDetailedRainComparison', 'ไม่มีผลรวมตรวจวัดจริงปี 2023 (HRDI)', 'สถานี HRDI ปี 2023 ตรวจวัดจริงไม่ครบ 12 เดือน (สูงสุด 9 เดือน) ตามหลักสถิติจึงไม่แสดงผลรวมทั้งปี แนะนำสลับเป็นโหมดทดลองวิเคราะห์ (Exploratory)', 'HRDI: ตรวจวัดไม่ครบ 12 ด.');
+                showChartEmptyState('chartDetailedRainComparison', 'ไม่มีค่าที่เทียบได้', 'ไม่มีจังหวัดที่สถานีมีค่าต้นทางครบ ม.ค.–ส.ค. ทั้งสองปีในตัวกรองนี้', 'ช่วงเทียบ: ม.ค.–ส.ค.');
                 return;
             }}
 
@@ -4926,6 +5032,10 @@ def get_halloween_html() -> str:
                 hii22 = REAL_DATA.monthly_overall['2022'];
                 hii23 = REAL_DATA.monthly_overall['2023'];
             }}
+            // observed: เทียบเฉพาะ ม.ค.–ส.ค. ทั้งสองแหล่ง
+            const obsCut = (arr) => isExp ? arr : arr.map((v, i) => i < REAL_DATA.obs_compare_window.months ? v : null);
+            hii22 = obsCut(hii22);
+            hii23 = obsCut(hii23);
 
             const datasets2 = [
                 {{ label: 'HII ระดับจังหวัด (2022)', data: hii22, borderColor: '#38bdf8', borderDash: [4, 4], tension: 0.3 }},
@@ -4936,20 +5046,15 @@ def get_halloween_html() -> str:
             let pStas = REAL_DATA.stations;
             if (p !== 'all') pStas = pStas.filter(s => s.province === p);
 
-            let hrdi22 = months.map((_, i) => {{
-                const vals = pStas.map(s => {{
-                    const arr = isExp ? s.monthly_exp_2022 : s.monthly_obs_2022;
-                    return (arr && arr[i] !== null && !isNaN(arr[i])) ? arr[i] : null;
-                }}).filter(v => v !== null);
+            // observed: เฉลี่ยแบบจับคู่ (สถานีที่มีค่าต้นทางเดือนนั้นทั้งสองปี) เฉพาะ ม.ค.–ส.ค. / exploratory: ค่าครบ 12 เดือน
+            const pairedMean = (y) => months.map((_, i) => {{
+                const use = isExp ? pStas : pStas.filter(s => i < REAL_DATA.obs_compare_window.months
+                    && s.monthly_obs_2022[i] !== null && s.monthly_obs_2023[i] !== null);
+                const vals = use.map(s => (isExp ? s[`monthly_exp_${{y}}`] : s[`monthly_obs_${{y}}`])[i]).filter(v => v !== null && !isNaN(v));
                 return vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
             }});
-            let hrdi23 = months.map((_, i) => {{
-                const vals = pStas.map(s => {{
-                    const arr = isExp ? s.monthly_exp_2023 : s.monthly_obs_2023;
-                    return (arr && arr[i] !== null && !isNaN(arr[i])) ? arr[i] : null;
-                }}).filter(v => v !== null);
-                return vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
-            }});
+            let hrdi22 = pairedMean('2022');
+            let hrdi23 = pairedMean('2023');
 
             // โหมด 12 เดือน: นับสถานีที่ใช้ค่าประมาณต่อเดือน → เส้นประ/จุดกลวงเมื่อเกินครึ่ง
             const estCnt = (off) => months.map((_, i) => isExp ? pStas.filter(s => (s.monthly_status_24 || [])[i + off] && s.monthly_status_24[i + off] !== 'observed').length : 0);
@@ -5068,6 +5173,8 @@ def get_halloween_html() -> str:
             const decCnt = tbs.filter(t => t.direction === 'ลดลง (-)').length;
 
             document.getElementById('tab3_kpiTambonCount').textContent = count;
+            const repNote = document.getElementById('tab3_kpiReportedNote');
+            if (repNote) repNote.textContent = `มีรายงานจริง: 2022 = ${{valid22.length}} • 2023 = ${{valid23.length}} ตำบล (ไม่ใช่เฉพาะ 26 ตำบลที่จับคู่สถานี)`;
             document.getElementById('tab3_kpiYield22').textContent = (mean22 !== null) ? mean22.toFixed(1) : 'ไม่มีรายงาน';
             document.getElementById('tab3_kpiYield23').textContent = (mean23 !== null) ? mean23.toFixed(1) : 'ไม่มีรายงาน';
             document.getElementById('tab3_kpiInc').textContent = incCnt;
@@ -5190,19 +5297,22 @@ def get_halloween_html() -> str:
 
             clearChartEmptyState('chartRiceDumbbell');
 
-            // Limit display to top 25 for clear visualization
-            const displayList = validTbs.slice(0, 25);
+            // Dumbbell: 25 ตำบลที่ผลผลิตเปลี่ยนมากที่สุด (ทั้งเพิ่มและลด) เรียงจากเพิ่มมากไปลดมาก
+            const displayList = [...validTbs].sort((a, b) => Math.abs(b.delta_yield) - Math.abs(a.delta_yield)).slice(0, 25)
+                .sort((a, b) => b.delta_yield - a.delta_yield);
             const labels = displayList.map(t => `${{t.tambon_name}} (${{t.province_name}})`);
-            const d22 = displayList.map(t => t.yield_2022);
-            const d23 = displayList.map(t => t.yield_2023);
+            const dumbbellNote = document.getElementById('lblDumbbellScope');
+            if (dumbbellNote) dumbbellNote.textContent = `${{displayList.length}} ตำบลที่เปลี่ยนมากที่สุด จาก ${{validTbs.length}} ตำบลที่มีรายงานครบ 2 ปี`;
 
             chartRiceDumbbell = new Chart(ctx, {{
                 type: 'bar',
                 data: {{
                     labels: labels,
                     datasets: [
-                        {{ label: 'ผลผลิตปี 2022 (กก./ไร่)', data: d22, backgroundColor: '#A778E8', borderRadius: 4 }},
-                        {{ label: 'ผลผลิตปี 2023 (กก./ไร่)', data: d23, backgroundColor: '#FF8A32', borderRadius: 4 }}
+                        {{ type: 'bar', label: 'ช่วงเปลี่ยนแปลง', data: displayList.map(t => [Math.min(t.yield_2022, t.yield_2023), Math.max(t.yield_2022, t.yield_2023)]),
+                           backgroundColor: displayList.map(t => t.delta_yield >= 0 ? 'rgba(74, 222, 128, 0.55)' : 'rgba(248, 113, 113, 0.55)'), barThickness: 4 }},
+                        {{ type: 'scatter', label: 'ปี 2022', data: displayList.map((t, i) => ({{ x: t.yield_2022, y: labels[i] }})), backgroundColor: '#A778E8', borderColor: '#ffffff', borderWidth: 1, pointRadius: 6 }},
+                        {{ type: 'scatter', label: 'ปี 2023', data: displayList.map((t, i) => ({{ x: t.yield_2023, y: labels[i] }})), backgroundColor: '#FF8A32', borderColor: '#ffffff', borderWidth: 1, pointRadius: 6 }}
                     ]
                 }},
                 options: {{
@@ -5213,10 +5323,17 @@ def get_halloween_html() -> str:
                         const t = displayList[el.index];
                         return () => dispatchTab3Filter({{ province: t.province_name, tambon: t.tambon_code_6 }});
                     }}),
-                    plugins: {{ legend: {{ labels: {{ color: '#F7F0E8' }} }} }},
+                    plugins: {{
+                        legend: {{ labels: {{ color: '#F7F0E8', filter: (it) => it.text !== 'ช่วงเปลี่ยนแปลง' }} }},
+                        tooltip: {{ callbacks: {{ label: (c) => {{
+                            const t = displayList[c.dataIndex];
+                            return c.dataset.type === 'bar' ? `2022: ${{t.yield_2022.toFixed(1)}} → 2023: ${{t.yield_2023.toFixed(1)}} กก./ไร่ (${{t.delta_yield >= 0 ? '+' : ''}}${{t.delta_yield.toFixed(1)}})`
+                                : `${{c.dataset.label}}: ${{c.raw.x.toFixed(1)}} กก./ไร่`;
+                        }} }} }}
+                    }},
                     scales: {{
-                        x: {{ ticks: {{ color: '#A59DB5' }} }},
-                        y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}
+                        x: {{ type: 'linear', title: {{ display: true, text: 'ผลผลิตต่อไร่ (กก./ไร่)', color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
+                        y: {{ type: 'category', labels: labels, ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}
                     }}
                 }}
             }});
@@ -5488,9 +5605,67 @@ def get_halloween_html() -> str:
             ].join('');
         }}
 
+        // กราฟคู่ HRDI | HII: Δ ฝน พ.ค.–ส.ค. vs Δ ผลผลิต บน 26 ตำบลชุดเดียวกัน (ค่า ρ/CI จาก src/59)
+        let chartCmpHrdi = null, chartCmpHii = null;
+        function renderCompareScatter() {{
+            const comp = REAL_DATA.relationship_compare || [];
+            const get = (sub, src) => comp.find(r => r.subset === sub && r.rain_source === src);
+            const f2 = (v) => `${{v >= 0 ? '+' : '−'}}${{Math.abs(v).toFixed(2)}}`;
+            const ciTxt = (r) => `${{f2(r.ci95_low)}} ถึง ${{f2(r.ci95_high)}}`;
+            const crosses = (r) => r.ci95_low < 0 && r.ci95_high > 0;
+            const bal = REAL_DATA.balanced_tambons || [];
+            const draw = (canvasId, prev, key, src, color, statId, note) => {{
+                if (prev) prev.destroy();
+                const r = get('all_panel', src);
+                const pts = bal.map(t => ({{ x: t[key], y: t.delta_yield, title: `${{t.tambon_name}} (${{t.province_name}})` }})).filter(p => p.x !== null && p.y !== null);
+                const stat = document.getElementById(statId);
+                if (!r || pts.length < 3) {{
+                    stat.innerHTML = `<strong>${{src}}</strong> • คำนวณไม่ได้: มีตัวอย่าง ${{pts.length}} ตำบล (ต้อง ≥ 3)`;
+                    showChartEmptyState(canvasId, 'คำนวณ Spearman ไม่ได้', `มีตัวอย่าง ${{pts.length}} ตำบล ต้องมีอย่างน้อย 3`, `n = ${{pts.length}}`);
+                    return null;
+                }}
+                clearChartEmptyState(canvasId);
+                stat.innerHTML = `<strong>${{src === 'HRDI' ? 'ฝนสถานีบนพื้นที่สูง (HRDI)' : 'ฝนระดับจังหวัด (HII)'}}: ρ = ${{f2(r.spearman_rho)}}</strong><br>95% CI ${{ciTxt(r)}} • n = ${{r.n_tambons}} ตำบล / ${{r.n_provinces}} จังหวัด • ระดับตำบล • Δ พ.ค.–ส.ค. 2022→2023 • ${{note}}`;
+                return new Chart(document.getElementById(canvasId).getContext('2d'), {{
+                    type: 'scatter',
+                    data: {{ datasets: [{{ label: `${{src}} (n = ${{r.n_tambons}})`, data: pts, backgroundColor: color, borderColor: '#ffffff', borderWidth: 1, pointRadius: 6 }}] }},
+                    options: {{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {{
+                            legend: {{ display: false }},
+                            tooltip: {{ callbacks: {{ title: (c) => c[0].raw.title, label: (c) => [`Δ ฝน: ${{c.raw.x.toFixed(0)}} มม.`, `Δ ผลผลิต: ${{c.raw.y.toFixed(1)}} กก./ไร่`] }} }}
+                        }},
+                        scales: {{
+                            x: {{ title: {{ display: true, text: `Δ ฝน ${{src}} พ.ค.–ส.ค. (มม.)`, color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
+                            y: {{ title: {{ display: true, text: 'Δ ผลผลิต (กก./ไร่)', color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }}
+                        }}
+                    }}
+                }});
+            }};
+            const hii = get('all_panel', 'HII');
+            chartCmpHrdi = draw('chartCmpHrdi', chartCmpHrdi, 'delta_hrdi', 'HRDI', '#A778E8', 'cmpStatHrdi', 'ส่วนใหญ่เป็นค่า OpenWeatherMap ณ พิกัดสถานี');
+            chartCmpHii = draw('chartCmpHii', chartCmpHii, 'delta_hii', 'HII', '#38bdf8', 'cmpStatHii', `ค่าฝนต่างกันจริงเพียง ${{hii ? hii.distinct_rain_values : '?'}} ค่า (1 ค่าต่อจังหวัด) จึงมีน้ำหนักเท่ากับ ${{hii ? hii.distinct_rain_values : '?'}} จุด`);
+
+            const d = get('all_panel', 'HRDI_minus_HII');
+            const h = get('all_panel', 'HRDI');
+            document.getElementById('cmpVerdict').innerHTML = (d && h && hii)
+                ? `<strong>คำตอบ:</strong> ${{crosses(h) && crosses(hii) ? 'ทั้งฝน HRDI และ HII ไม่แสดงความสัมพันธ์ที่เชื่อถือได้กับการเปลี่ยนแปลงผลผลิต (95% CI คร่อม 0 ทั้งคู่)' : 'มีอย่างน้อยหนึ่งแหล่งที่ CI ไม่คร่อม 0'}} และผลต่าง ρ(HRDI) − ρ(HII) = ${{f2(d.spearman_rho)}} (95% CI ${{ciTxt(d)}}) ${{crosses(d) ? '<strong>คร่อม 0 จึงสรุปไม่ได้ว่าแหล่งใดสัมพันธ์กับผลผลิตมากกว่ากัน</strong>' : 'ไม่คร่อม 0'}} • เป็นผลเชิงสำรวจจากข้อมูล 2 ปี ไม่ใช่เหตุและผล`
+                : 'คำนวณไม่ได้: ไม่พบผลการคำนวณเปรียบเทียบ (dashboard_relationship_compare.csv)';
+
+            const SUB = {{ all_panel: 'ทั้ง 26 ตำบล', exclude_station_far_from_tambon: 'ตัดตำบลที่สถานีอยู่นอกเขต > 5 กม.' }};
+            const SRC = {{ HRDI: 'HRDI', HII: 'HII', HRDI_minus_HII: 'ผลต่าง HRDI − HII' }};
+            document.querySelector('#cmpTable tbody').innerHTML = comp.map(r => `<tr>
+                <td>${{SUB[r.subset] || r.subset}}</td><td>${{SRC[r.rain_source] || r.rain_source}}</td>
+                <td>${{r.n_tambons}} / ${{r.n_provinces}}</td><td>${{r.distinct_rain_values === null ? '—' : r.distinct_rain_values}}</td>
+                <td>${{f2(r.spearman_rho)}}</td><td>${{ciTxt(r)}}</td>
+                <td>${{crosses(r) ? 'คร่อม 0 → ไม่พบความสัมพันธ์/ความต่างที่เชื่อถือได้' : 'ไม่คร่อม 0'}}</td></tr>`).join('');
+        }}
+
         function renderTab4ScatterPlot() {{
             if (state.activeTab !== 'page4') return;
             renderFindings();
+            renderCompareScatter();
             renderTab4Quadrant();
             const canvas = document.getElementById('chartScatterPlot');
             if (!canvas) return;
@@ -5550,13 +5725,12 @@ def get_halloween_html() -> str:
 
             if (kpiVal1 && kpiPill1 && kpiSub1) {{
                 // คำนวณ ρ ไม่ได้ (n < 3) → ซ่อนการ์ดแทนการแสดง N/A
-                kpiVal1.closest('.kpi-card').classList.toggle('card-no-data', n < 3);
                 if (n < 3) {{
-                    kpiVal1.textContent = 'N/A';
-                    kpiPill1.textContent = `n = ${{n}} (< 3)`;
+                    kpiVal1.textContent = 'คำนวณไม่ได้';
+                    kpiPill1.textContent = `n = ${{n}}`;
                     kpiPill1.style.background = 'rgba(239, 68, 68, 0.2)';
                     kpiPill1.style.color = '#ef4444';
-                    kpiSub1.textContent = 'ขนาดตัวอย่างไม่เพียงพอต่อการคำนวณทางสถิติ';
+                    kpiSub1.textContent = `มีตัวอย่าง ${{n}} จุดในตัวกรองนี้ — Spearman ต้องมีอย่างน้อย 3 จุด (ดูค่าภาพรวม 26 ตำบลในกราฟคู่ HRDI | HII)`;
                 }} else {{
                     kpiVal1.textContent = (rho !== null) ? rho.toFixed(4) : 'N/A';
                     kpiPill1.textContent = `n = ${{n}}`;
@@ -5722,6 +5896,88 @@ def get_halloween_html() -> str:
         renderSampleTable('hrdi');
 
         // -------------------------------------------------------------
+        // K. TAB 4: การจับคู่สถานี–ตำบล (Spatial Join) + สถานะหน่วย
+        // -------------------------------------------------------------
+        const STATUS_TH = {{ inside: 'อยู่ในตำบล', near_edge: 'นอกเขต ≤ 5 กม.', outside_far: 'นอกเขต > 5 กม.' }};
+        const STATUS_COLOR = {{ inside: '#4ade80', near_edge: '#facc15', outside_far: '#f87171' }};
+        let matchMap = null;
+        function renderMatchTab() {{
+            const pairs = (REAL_DATA.spatial_check || []).filter(r => r.scope === 'panel_pair');
+            const allSt = (REAL_DATA.spatial_check || []).filter(r => r.scope === 'all_stations');
+            const cnt = (k) => pairs.filter(r => r.status === k).length;
+            const tambons = [...new Set(pairs.map(r => r.tambon_code_6))];
+            const provs = [...new Set(pairs.map(r => r.province_name))];
+            const cm = pairs.filter(r => r.province_name === 'เชียงใหม่').map(r => r.tambon_code_6);
+            const kpi = (icon, title, val, unit, sub) => `<div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">${{icon}}</span><span>${{title}}</span></div><div class="kpi-main-body"><div class="kpi-number">${{val}}</div><span class="kpi-subtext">${{unit}}</span></div><div class="kpi-subtext">${{sub}}</div></div>`;
+            document.getElementById('matchKpis').innerHTML = [
+                kpi('🌾', 'ตำบลที่จับคู่ได้', tambons.length, 'ตำบล', `${{provs.length}} จังหวัด • เชียงใหม่ ${{new Set(cm).size}} ตำบล (${{Math.round(new Set(cm).size / tambons.length * 100)}}%) • จาก 921 ตำบลในทะเบียน`),
+                kpi('📡', 'คู่สถานี–ตำบล', pairs.length, 'คู่', 'บางตำบลมีมากกว่า 1 สถานี'),
+                kpi('✅', 'สถานีอยู่ในตำบลจริง', cnt('inside'), `จาก ${{pairs.length}}`, `นอกเขต ≤ 5 กม. ${{cnt('near_edge')}} คู่ • นอกเขต > 5 กม. ${{cnt('outside_far')}} คู่`),
+                kpi('🗺️', 'ทุกสถานี (50)', allSt.filter(r => r.status === 'inside').length, 'อยู่ในตำบลที่บันทึก', `อีก ${{allSt.length - allSt.filter(r => r.status === 'inside').length}} สถานี: ตำบลต่าง / ไม่มีรหัสตำบล (ไม่ได้ใช้วิเคราะห์ทั้งหมด)`)
+            ].join('');
+
+            const comp = (REAL_DATA.relationship_compare || []);
+            const sens = comp.find(r => r.subset === 'exclude_station_far_from_tambon' && r.rain_source === 'HRDI');
+            const main = comp.find(r => r.subset === 'all_panel' && r.rain_source === 'HRDI');
+            const f2 = (v) => `${{v >= 0 ? '+' : '−'}}${{Math.abs(v).toFixed(2)}}`;
+            const li = (icon, head, text) => `<div class="about-item"><span class="about-icon">${{icon}}</span><div><strong>${{head}}</strong><br>${{text}}</div></div>`;
+            document.getElementById('matchMethod').innerHTML = [
+                li('🔤', 'ขั้นที่ 1: จับคู่ตามชื่อเขตการปกครอง', 'ตำบลที่มีสถานี HRDI ตั้งอยู่ตามชื่อจังหวัด–อำเภอ–ตำบลในข้อมูลสถานี และมีผลผลิตข้าวครบ 2 ปี → 26 ตำบล (ตัดตำบลแม่เหียะเพราะสถานี RPF ฝน 0 มม. ตลอดฤดูฝน)'),
+                li('📐', 'ขั้นที่ 2: ตรวจด้วย Spatial Join', 'นำพิกัดจริงของสถานีไปทับขอบเขตตำบล แล้ววัดระยะถึงเส้นขอบและจุดกึ่งกลางตำบล (ไม่ได้สมมติพิกัด)'),
+                li('⚠️', 'สิ่งที่พบ', `${{cnt('outside_far')}} คู่อยู่นอกตำบลเกิน 5 กม. (ป่ากล้วย, ป่าแป๋, ปางมะโอ) — ชื่อตำบลในข้อมูลสถานีไม่ตรงกับตำแหน่งจริง`),
+                li('🧪', 'กระทบผลหรือไม่', (main && sens) ? `ตัดตำบลที่สถานีอยู่ไกลเกิน 5 กม. ออก (n=${{sens.n_tambons}}) ได้ ρ = ${{f2(sens.spearman_rho)}} (95% CI ${{f2(sens.ci95_low)}} ถึง ${{f2(sens.ci95_high)}}) เทียบกับ ${{f2(main.spearman_rho)}} เมื่อใช้ทั้ง 26 ตำบล — ยังคร่อม 0 ข้อสรุปไม่เปลี่ยน` : 'ไม่มีข้อมูลทดสอบความไว'),
+                li('🏔️', 'ข้อจำกัดของความเป็นตัวแทน', `ตำบลบนพื้นที่สูงใหญ่ (ค่ากลาง ${{(pairs.map(r => +r.tambon_area_sqkm).sort((a, b) => a - b)[Math.floor(pairs.length / 2)]).toFixed(0)}} ตร.กม.) สถานีเดียวแทนฝนทั้งตำบลไม่ได้สมบูรณ์ และไม่ทราบตำแหน่งแปลงนาในตำบล`)
+            ].join('');
+
+            const bal = Object.fromEntries((REAL_DATA.balanced_tambons || []).map(t => [t.tambon_code_6, t]));
+            const tbody = document.querySelector('#matchTable tbody');
+            tbody.innerHTML = '';
+            [...pairs].sort((a, b) => ({{ outside_far: 0, near_edge: 1, inside: 2 }}[a.status] - {{ outside_far: 0, near_edge: 1, inside: 2 }}[b.status]) || (+b.distance_to_boundary_km - +a.distance_to_boundary_km))
+                .forEach(r => {{
+                    const t = bal[r.tambon_code_6] || {{}};
+                    const actual = r.status !== 'inside' && r.actual_tambon_name ? `<br><span style="color:var(--text-muted);font-size:0.85em;">พิกัดจริงอยู่ ต.${{r.actual_tambon_name}}</span>` : '';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${{r.tambon_name}} (${{r.province_name}})</td>
+                        <td>${{r.station_code}} ${{r.station_name}}</td>
+                        <td><span class="status-badge status-${{r.status}}">${{STATUS_TH[r.status]}}</span>${{actual}}</td>
+                        <td>${{(+r.distance_to_boundary_km).toFixed(1)}}</td>
+                        <td>${{(+r.distance_to_tambon_centroid_km).toFixed(1)}}</td>
+                        <td>${{(+r.tambon_area_sqkm).toFixed(0)}}</td>
+                        <td>${{t.hrdi_2022 !== undefined ? `${{Math.round(t.hrdi_2022)}} → ${{Math.round(t.hrdi_2023)}} (${{t.delta_hrdi >= 0 ? '+' : ''}}${{Math.round(t.delta_hrdi)}})` : '—'}}</td>
+                        <td>${{t.yield_2022 !== undefined ? `${{Math.round(t.yield_2022)}} → ${{Math.round(t.yield_2023)}} (${{t.delta_yield >= 0 ? '+' : ''}}${{Math.round(t.delta_yield)}})` : '—'}}</td>`;
+                    tbody.appendChild(tr);
+                }});
+
+            const ub = document.querySelector('#unitTable tbody');
+            const UST = {{ confirmed: 'ยืนยันแล้ว', partial: 'ยืนยันบางส่วน', unconfirmed: 'รอยืนยัน' }};
+            ub.innerHTML = Object.entries(REAL_DATA.unit_verification || {{}}).map(([k, u]) =>
+                `<tr><td><strong>${{k}}</strong><br><span style="color:var(--text-muted);font-size:0.85em;">${{u.dataset}}</span></td><td>${{u.variable}}</td><td>${{u.unit}}</td><td><span class="status-badge status-${{u.status}}">${{UST[u.status]}}</span></td><td style="font-size:0.85em;">${{u.evidence}}</td></tr>`).join('');
+
+            // สร้างแผนที่หลังแท็บแสดงผลแล้ว (คอนเทนเนอร์ต้องมีขนาดก่อน fitBounds)
+            setTimeout(() => {{
+                if (document.getElementById('matchMap').offsetWidth === 0) return;
+                if (!matchMap) {{
+                    matchMap = L.map('matchMap', {{ zoomControl: true, attributionControl: false, zoomSnap: 0.25 }}).setView([18.2, 99.3], 7);
+                    L.geoJSON(REAL_DATA.thailand_geojson, {{ interactive: false, style: {{ fillColor: '#122236', fillOpacity: 0.6, color: 'rgba(110, 205, 235, 0.35)', weight: 0.8 }} }}).addTo(matchMap);
+                    const bestStatus = {{}};
+                    pairs.forEach(r => {{ const o = {{ outside_far: 0, near_edge: 1, inside: 2 }}; if (!(r.tambon_code_6 in bestStatus) || o[r.status] > o[bestStatus[r.tambon_code_6]]) bestStatus[r.tambon_code_6] = r.status; }});
+                    const tl = L.geoJSON(REAL_DATA.panel_tambons_geojson, {{
+                        style: (f) => ({{ fillColor: STATUS_COLOR[bestStatus[f.properties.tam_code]] || '#A778E8', fillOpacity: 0.35, color: '#ffffff', weight: 1.2 }}),
+                        onEachFeature: (f, layer) => layer.bindTooltip(`ต.${{f.properties.tam_th}} อ.${{f.properties.amp_th}} (${{f.properties.pro_th}})`, {{ className: 'station-map-tooltip' }})
+                    }}).addTo(matchMap);
+                    pairs.forEach(r => {{
+                        L.circleMarker([+r.station_lat, +r.station_lon], {{ radius: 6, fillColor: STATUS_COLOR[r.status], color: '#1a0f2b', weight: 1.5, fillOpacity: 1 }})
+                            .bindTooltip(`<strong>${{r.station_code}} ${{r.station_name}}</strong><br>จับคู่กับ ต.${{r.tambon_name}} • ${{STATUS_TH[r.status]}}${{r.status !== 'inside' ? ` (${{(+r.distance_to_boundary_km).toFixed(1)}} กม.)` : ''}}`, {{ className: 'station-map-tooltip' }})
+                            .addTo(matchMap);
+                    }});
+                    matchMap.fitBounds(tl.getBounds(), {{ padding: [20, 20] }});
+                }}
+                matchMap.invalidateSize();
+            }}, 150);
+        }}
+
+        // -------------------------------------------------------------
         // J. NAVIGATION TAB SWITCHING LOGIC
         // -------------------------------------------------------------
         const navTabBtns = document.querySelectorAll('.nav-tab-btn');
@@ -5749,6 +6005,8 @@ def get_halloween_html() -> str:
                     updateTab3Components();
                 }} else if (targetTab === 'page4') {{
                     renderTab4ScatterPlot();
+                }} else if (targetTab === 'page5') {{
+                    renderMatchTab();
                 }}
             }});
         }});

@@ -66,13 +66,24 @@ for s in stations:
         st = s["monthly_status_24"][m_idx]
         if st != "observed":
             assert v is None, f"Station {s['name']} month {m_idx} is {st} but has observed value {v}"
-# Check 2023 HRDI in observed mode is None for all stations and provinces
-for p, s in provs.items():
-    assert s["rain_obs_2023"] is None, f"Province {p} rain_obs_2023 must be None in Observed mode"
+# Observed mode compares 2022 vs 2023 only over Jan–Aug, and only for stations with source values
+# in all 8 months of BOTH years (2023 has no source data after Aug) — never a full-year 2023 total.
 for s in stations:
-    assert s["annual_obs_2023"] is None, f"Station {s['name']} annual_obs_2023 must be None in Observed mode"
+    if s["obs_compare_complete"]:
+        assert s["annual_obs_2023"] == round(sum(s["monthly_obs_2023"][:8]), 1), f"{s['name']}: 2023 total must be Jan–Aug"
+        assert s["annual_obs_2022"] == round(sum(s["monthly_obs_2022"][:8]), 1), f"{s['name']}: 2022 total must be Jan–Aug"
+        assert all(v is not None for v in s["monthly_obs_2022"][:8] + s["monthly_obs_2023"][:8])
+    else:
+        assert s["annual_obs_2022"] is None and s["annual_obs_2023"] is None, f"{s['name']}: incomplete station must not get a total"
+for p, s in provs.items():
+    used = [st for st in stations if st["province"] == p and st["obs_compare_complete"]]
+    assert s["obs_compare_station_count"] == len(used)
+    if used:
+        assert abs(s["rain_obs_2023"] - sum(st["annual_obs_2023"] for st in used) / len(used)) < 0.06
+    else:
+        assert s["rain_obs_2023"] is None
 print("  ✓ 100% of estimated months are None in monthly_obs_24.")
-print("  ✓ 100% of 2023 HRDI annual sums are None in Observed mode.")
+print("  ✓ Observed totals use Jan–Aug on the same complete stations for both years.")
 
 # -------------------------------------------------------------------------
 # Test 4: ผลผลิตข้าวใช้ข้อมูลรายปี ไม่สร้างผลผลิตรายเดือน

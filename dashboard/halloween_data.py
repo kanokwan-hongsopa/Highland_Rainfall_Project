@@ -46,6 +46,12 @@ OVERVIEW_CENTER = {"lat": 17.5, "lng": 99.5, "zoom": 6.4}
 GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "thailand_9provinces.geojson"
 # เงาแผนที่ทั้งประเทศ (77 จังหวัด ย่อเส้นแล้ว; src/60_simplify_thailand_provinces.py) ใช้แสดงผลเท่านั้น
 THAILAND_GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "thailand_77provinces_simplified.geojson"
+PANEL_TAMBONS_GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "panel_tambons_simplified.geojson"
+UNIT_VERIFICATION_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "unit_verification.json"
+SPATIAL_CHECK_FILE = Path(__file__).resolve().parent.parent / "data" / "analysis_ready" / "station_tambon_spatial_check.csv"
+RELATIONSHIP_COMPARE_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_relationship_compare.csv"
+# ช่วงเปรียบเทียบฝนระหว่างปีด้วยข้อมูลต้นทางเท่านั้น: ม.ค.–ส.ค. (ปี 2023 ไม่มีข้อมูลจริงหลัง ส.ค.)
+OBS_COMPARE_MONTHS = 8
 COMPLETENESS_DIR = Path(__file__).resolve().parent.parent / "data" / "completeness"
 ANALYSIS_READY_DIR = Path(__file__).resolve().parent.parent / "data" / "analysis_ready"
 
@@ -105,6 +111,9 @@ def get_halloween_payload() -> str:
         r921_df = pd.DataFrame()
 
     # Metadata สถานีสภาพอากาศ
+    src_col = climate_df["DATA SOURCE"].astype(str).str.lower()
+    src_counts = (climate_df.assign(_owm=src_col.str.contains("openweathermap"))
+                  .groupby("STA_TH")["_owm"].agg(["sum", "count"]).to_dict(orient="index"))
     sta_meta = climate_df.groupby("STA_TH")[
         ["province_clean", "LAT", "LONG", "AMPHOE", "TAMBON", "CODE_REF", "CODE_STA", "source_type", "TEMP", "HUMIDITY", "WIND_SPEED"]
     ].first().to_dict(orient="index")
@@ -175,9 +184,18 @@ def get_halloween_payload() -> str:
             non_obs_23 = sum(1 for s in m_status_24[12:24] if s != "observed")
 
             # กฎเหล็กข้อ 7: ในโหมดตรวจวัดจริง ห้ามแสดงผลรวมทั้งปีของสถานีที่ไม่ครบ 12 เดือนโดยเด็ดขาด!
-            annual_obs_22 = round(sum(m_obs_24[:12]), 1) if obs_cnt_22 == 12 else None
-            annual_obs_23 = round(sum(m_obs_24[12:24]), 1) if obs_cnt_23 == 12 else None
-            annual_obs_all = None  # ไม่มีสถานีใดครบ 24 เดือน (ปี 2023 สูงสุด 9 เดือน)
+            # โหมดข้อมูลต้นทาง: เทียบได้เฉพาะ ม.ค.–ส.ค. ที่มีค่าต้นทางทั้งสองปี (ไม่รวมค่าประมาณ/ค่าผิดปกติ)
+            paired_months = [m for m in range(OBS_COMPARE_MONTHS)
+                             if m_obs_24[m] is not None and m_obs_24[m + 12] is not None]
+            obs_compare_complete = len(paired_months) == OBS_COMPARE_MONTHS
+            annual_obs_22 = round(sum(m_obs_24[:OBS_COMPARE_MONTHS]), 1) if obs_compare_complete else None
+            annual_obs_23 = round(sum(m_obs_24[12:12 + OBS_COMPARE_MONTHS]), 1) if obs_compare_complete else None
+            annual_obs_all = round((annual_obs_22 + annual_obs_23) / 2, 1) if obs_compare_complete else None
+            sc = src_counts.get(sta_name, {"sum": 0, "count": 0})
+            rows_owm, rows_total = int(sc["sum"]), int(sc["count"])
+            data_source_label = ("OpenWeatherMap" if rows_owm == rows_total and rows_total
+                                 else "สถานี HRDI" if rows_owm == 0 and rows_total
+                                 else f"ผสม (OpenWeatherMap {rows_owm}/{rows_total} เดือน)")
 
             # โหมดทดลองวิเคราะห์ (Exploratory): ผลรวม 12 เดือนครบถ้วน
             annual_exp_22 = round(sum(m_exp_24[:12]), 1) if all(x is not None for x in m_exp_24[:12]) else None
@@ -213,6 +231,11 @@ def get_halloween_payload() -> str:
                 "estimated_count_total": est_cnt_tot,
                 "exploratory_count_total": exp_cnt_tot,
                 "qa_replaced_count_total": qa_cnt_tot,
+                "paired_compare_months": len(paired_months),
+                "obs_compare_complete": obs_compare_complete,
+                "rows_openweathermap": rows_owm,
+                "rows_total_2022_2023": rows_total,
+                "data_source_label": data_source_label,
                 "non_observed_count_2022": non_obs_22,
                 "non_observed_count_2023": non_obs_23,
                 "data_status_label": status_label,
@@ -423,10 +446,11 @@ def get_halloween_payload() -> str:
         wind_avg = float(c_p["WIND_SPEED"].mean()) if len(c_p) > 0 and c_p["WIND_SPEED"].notna().sum() > 0 else 0.0
 
         # HRDI Observed Annual Means (เฉพาะสถานีที่มี 12 เดือนครบ)
-        comp_obs_22 = [s["annual_obs_2022"] for s in p_stas if s["annual_obs_2022"] is not None]
-        rain_obs_22 = round(sum(comp_obs_22) / len(comp_obs_22), 1) if comp_obs_22 else None
-        rain_obs_23 = None  # 0 สถานีที่ครบ 12 เดือนในปี 2023
-        rain_obs_all = None
+        # ม.ค.–ส.ค. เฉพาะสถานีที่มีค่าต้นทางครบ 8 เดือนทั้งสองปี
+        comp_stas = [s for s in p_stas if s["obs_compare_complete"]]
+        rain_obs_22 = round(sum(s["annual_obs_2022"] for s in comp_stas) / len(comp_stas), 1) if comp_stas else None
+        rain_obs_23 = round(sum(s["annual_obs_2023"] for s in comp_stas) / len(comp_stas), 1) if comp_stas else None
+        rain_obs_all = round((rain_obs_22 + rain_obs_23) / 2, 1) if comp_stas else None
 
         # HRDI Exploratory Annual Means (ครบ 12 เดือนสำหรับทุกสถานี)
         exp_22_vals = [s["annual_exp_2022"] for s in p_stas if s["annual_exp_2022"] is not None]
@@ -445,8 +469,11 @@ def get_halloween_payload() -> str:
         m_est_cnt_23 = [sum(1 for s in p_stas if s["monthly_status_24"][i + 12] != "observed") for i in range(12)]
 
         for m_idx in range(12):
-            obs_vals_22 = [s["monthly_obs_2022"][m_idx] for s in p_stas if s["monthly_obs_2022"][m_idx] is not None]
-            obs_vals_23 = [s["monthly_obs_2023"][m_idx] for s in p_stas if s["monthly_obs_2023"][m_idx] is not None]
+            # รายเดือนแบบจับคู่: ใช้เฉพาะสถานีที่มีค่าต้นทางเดือนนั้นทั้งสองปี และเฉพาะ ม.ค.–ส.ค.
+            paired = [s for s in p_stas if m_idx < OBS_COMPARE_MONTHS
+                      and s["monthly_obs_2022"][m_idx] is not None and s["monthly_obs_2023"][m_idx] is not None]
+            obs_vals_22 = [s["monthly_obs_2022"][m_idx] for s in paired]
+            obs_vals_23 = [s["monthly_obs_2023"][m_idx] for s in paired]
             exp_vals_22 = [s["monthly_exp_2022"][m_idx] for s in p_stas if s["monthly_exp_2022"][m_idx] is not None]
             exp_vals_23 = [s["monthly_exp_2023"][m_idx] for s in p_stas if s["monthly_exp_2023"][m_idx] is not None]
 
@@ -465,6 +492,8 @@ def get_halloween_payload() -> str:
         sub_hii_23 = hii_p[(hii_p["year"] == 2023) & (hii_p["month"].isin([5, 6, 7, 8]))]
         hii_may_aug_22 = round(float(sub_hii_22["avg_rain_mm"].sum()), 1) if len(sub_hii_22) == 4 else None
         hii_may_aug_23 = round(float(sub_hii_23["avg_rain_mm"].sum()), 1) if len(sub_hii_23) == 4 else None
+        hii_ja = {y: hii_p[(hii_p["year"] == y) & (hii_p["month"] <= OBS_COMPARE_MONTHS)]["avg_rain_mm"] for y in (2022, 2023)}
+        hii_ja_22, hii_ja_23 = (round(float(hii_ja[y].sum()), 1) if len(hii_ja[y]) == OBS_COMPARE_MONTHS else None for y in (2022, 2023))
 
         prov_summaries[prov_name] = {
             "name": prov_name,
@@ -485,6 +514,9 @@ def get_halloween_payload() -> str:
             "exp_may_aug_2023": exp_may_aug_23,
             "hii_may_aug_2022": hii_may_aug_22,
             "hii_may_aug_2023": hii_may_aug_23,
+            "obs_compare_station_count": len(comp_stas),
+            "hii_ja_2022": hii_ja_22,
+            "hii_ja_2023": hii_ja_23,
             # Backward compatibility aliases
             "rain_all": rain_exp_all,
             "rain_2022": rain_exp_22,
@@ -535,8 +567,17 @@ def get_halloween_payload() -> str:
     hrdi_exp_23_overall = round(sum(all_exp_23) / len(all_exp_23), 1) if all_exp_23 else 0.0
     hrdi_exp_all_overall = round((hrdi_exp_22_overall + hrdi_exp_23_overall) / 2, 1)
 
-    all_obs_22 = [s["annual_obs_2022"] for s in station_list if s["annual_obs_2022"] is not None]
-    hrdi_obs_22_overall = round(sum(all_obs_22) / len(all_obs_22), 1) if all_obs_22 else None
+    comp_all = [s for s in station_list if s["obs_compare_complete"]]
+    hrdi_obs_22_overall = round(sum(s["annual_obs_2022"] for s in comp_all) / len(comp_all), 1) if comp_all else None
+    hrdi_obs_23_overall = round(sum(s["annual_obs_2023"] for s in comp_all) / len(comp_all), 1) if comp_all else None
+    paired_overall = {"2022": [], "2023": [], "n": []}
+    for m_idx in range(12):
+        both = [s for s in station_list if m_idx < OBS_COMPARE_MONTHS
+                and s["monthly_obs_2022"][m_idx] is not None and s["monthly_obs_2023"][m_idx] is not None]
+        for y in ("2022", "2023"):
+            paired_overall[y].append(round(sum(s[f"monthly_obs_{y}"][m_idx] for s in both) / len(both), 1) if both else None)
+        paired_overall["n"].append(len(both))
+    hii_ja_overall = {y: [v for v in (prov_summaries[p][f"hii_ja_{y}"] for p in prov_summaries) if v is not None] for y in (2022, 2023)}
 
     overall_kpis = {
         "mean_rain": round(float(hii_df["avg_rain_mm"].mean() * 12), 1) if not hii_df.empty else 0.0,
@@ -548,7 +589,13 @@ def get_halloween_payload() -> str:
         "total_stations": len(station_list),
         "total_tambons": len(tambon_items),
         "hrdi_obs_rain_2022": hrdi_obs_22_overall,
-        "hrdi_obs_rain_2023": None,
+        "hrdi_obs_rain_2023": hrdi_obs_23_overall,
+        "hrdi_obs_rain_all": round((hrdi_obs_22_overall + hrdi_obs_23_overall) / 2, 1) if comp_all else None,
+        "hrdi_obs_station_count": len(comp_all),
+        "hii_ja_2022": round(sum(hii_ja_overall[2022]) / len(hii_ja_overall[2022]), 1) if hii_ja_overall[2022] else None,
+        "hii_ja_2023": round(sum(hii_ja_overall[2023]) / len(hii_ja_overall[2023]), 1) if hii_ja_overall[2023] else None,
+        "rows_openweathermap": int(sum(s["rows_openweathermap"] for s in station_list)),
+        "rows_total_2022_2023": int(sum(s["rows_total_2022_2023"] for s in station_list)),
         "hrdi_exp_rain_2022": hrdi_exp_22_overall,
         "hrdi_exp_rain_2023": hrdi_exp_23_overall,
         "hrdi_exp_rain_all": hrdi_exp_all_overall,
@@ -584,6 +631,12 @@ def get_halloween_payload() -> str:
         "centers": PROVINCE_GEO_CENTERS,
         "province_geojson": load_province_geojson(),
         "thailand_geojson": load_province_geojson(THAILAND_GEOJSON_FILE),
+        "panel_tambons_geojson": load_province_geojson(PANEL_TAMBONS_GEOJSON_FILE),
+        "monthly_obs_paired_overall": paired_overall,
+        "obs_compare_window": {"label": "ม.ค.–ส.ค.", "months": OBS_COMPARE_MONTHS, "stations": len(comp_all)},
+        "unit_verification": json.loads(UNIT_VERIFICATION_FILE.read_text(encoding="utf-8"))["sources"] if UNIT_VERIFICATION_FILE.exists() else {},
+        "spatial_check": pd.read_csv(SPATIAL_CHECK_FILE, encoding="utf-8-sig", dtype=str).fillna("").to_dict(orient="records") if SPATIAL_CHECK_FILE.exists() else [],
+        "relationship_compare": pd.read_csv(RELATIONSHIP_COMPARE_FILE, encoding="utf-8-sig").astype(object).where(lambda d: d.notna(), None).to_dict(orient="records") if RELATIONSHIP_COMPARE_FILE.exists() else [],
         "overview_center": OVERVIEW_CENTER,
         "stations": station_list,
         "monthly_trends": monthly_trends,

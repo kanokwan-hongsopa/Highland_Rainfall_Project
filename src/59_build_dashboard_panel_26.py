@@ -178,7 +178,48 @@ window = pd.DataFrame([
 ], columns=["Metric", "Baseline (Feb-Jul)", "Experiment (May-Aug)", "Difference / Note"])
 window.to_csv(REPORTS / "experiment_window_comparison.csv", index=False, encoding="utf-8-sig")
 
+# 8. HRDI vs HII บนตำบลชุดเดียวกัน (Δ พ.ค.–ส.ค.) + CI ของผลต่าง + ทดสอบความไวตามผลตรวจพิกัด (src/61)
+def paired_bootstrap(df, reps=5000, seed=42):
+    rng = np.random.default_rng(seed)
+    hr, hi = [], []
+    for _ in range(reps):
+        s = df.iloc[rng.integers(0, len(df), len(df))]
+        if s["hrdi_change"].nunique() > 1 and s["hii_change"].nunique() > 1 and s["yield_change"].nunique() > 1:
+            hr.append(rho(s, "hrdi_change", "yield_change"))
+            hi.append(rho(s, "hii_change", "yield_change"))
+    hr, hi = np.array(hr), np.array(hi)
+    pct = lambda a: (float(np.percentile(a, 2.5)), float(np.percentile(a, 97.5)))
+    return pct(hr), pct(hi), pct(hr - hi)
+
+
+spatial_path = DATA / "analysis_ready" / "station_tambon_spatial_check.csv"
+far_tambons = set()
+if spatial_path.exists():
+    sp = pd.read_csv(spatial_path, encoding="utf-8-sig", dtype={"tambon_code_6": str})
+    sp = sp[sp["scope"] == "panel_pair"]
+    # ตัดตำบลที่ไม่มีสถานีใดอยู่ภายในหรือห่างขอบไม่เกิน 5 กม.
+    ok = sp[sp["status"].isin(["inside", "near_edge"])]["tambon_code_6"].unique()
+    far_tambons = set(sp["tambon_code_6"]) - set(ok)
+
+compare_rows = []
+for label, df in [("all_panel", changes),
+                  ("exclude_station_far_from_tambon", changes[~changes["tambon_code_6"].astype(str).isin(far_tambons)])]:
+    (hr_lo, hr_hi), (hi_lo, hi_hi), (d_lo, d_hi) = paired_bootstrap(df)
+    base = {"subset": label, "n_tambons": len(df), "n_provinces": df["province_id"].nunique(),
+            "rain_window": "May-Aug", "measure": "change_2023_minus_2022", "excluded_tambons": ";".join(sorted(far_tambons)) if label != "all_panel" else ""}
+    compare_rows += [
+        {**base, "rain_source": "HRDI", "spearman_rho": rho(df, "hrdi_change", "yield_change"), "ci95_low": hr_lo, "ci95_high": hr_hi,
+         "distinct_rain_values": df["hrdi_change"].nunique()},
+        {**base, "rain_source": "HII", "spearman_rho": rho(df, "hii_change", "yield_change"), "ci95_low": hi_lo, "ci95_high": hi_hi,
+         "distinct_rain_values": df["hii_change"].nunique()},
+        {**base, "rain_source": "HRDI_minus_HII", "spearman_rho": rho(df, "hrdi_change", "yield_change") - rho(df, "hii_change", "yield_change"),
+         "ci95_low": d_lo, "ci95_high": d_hi, "distinct_rain_values": None},
+    ]
+compare = pd.DataFrame(compare_rows)
+compare.to_csv(DASHBOARD / "dashboard_relationship_compare.csv", index=False, encoding="utf-8-sig")
+
 print(f"Panel: {n_t} tambons, {n_p} provinces, {n_s} stations")
+print(compare[["subset", "rain_source", "n_tambons", "spearman_rho", "ci95_low", "ci95_high", "distinct_rain_values"]].round(3).to_string(index=False))
 print(corr[["analysis", "n", "spearman_rho", "ci95_low", "ci95_high"]].round(3).to_string(index=False))
 print(prov.round(1).to_string(index=False))
 print(window.to_string(index=False))
