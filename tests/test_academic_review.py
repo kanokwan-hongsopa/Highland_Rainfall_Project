@@ -85,16 +85,34 @@ def test_relationship_compare_matches_recompute():
     print(f"  ✓ HRDI ρ={hr.spearman_rho:+.3f} HII ρ={hi.spearman_rho:+.3f} (recomputed, same 26 tambons)")
 
 
+def test_relationship_compare_12m_exploratory():
+    comp = pd.read_csv(DATA / "dashboard" / "dashboard_relationship_compare.csv", encoding="utf-8-sig")
+    r12 = pd.read_csv(DATA / "dashboard" / "dashboard_tambon_rain_12m.csv", encoding="utf-8-sig")
+    rt = pd.read_csv(DATA / "dashboard" / "dashboard_rice_tambon.csv", encoding="utf-8-sig")
+    w = rt.pivot(index="tambon_code_6", columns="year", values="rice_yield_per_harvest_area")
+    df = r12.set_index("tambon_code_6").join((w[2023] - w[2022]).rename("dy"))
+    main = comp[comp.rain_window == "May-Aug"]
+    exp = comp[comp.rain_window == "Jan-Dec"]
+    assert len(main) == len(exp) == 6
+    assert not main.includes_estimates.astype(bool).any() and exp.includes_estimates.astype(bool).all()
+    get = lambda src: exp[(exp.subset == "all_panel") & (exp.rain_source == src)].iloc[0]
+    assert abs(get("HRDI").spearman_rho - df.delta_hrdi_12m.corr(df.dy, method="spearman")) < 1e-9
+    assert abs(get("HII").spearman_rho - df.delta_hii_12m.corr(df.dy, method="spearman")) < 1e-9
+    assert 0 < get("HRDI").hrdi_estimated_share < 0.5
+    assert {t["tambon_code_6"] for t in payload["balanced_tambons"] if t["delta_hrdi_12m"] is not None} == set(r12.tambon_code_6.astype(str))
+    print(f"  ✓ 12-month (exploratory) HRDI ρ={get('HRDI').spearman_rho:+.3f} HII ρ={get('HII').spearman_rho:+.3f}")
+
+
 def test_unit_status():
     u = payload["unit_verification"]
     assert u["HII"]["status"] == "confirmed"
     assert u["DOAE"]["status"] == "partial"
-    assert u["HRDI"]["status"] == "unconfirmed"
-    print("  ✓ unit status: HII confirmed, DOAE partial, HRDI unconfirmed")
+    assert u["HRDI"]["status"] == "partial" and "openweathermap.org" in u["HRDI"]["evidence"]
+    print("  ✓ unit status: HII confirmed, DOAE partial, HRDI partial (OpenWeatherMap docs)")
 
 
 if __name__ == "__main__":
     for fn in [test_observed_window_is_jan_aug_paired, test_hii_same_window, test_data_source_disclosed,
-               test_spatial_check, test_relationship_compare_matches_recompute, test_unit_status]:
+               test_spatial_check, test_relationship_compare_matches_recompute, test_relationship_compare_12m_exploratory, test_unit_status]:
         fn()
     print("ALL ACADEMIC REVIEW TESTS PASSED")

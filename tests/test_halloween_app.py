@@ -110,7 +110,10 @@ def test_halloween_html_structure():
     assert 'data-tab="page2"' in html, "Missing Tab 2 navigation"
     assert 'data-tab="page3"' in html, "Missing Tab 3 navigation"
     assert 'data-tab="page4"' in html, "Missing Tab 4 navigation"
-    assert 'data-tab="page5"' in html, "Missing Tab 5 navigation"
+    assert 'data-tab="page5"' in html, "Missing methods tab navigation"
+    assert 'data-tab="page6"' in html, "Missing yield-change tab navigation"
+    for el in ("vhHeadline", "chartForest", "chartTab6ProvChange", "riceFilterBar"):
+        assert f'id="{el}"' in html, f"Missing {el}"
 
     # 4. Leaflet Map Container & Script
     assert 'id="leafletMap"' in html, "Missing Leaflet map container 'leafletMap'"
@@ -135,7 +138,7 @@ def test_halloween_html_structure():
 
     # 7. Non-Causal Disclaimers & Unit Warnings
     assert "วิเคราะห์เชิงสำรวจ (Non-causal)" in html, "Missing non-causal exploratory disclaimer"
-    assert "หน่วยรอยืนยัน" in html, "Missing unconfirmed unit labels"
+    assert "ยืนยันบางส่วน" in html, "Missing unit verification status labels"
 
     print("[PASS] test_halloween_html_structure passed successfully!")
 

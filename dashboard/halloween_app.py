@@ -199,6 +199,32 @@ def get_halloween_html() -> str:
         .compare-stat strong {{ color: #ffffff; font-size: 1.05rem; }}
         .compare-verdict {{ margin: 0.8rem 0; padding: 0.7rem 1rem; border-radius: 10px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.35); color: var(--text-cream); line-height: 1.6; }}
 
+        /* คำถามประจำแท็บ + คำตอบคำถามที่ 5 */
+        .tab-question {{ font-size: 1.15rem; font-weight: 600; color: #ffffff; margin: 0 0 0.85rem; line-height: 1.5; }}
+        .tab-question-num {{ display: inline-block; font-size: 0.8rem; font-weight: 600; color: #1a0f2b; background: var(--primary-orange); border-radius: 999px; padding: 0.15rem 0.65rem; margin-right: 0.5rem; vertical-align: middle; }}
+        .verdict-hero {{ background: linear-gradient(135deg, rgba(167,120,232,0.14), rgba(255,138,50,0.08)); border: 1px solid rgba(255,138,50,0.4); border-radius: 18px; padding: 1.2rem 1.3rem; margin-bottom: 0.95rem; }}
+        .vh-scope {{ color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.9rem; line-height: 1.55; }}
+        .vh-grid {{ display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 1.2rem; }}
+        @media (max-width: 900px) {{ .vh-grid {{ grid-template-columns: 1fr; }} }}
+        .vh-label {{ font-size: 0.78rem; letter-spacing: 0.02em; color: var(--text-muted); margin-bottom: 0.3rem; }}
+        .vh-headline {{ font-size: 1.6rem; font-weight: 700; color: #ffffff; line-height: 1.3; }}
+        .vh-sub {{ color: var(--text-cream); margin: 0.45rem 0 0.8rem; line-height: 1.6; }}
+        .vh-tiles {{ display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }}
+        .vh-answer, .vh-forest, .vh-tile {{ min-width: 0; }}
+        @media (max-width: 600px) {{ .vh-tiles {{ grid-template-columns: 1fr; }} .vh-headline {{ font-size: 1.35rem; }} .verdict-hero {{ padding: 1rem 0.9rem; }} }}
+        .vh-tile {{ border-radius: 12px; padding: 0.65rem 0.8rem; background: rgba(26,15,43,0.55); border: 1px solid rgba(167,120,232,0.3); }}
+        .vh-tile-hii {{ border-color: rgba(56,189,248,0.35); }}
+        .vh-tile-src {{ font-size: 0.8rem; color: var(--text-muted); }}
+        .vh-tile-rho {{ font-size: 1.5rem; font-weight: 700; color: #ffffff; }}
+        .vh-tile-hrdi .vh-tile-rho {{ color: #c4a5f5; }}
+        .vh-tile-hii .vh-tile-rho {{ color: #7dd3fc; }}
+        .vh-tile-txt {{ font-size: 0.82rem; color: var(--text-cream); line-height: 1.45; }}
+        .vh-note {{ margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-muted); }}
+        .vh-forest-note {{ font-size: 0.82rem; color: var(--text-muted); margin-top: 0.3rem; }}
+        .more-analysis > summary {{ cursor: pointer; color: var(--text-cream); font-weight: 600; }}
+        .more-analysis {{ margin-top: 0.4rem; background: rgba(26,15,43,0.45); border: 1px dashed rgba(167,120,232,0.35); border-radius: 14px; padding: 0.8rem 1rem; }}
+        .more-analysis-body {{ margin-top: 0.9rem; }}
+
         /* แถบโหมดข้อมูลฝน + หมายเลขแท็บตามคำถามวิจัย */
         .nav-num {{
             display: inline-flex;
@@ -647,6 +673,12 @@ def get_halloween_html() -> str:
         }}
 
         @media (max-width: 768px) {{
+            .kpi-row-grid {{
+                grid-template-columns: repeat(2, 1fr);
+            }}
+        }}
+
+        @media (max-width: 480px) {{
             .kpi-row-grid {{
                 grid-template-columns: 1fr;
             }}
@@ -1908,13 +1940,16 @@ def get_halloween_html() -> str:
                 <span class="nav-num">2</span> HRDI vs HII
             </button>
             <button class="nav-tab-btn" data-tab="page3">
-                <span class="nav-num">3</span> ผลผลิตข้าวนาปี
+                <span class="nav-num">3</span> ผลผลิตข้าว สูง–ต่ำ
             </button>
-            <button class="nav-tab-btn" data-tab="page5">
-                <span class="nav-num">4</span> จับคู่สถานี–ตำบล
+            <button class="nav-tab-btn" data-tab="page6">
+                <span class="nav-num">4</span> ผลผลิต 2022→2023
             </button>
             <button class="nav-tab-btn" data-tab="page4">
-                <span class="nav-num">5</span> ฝน ↔ ผลผลิต
+                <span class="nav-num">5</span> HRDI หรือ HII ↔ ผลผลิต
+            </button>
+            <button class="nav-tab-btn" data-tab="page5">
+                <span class="nav-num">i</span> วิธีการ &amp; ข้อมูล
             </button>
         </nav>
 
@@ -2007,10 +2042,10 @@ def get_halloween_html() -> str:
                         </div>
                     </div>
                     <div class="kpi-main-body">
-                        <div class="kpi-number" id="tab1_kpiTemp">21.4</div>
-                        <span class="kpi-delta-pill kpi-delta-down" id="tab1_kpiTempBadge">▲ 0.6°C</span>
+                        <div class="kpi-number" id="tab1_kpiTemp">—</div>
+                        <span class="kpi-delta-pill" id="tab1_kpiTempBadge"></span>
                     </div>
-                    <div class="kpi-subtext">อุณหภูมิเฉลี่ยยอดดอย 24 เดือน</div>
+                    <div class="kpi-subtext" id="tab1_kpiTempSub">เฉลี่ย ม.ค.–ส.ค.</div>
                 </div>
 
                 <!-- 3. ความชื้นเฉลี่ย -->
@@ -2023,10 +2058,10 @@ def get_halloween_html() -> str:
                         </div>
                     </div>
                     <div class="kpi-main-body">
-                        <div class="kpi-number" id="tab1_kpiHumidity">78.1</div>
-                        <span class="kpi-delta-pill kpi-delta-up" id="tab1_kpiHumidityBadge">▲ 1.9%</span>
+                        <div class="kpi-number" id="tab1_kpiHumidity">—</div>
+                        <span class="kpi-delta-pill" id="tab1_kpiHumidityBadge"></span>
                     </div>
-                    <div class="kpi-subtext">ความชื้นสัมพัทธ์ในบรรยากาศ</div>
+                    <div class="kpi-subtext" id="tab1_kpiHumiditySub">ความชื้นสัมพัทธ์ เฉลี่ย ม.ค.–ส.ค.</div>
                 </div>
 
                 <!-- 4. ความเร็วลมเฉลี่ย -->
@@ -2039,10 +2074,10 @@ def get_halloween_html() -> str:
                         </div>
                     </div>
                     <div class="kpi-main-body">
-                        <div class="kpi-number" id="tab1_kpiWind">2.3</div>
-                        <span class="kpi-delta-pill kpi-delta-down" id="tab1_kpiWindBadge">▲ 0.2</span>
+                        <div class="kpi-number" id="tab1_kpiWind">—</div>
+                        <span class="kpi-delta-pill" id="tab1_kpiWindBadge"></span>
                     </div>
-                    <div class="kpi-subtext">ความเร็วลมเฉลี่ยสถานี HRDI</div>
+                    <div class="kpi-subtext" id="tab1_kpiWindSub">เฉลี่ย ม.ค.–ส.ค.</div>
                 </div>
 
                 <!-- 5. ผลผลิตข้าวนาปีเฉลี่ย -->
@@ -2055,10 +2090,10 @@ def get_halloween_html() -> str:
                         </div>
                     </div>
                     <div class="kpi-main-body">
-                        <div class="kpi-number" id="tab1_kpiYield">612.8</div>
-                        <span class="kpi-delta-pill kpi-delta-down" id="tab1_kpiYieldBadge">▼ 4.5%</span>
+                        <div class="kpi-number" id="tab1_kpiYield">—</div>
+                        <span class="kpi-delta-pill" id="tab1_kpiYieldBadge"></span>
                     </div>
-                    <div class="kpi-subtext">ข้าวนาปีเฉลี่ยทุกตำบลที่มีรายงาน (DOAE)</div>
+                    <div class="kpi-subtext" id="tab1_kpiYieldSub">ข้าวนาปีเฉลี่ยทุกตำบลที่มีรายงาน (DOAE)</div>
                 </div>
             </div>
 
@@ -2192,7 +2227,7 @@ def get_halloween_html() -> str:
                         </div>
                         <div class="chart-attribution-card">
                             <span id="lblMonthlyScope">ภาพรวม 9 จังหวัด</span>
-                            <span>มม./เดือน (หน่วย HRDI รอยืนยัน — metadata ไม่ระบุ) | HRDI / OpenWeatherMap</span>
+                            <span>มม./เดือน (HRDI: ยืนยันบางส่วนจากเอกสาร OpenWeatherMap) | HRDI / OpenWeatherMap</span>
                         </div>
                     </div>
                 </div>
@@ -2407,7 +2442,7 @@ def get_halloween_html() -> str:
                     <div class="chart-canvas-container" style="height: 330px;">
                         <canvas id="chartTab2RankHrdi"></canvas>
                     </div>
-                    <div class="chart-attribution-card"><span><span class="tab2-window-text">ฝนสะสม</span> • เฉลี่ยสถานีในจังหวัด (มม. หน่วยรอยืนยัน) • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
+                    <div class="chart-attribution-card"><span><span class="tab2-window-text">ฝนสะสม</span> • เฉลี่ยสถานีในจังหวัด (มม. ยืนยันบางส่วน) • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
                 </div>
                 <div class="chart-bento-card">
                     <div class="chart-card-header">
@@ -2457,8 +2492,9 @@ def get_halloween_html() -> str:
              PAGE 3: RICE YIELD (25 BALANCED TAMBONS — NO SPAGHETTI CHART)
              ==================================================================== -->
         <section id="page3" class="page-view-section">
-            <!-- Filter Bar for Tab 3 -->
-            <div class="filter-bar-card" style="margin-bottom: 0.95rem;">
+            <div class="tab-question"><span class="tab-question-num">คำถามที่ 3</span> จังหวัดและตำบลไหนมีผลผลิตข้าวนาปีต่อไร่สูงหรือต่ำ?</div>
+            <!-- Filter Bar ข้าว (ใช้ร่วมแท็บ 3 และ 4 — ย้ายตามแท็บที่เปิด) -->
+            <div class="filter-bar-card" id="riceFilterBar" style="margin-bottom: 0.95rem;">
                 <div class="filter-group-row">
                     <div class="filter-item">
                         <span class="filter-label">📅 ปี</span>
@@ -2494,7 +2530,7 @@ def get_halloween_html() -> str:
                 </div>
 
                 <button class="btn-tab-reset" id="tab3_btnReset">
-                    <span>🔄</span> ล้างตัวกรองแท็บ 3
+                    <span>🔄</span> ล้างตัวกรองข้าว
                 </button>
             </div>
 
@@ -2514,16 +2550,6 @@ def get_halloween_html() -> str:
                     <div class="kpi-header"><span class="kpi-icon">🌾</span><span>ผลผลิตเฉลี่ยปี 2023</span></div>
                     <div class="kpi-main-body"><div class="kpi-number" id="tab3_kpiYield23">617.2</div><span class="kpi-subtext">กก./ไร่</span></div>
                     <div class="kpi-subtext">กก./ไร่ ต่อพื้นที่เก็บเกี่ยว (พื้นที่ยืนยัน, น้ำหนักอนุมาน)</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-header"><span class="kpi-icon">📈</span><span>ตำบลที่ผลผลิตเพิ่มขึ้น</span></div>
-                    <div class="kpi-main-body"><div class="kpi-number" style="color:#4ade80;" id="tab3_kpiInc">10</div><span class="kpi-delta-pill kpi-delta-up">40%</span></div>
-                    <div class="kpi-subtext">เพิ่มขึ้นเฉลี่ย +35.4 กก./ไร่</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-header"><span class="kpi-icon">📉</span><span>ตำบลที่ผลผลิตลดลง</span></div>
-                    <div class="kpi-main-body"><div class="kpi-number" style="color:#f87171;" id="tab3_kpiDec">10</div><span class="kpi-delta-pill kpi-delta-down">40%</span></div>
-                    <div class="kpi-subtext">คงที่ 5 ตำบล (20%)</div>
                 </div>
             </div>
 
@@ -2553,13 +2579,58 @@ def get_halloween_html() -> str:
                 </div>
             </div>
 
-            <!-- Dumbbell & Ranked Bar Charts (Replaces Spaghetti Lines) -->
-            <div class="chart-row-split" style="margin-bottom: 0.95rem;">
+            <!-- อันดับตำบล: ผลผลิตต่อไร่สูงสุด/ต่ำสุด -->
+            <div class="chart-bento-card" style="margin-bottom: 0.95rem;">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">
+                        <span>🏆</span> อันดับตำบล: ผลผลิตต่อไร่สูงสุดและต่ำสุด <span id="lblRankScope" style="font-weight:400; color:var(--text-muted); font-size:0.85em;"></span>
+                    </div>
+                    <span style="font-size:0.83rem; color:var(--text-muted);">🟠 กลุ่มสูงสุด | 🟣 กลุ่มต่ำสุด</span>
+                </div>
+                <div class="chart-canvas-container" style="height: 520px;">
+                    <canvas id="chartRiceRankedBar"></canvas>
+                </div>
+                <div class="chart-attribution-card">
+                    <span>ผลผลิตต่อพื้นที่เก็บเกี่ยว (กก./ไร่) จากทะเบียน DOAE • "ทั้งหมด" = เฉลี่ยปีที่มีรายงาน • คลิกแท่งเพื่อเลือกตำบล</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ====================================================================
+             PAGE 6 (แท็บ 4): ผลผลิตข้าวนาปีเปลี่ยนแปลงอย่างไรระหว่างสองปี
+             ==================================================================== -->
+        <section id="page6" class="page-view-section">
+            <div class="tab-question"><span class="tab-question-num">คำถามที่ 4</span> ผลผลิตข้าวนาปีเปลี่ยนแปลงอย่างไรระหว่างปี 2022 และ 2023?</div>
+            <!-- ตัวกรองข้าวจะถูกย้ายมาวางตรงนี้เมื่อเปิดแท็บ -->
+            <div class="kpi-row-grid" style="margin-bottom: 0.95rem;">
+                <div class="kpi-card">
+                    <div class="kpi-header"><span class="kpi-icon">🔁</span><span>ตำบลที่รายงานครบ 2 ปี</span></div>
+                    <div class="kpi-main-body"><div class="kpi-number" id="tab6_kpiPaired">0</div><span class="kpi-subtext">ตำบล</span></div>
+                    <div class="kpi-subtext" id="tab6_kpiPairedNote">ใช้คำนวณการเปลี่ยนแปลง</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header"><span class="kpi-icon">📈</span><span>ตำบลที่ผลผลิตเพิ่มขึ้น</span></div>
+                    <div class="kpi-main-body"><div class="kpi-number" style="color:#4ade80;" id="tab3_kpiInc">0</div><span class="kpi-delta-pill kpi-delta-up" id="tab6_incPct">0%</span></div>
+                    <div class="kpi-subtext" id="tab6_incSub">ของตำบลที่รายงานครบ 2 ปี</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header"><span class="kpi-icon">📉</span><span>ตำบลที่ผลผลิตลดลง</span></div>
+                    <div class="kpi-main-body"><div class="kpi-number" style="color:#f87171;" id="tab3_kpiDec">0</div><span class="kpi-delta-pill kpi-delta-down" id="tab6_decPct">0%</span></div>
+                    <div class="kpi-subtext" id="tab6_decSub">ของตำบลที่รายงานครบ 2 ปี</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header"><span class="kpi-icon">⚖️</span><span>ผลผลิตเปลี่ยนเฉลี่ย</span></div>
+                    <div class="kpi-main-body"><div class="kpi-number" id="tab6_kpiMedian">0</div><span class="kpi-subtext">กก./ไร่</span></div>
+                    <div class="kpi-subtext" id="tab6_kpiMedianNote">Δ เฉลี่ย (2023 − 2022)</div>
+                </div>
+            </div>
+
                 <!-- Dumbbell Plot -->
-                <div class="chart-bento-card">
+                <div class="chart-bento-card" style="margin-bottom: 0.95rem;">
                     <div class="chart-card-header">
                         <div class="chart-card-title">
-                            <span>🌱</span> Dumbbell Plot: ผลผลิตต่อไร่ 2022 → 2023 <span id="lblDumbbellScope" style="font-weight:400; color:var(--text-muted); font-size:0.85em;"></span>
+                            <span>🌱</span> ตำบลที่ผลผลิตเปลี่ยนมากที่สุด 2022 → 2023 <span id="lblDumbbellScope" style="font-weight:400; color:var(--text-muted); font-size:0.85em;"></span>
                         </div>
                         <span style="font-size:0.83rem; color:var(--text-muted);">🟣 2022 | 🟠 2023</span>
                     </div>
@@ -2567,32 +2638,27 @@ def get_halloween_html() -> str:
                         <canvas id="chartRiceDumbbell"></canvas>
                     </div>
                     <div class="chart-attribution-card">
-                        <span>แสดงการเปรียบเทียบผลผลิตรายตำบลโดยไม่เกิดเส้นทับซ้อน (Dumbbell Range)</span>
+                        <span>Dumbbell: จุดม่วง = 2022, จุดส้ม = 2023, เส้นเขียว = เพิ่มขึ้น, เส้นแดง = ลดลง • คลิกเพื่อเลือกตำบล</span>
                     </div>
                 </div>
 
-                <!-- Ranked Bar Chart -->
-                <div class="chart-bento-card">
-                    <div class="chart-card-header">
-                        <div class="chart-card-title">
-                            <span>📊</span> การเปลี่ยนแปลงผลผลิตข้าวนาปี (Δ กก./ไร่)
-                        </div>
-                        <span style="font-size:0.83rem; color:var(--text-muted);">เรียงลำดับมากไปน้อย</span>
-                    </div>
-                    <div class="chart-canvas-container" style="height: 480px;">
-                        <canvas id="chartRiceRankedBar"></canvas>
-                    </div>
-                    <div class="chart-attribution-card">
-                        <span>เขียว = ผลผลิตเพิ่มขึ้น | แดง = ผลผลิตลดลง | เทา = คงที่</span>
+            <div class="chart-bento-card" style="margin-bottom: 0.95rem;">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">
+                        <span>🗺️</span> การเปลี่ยนแปลงรายจังหวัด (เฉลี่ยตำบลที่รายงานครบ 2 ปี)
                     </div>
                 </div>
+                <div class="chart-canvas-container" style="height: 340px;">
+                    <canvas id="chartTab6ProvChange"></canvas>
+                </div>
+                <div class="chart-attribution-card"><span>แท่ง = Δ ผลผลิตเฉลี่ย (กก./ไร่) • ชี้เพื่อดูจำนวนตำบลที่เพิ่ม/ลด • คลิกแท่งเพื่อเลือกจังหวัด</span></div>
             </div>
 
             <!-- Searchable & Sortable 25 Tambons Table -->
             <div class="chart-bento-card">
                 <div class="chart-card-header">
                     <div class="chart-card-title">
-                        <span>📋</span> ตารางข้อมูลผลผลิตข้าวนาปีและฝนรายตำบล (26 ตำบล Balanced Panel)
+                        <span>📋</span> ตารางผลผลิตข้าวนาปีรายตำบล <span style="font-weight:400; color:var(--text-muted); font-size:0.85em;">(ตามตัวกรอง แสดงสูงสุด 100 แถว • Δ ฝนมีเฉพาะ 26 ตำบลที่จับคู่สถานี)</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:0.75rem;">
                         <span style="font-size:0.83rem; color:var(--text-muted);">🌧️ ฝนสะสม พ.ค.–ส.ค. (ต้นฤดูปลูก/ระยะแตกกอ)</span>
@@ -2630,6 +2696,57 @@ def get_halloween_html() -> str:
              PAGE 4: CORRELATION & LOPO SENSITIVITY
              ==================================================================== -->
         <section id="page4" class="page-view-section">
+            <!-- คำตอบคำถามที่ 5 (คำนวณจาก dashboard_relationship_compare.csv) -->
+            <div class="verdict-hero">
+                <div class="tab-question" style="margin-bottom:0.6rem;"><span class="tab-question-num">คำถามที่ 5</span> ฝน HRDI หรือ HII มีความสัมพันธ์กับผลผลิตข้าวนาปีมากกว่ากัน?</div>
+                <div class="vh-scope" id="vhScope"></div>
+                <div class="vh-grid">
+                    <div class="vh-answer">
+                        <div class="vh-label">คำตอบ</div>
+                        <div class="vh-headline" id="vhHeadline"></div>
+                        <div class="vh-sub" id="vhSub"></div>
+                        <div class="vh-tiles">
+                            <div class="vh-tile vh-tile-hrdi"><div class="vh-tile-src">ฝน HRDI (สถานีบนพื้นที่สูง)</div><div class="vh-tile-rho" id="vhRhoHrdi"></div><div class="vh-tile-txt" id="vhTxtHrdi"></div></div>
+                            <div class="vh-tile vh-tile-hii"><div class="vh-tile-src">ฝน HII (ค่าเฉลี่ยจังหวัด)</div><div class="vh-tile-rho" id="vhRhoHii"></div><div class="vh-tile-txt" id="vhTxtHii"></div></div>
+                        </div>
+                        <div class="vh-note" id="vhNote">ผลเชิงสำรวจจากข้อมูล 2 ปี ไม่ใช่เหตุและผล • รายละเอียดวิธีการดูแท็บ i</div>
+                    </div>
+                    <div class="vh-forest">
+                        <div class="vh-label">Spearman ρ และช่วงความเชื่อมั่น 95% (bootstrap)</div>
+                        <div class="chart-canvas-container" style="height: 300px;"><canvas id="chartForest"></canvas></div>
+                        <div class="vh-forest-note">จุด = ค่า ρ • แถบ = ช่วงความเชื่อมั่น 95% • <strong>แถบที่คร่อมเส้นประ 0 = ยังสรุปไม่ได้</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- คำถามที่ 5: HRDI vs HII กับผลผลิต บนตำบลชุดเดียวกัน -->
+            <div class="chart-bento-card" style="margin-bottom: 0.95rem;">
+                <div class="chart-card-header">
+                    <div class="chart-card-title"><span>🔬</span> หลักฐาน: กราฟการกระจายแยกตามแหล่งฝน (26 ตำบลชุดเดียวกัน)</div>
+                </div>
+                <p class="match-question" id="cmpIntro">ทดสอบแยกกันบน <strong>ตำบลชุดเดียวกัน</strong> ช่วงฝนเดียวกัน (พ.ค.–ส.ค. ค่าต้นทาง) และเกณฑ์เดียวกัน (การเปลี่ยนแปลง 2022→2023) — ผลนี้มาจาก 26 ตำบลใน 6 จังหวัด <strong>ไม่ใช่ตัวแทนทั้ง 9 จังหวัด</strong></p>
+                <div class="chart-row-split">
+                    <div>
+                        <div class="compare-stat" id="cmpStatHrdi"></div>
+                        <div class="chart-canvas-container" style="height: 320px;"><canvas id="chartCmpHrdi"></canvas></div>
+                    </div>
+                    <div>
+                        <div class="compare-stat" id="cmpStatHii"></div>
+                        <div class="chart-canvas-container" style="height: 320px;"><canvas id="chartCmpHii"></canvas></div>
+                    </div>
+                </div>
+                <div class="compare-verdict" id="cmpVerdict"></div>
+                <div class="table-responsive-wrapper">
+                    <table class="styled-table" id="cmpTable">
+                        <thead><tr><th>ชุดตำบล</th><th>แหล่งฝน</th><th>n (ตำบล / จังหวัด)</th><th>ค่าฝนที่ต่างกัน</th><th>Spearman ρ</th><th>95% CI (bootstrap)</th><th>ความหมาย</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <details class="more-analysis">
+                <summary>📂 การวิเคราะห์เพิ่มเติม: ระดับจังหวัด, กรองรายจังหวัด, LOPO และช่วงเวลาฝนอื่น (ไม่ใช่ผลหลัก)</summary>
+                <div class="more-analysis-body">
             <!-- Filter Bar for Tab 4 -->
             <div class="filter-bar-card" style="margin-bottom: 0.95rem;">
                 <div class="filter-group-row">
@@ -2677,31 +2794,6 @@ def get_halloween_html() -> str:
                     <div class="kpi-header"><span class="kpi-icon">🌧️</span><span>Spearman ρ (จังหวัด HII)</span></div>
                     <div class="kpi-main-body"><div class="kpi-number" id="tab4_kpiVal3" style="color:var(--accent-cyan);">—</div><span class="kpi-delta-pill" id="tab4_kpiPill3" style="background:rgba(148,163,184,0.2); color:#94a3b8;">n = —</span></div>
                     <div class="kpi-subtext" id="tab4_kpiSub3">ฝนเฉลี่ยทั้งจังหวัด ไม่ใช่จุดเพาะปลูก (พ.ค.–ส.ค.)</div>
-                </div>
-            </div>
-
-            <!-- คำถามที่ 5: HRDI vs HII กับผลผลิต บนตำบลชุดเดียวกัน -->
-            <div class="chart-bento-card" style="margin-bottom: 0.95rem;">
-                <div class="chart-card-header">
-                    <div class="chart-card-title"><span>⚖️</span> ฝน HRDI และฝน HII สัมพันธ์กับผลผลิตข้าวนาปีแตกต่างกันหรือไม่?</div>
-                </div>
-                <p class="match-question">ทดสอบแยกกันบน <strong>ตำบลชุดเดียวกัน</strong> ช่วงฝนเดียวกัน (พ.ค.–ส.ค. ค่าต้นทาง) และเกณฑ์เดียวกัน (การเปลี่ยนแปลง 2022→2023) — ผลนี้มาจาก 26 ตำบลใน 6 จังหวัด <strong>ไม่ใช่ตัวแทนทั้ง 9 จังหวัด</strong></p>
-                <div class="chart-row-split">
-                    <div>
-                        <div class="compare-stat" id="cmpStatHrdi"></div>
-                        <div class="chart-canvas-container" style="height: 320px;"><canvas id="chartCmpHrdi"></canvas></div>
-                    </div>
-                    <div>
-                        <div class="compare-stat" id="cmpStatHii"></div>
-                        <div class="chart-canvas-container" style="height: 320px;"><canvas id="chartCmpHii"></canvas></div>
-                    </div>
-                </div>
-                <div class="compare-verdict" id="cmpVerdict"></div>
-                <div class="table-responsive-wrapper">
-                    <table class="styled-table" id="cmpTable">
-                        <thead><tr><th>ชุดตำบล</th><th>แหล่งฝน</th><th>n (ตำบล / จังหวัด)</th><th>ค่าฝนที่ต่างกัน</th><th>Spearman ρ</th><th>95% CI (bootstrap)</th><th>ความหมาย</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
                 </div>
             </div>
 
@@ -2787,8 +2879,8 @@ def get_halloween_html() -> str:
                             <strong>ข้อกำหนดสำคัญ:</strong> การวิเคราะห์นี้เป็นการ<strong>วิเคราะห์เชิงสำรวจ (Non-causal)</strong> บนชุดข้อมูลช่วงสั้น 2 ปี (2022–2023) <strong>ห้ามสรุปว่าฝนเป็นสาเหตุของการเพิ่มหรือลดผลผลิต</strong> และห้ามอ้างว่าปัจจัยอื่นมีอิทธิพลมากกว่าฝนโดยไม่มีการวิเคราะห์รองรับ
                         </div>
                         <p>• <strong>ช่วงเวลาฝน:</strong> ช่วง พ.ค.–ส.ค. เป็นช่วงฝนต้นฤดูปลูกและเจริญเติบโตทางลำต้น (Vegetative Stage) <strong>ไม่ใช่ฤดูปลูกเต็มฤดู</strong> เนื่องจากข้อมูล HRDI 2023 ขาดหายในไตรมาส 4</p>
-                        <p>• <strong>การจับคู่พื้นที่:</strong> จับคู่สถานี 29 แห่งกับ 26 ตำบลตามชื่อเขตการปกครอง (Administrative Name Matching) ไม่ใช่การยืนยันพิกัด GPS ในแปลงนาจริง 100%</p>
-                        <p>• <strong>สถานะหน่วยวัด:</strong> HII = มม. (ยืนยันจาก metadata) • DOAE พื้นที่ = ไร่ (ยืนยัน), ผลผลิต = กก. (อนุมาน) • HRDI ฝน = รอยืนยัน (คาดว่า มม.) — ดูตารางในแท็บ 4</p>
+                        <p>• <strong>การจับคู่พื้นที่:</strong> จับคู่สถานี 29 แห่งกับ 26 ตำบลตามชื่อเขตการปกครอง แล้วตรวจซ้ำด้วย Spatial Join พิกัดสถานีกับขอบเขตตำบลจริง (อยู่ในเขต 24 คู่, ใกล้ขอบ ≤ 5 กม. 2 คู่, นอกเขต > 5 กม. 3 คู่ — ดูแท็บวิธีการ) • ฝนสถานีเป็นฝน ณ จุดสถานี ไม่ใช่ฝนที่ตกบนแปลงนาโดยตรง</p>
+                        <p>• <strong>สถานะหน่วยวัด:</strong> HII = มม. (ยืนยันจาก metadata) • DOAE พื้นที่ = ไร่ (ยืนยัน), ผลผลิต = กก. (อนุมาน) • HRDI ฝน = มม. ยืนยันบางส่วน (เอกสาร OpenWeatherMap ระบุหน่วย มม.; metadata สวพส. ไม่ระบุ) — ดูตารางในแท็บวิธีการ</p>
                     </div>
                 </div>
             </div>
@@ -2817,6 +2909,8 @@ def get_halloween_html() -> str:
                     </table>
                 </div>
             </div>
+                </div>
+            </details>
         </section>
 
         <!-- ====================================================================
@@ -2925,11 +3019,11 @@ def get_halloween_html() -> str:
                     </div>
                     <div>
                         <h4 style="color:#ffffff; margin-bottom:0.4rem;">3. การจับคู่ข้อมูลข้าวนาปี 26 ตำบล (Balanced Panel)</h4>
-                        <p>จับคู่ตามชื่อเขตการปกครอง (Administrative Name Matching) กับทะเบียนทางการ (geo.json) รวม 26 ตำบล 29 สถานี (ตัดตำบลแม่เหียะออกเพราะสถานี RPF บันทึกฝน 0 มม. ตลอดฤดูฝน; ไม่ได้ยืนยันพิกัด GPS ในแปลงนาจริง)</p>
+                        <p>ขั้นที่ 1 จับคู่ตามชื่อเขตการปกครองกับทะเบียนทางการ (geo.json) ขั้นที่ 2 ตรวจซ้ำด้วย Spatial Join พิกัดสถานีกับขอบเขตตำบล รวม 26 ตำบล 29 สถานี (ตัดตำบลแม่เหียะออกเพราะสถานี RPF บันทึกฝน 0 มม. ตลอดฤดูฝน; ไม่ทราบตำแหน่งแปลงนาภายในตำบล)</p>
                         <p>• เชียงใหม่: 14 ตำบล (54%) | น่าน: 5 ตำบล | แม่ฮ่องสอน: 3 ตำบล | ตาก: 2 ตำบล | เชียงราย: 1 ตำบล | กำแพงเพชร: 1 ตำบล</p>
                         
                         <h4 style="color:#ffffff; margin-top:1rem; margin-bottom:0.4rem;">4. Data Dictionary & นิยามข้อมูล</h4>
-                        <p>• <strong>rainfall_mm:</strong> ปริมาณฝนรายเดือนของสถานี HRDI — หน่วยรอยืนยัน (metadata ไม่ระบุ คาดว่า มม.)</p>
+                        <p>• <strong>rainfall_mm:</strong> ปริมาณฝนรายเดือนของสถานี HRDI — หน่วย มม. ยืนยันบางส่วน (เอกสาร OpenWeatherMap ระบุ มม.; metadata สวพส. ไม่ระบุ คาดว่า มม.)</p>
                         <p>• <strong>rice_yield_per_harvest_area:</strong> ผลผลิต ÷ พื้นที่เก็บเกี่ยว (กก./ไร่) — พื้นที่ยืนยันเป็นไร่, น้ำหนักอนุมานเป็น กก.</p>
                         <p>• <strong>hrdi_may_aug:</strong> ฝนสะสม พ.ค.–ส.ค. จากสถานี HRDI (ช่วงวิเคราะห์หลัก: ต้นฤดูปลูก/ระยะแตกกอ)</p>
                         <p>• <strong>hii_may_aug:</strong> ฝนสะสม พ.ค.–ส.ค. เฉลี่ยระดับจังหวัดจาก HII (ช่วงวิเคราะห์หลัก)</p>
@@ -2970,7 +3064,7 @@ def get_halloween_html() -> str:
         <!-- Footer Governance Note -->
         <footer style="background:rgba(22, 13, 34, 0.75); border:1px dashed rgba(255, 138, 50, 0.3); border-radius:10px; padding:0.75rem 1.25rem; font-size:0.86rem; color:var(--text-muted); display:flex; align-items:center; justify-content:space-between; margin-top:0.6rem;">
             <span>🌾 <strong>Highland Rainfall Project (2022–2023)</strong> | สำรวจสภาพภูมิอากาศบนพื้นที่สูงและผลผลิตข้าวนาปี</span>
-            <span>⚠️ การวิเคราะห์เชิงสำรวจ (Non-causal, No Forecasting) | หน่วยฝน HRDI รอยืนยัน</span>
+            <span>⚠️ การวิเคราะห์เชิงสำรวจ (Non-causal, No Forecasting) | หน่วยฝน HRDI ยืนยันบางส่วน (มม. ตามเอกสาร OpenWeatherMap)</span>
         </footer>
 
     </main>
@@ -3020,6 +3114,11 @@ def get_halloween_html() -> str:
         // ช่วงเปรียบเทียบตามโหมด: observed = ม.ค.–ส.ค. ที่มีค่าต้นทางทั้งสองปี / exploratory = ทั้งปี (รวมค่าประมาณ)
         // -------------------------------------------------------------
         const isObsMode = () => state.hrdiMode === 'observed';
+        // ผลเปรียบเทียบ HRDI vs HII ตามโหมด: ค่าต้นทาง = พ.ค.–ส.ค. / ครบ 12 เดือน = ม.ค.–ธ.ค. (HRDI รวมค่าประมาณ)
+        const cmpRows = () => (REAL_DATA.relationship_compare || []).filter(r => r.rain_window === (isObsMode() ? 'May-Aug' : 'Jan-Dec'));
+        const cmpWin = () => isObsMode()
+            ? {{ short: 'พ.ค.–ส.ค.', long: 'พ.ค.–ส.ค. ค่าต้นทาง', kh: 'delta_hrdi', ki: 'delta_hii' }}
+            : {{ short: 'ม.ค.–ธ.ค.', long: 'ม.ค.–ธ.ค. ฝน HRDI รวมค่าประมาณ', kh: 'delta_hrdi_12m', ki: 'delta_hii_12m' }};
         const rainWindowLabel = () => isObsMode() ? 'ม.ค.–ส.ค. (ค่าต้นทางทั้งสองปี)' : 'ทั้งปี (รวมค่าประมาณ)';
         function hrdiRain(sum, yr) {{
             const k = isObsMode() ? 'obs' : 'exp';
@@ -3061,6 +3160,7 @@ def get_halloween_html() -> str:
             updateTab1Components();
             updateTab2Components();
             updateTab1MapVisuals(false);
+            if (state.activeTab === 'page4') renderTab4ScatterPlot();
 
             if (state.isDrawerOpen && state.tab1.station !== 'all') {{
                 const s = REAL_DATA.stations.find(x => x.name === state.tab1.station);
@@ -4016,6 +4116,49 @@ def get_halloween_html() -> str:
                 }}
             }}
 
+            // อุณหภูมิ/ความชื้น/ลม ตามปีที่เลือก (ม.ค.–ส.ค. ทั้งสองปี) • ป้าย = การเปลี่ยนแปลง 2022→2023 จากข้อมูลจริง
+            let clim = REAL_DATA.overall_kpis.climate_ja, climScope = 'เฉลี่ยทุกสถานี';
+            if (sta !== 'all') {{
+                const s = REAL_DATA.stations.find(x => x.name === sta);
+                if (s && s.climate_ja) {{ clim = s.climate_ja; climScope = `สถานี ${{s.name}}`; }}
+            }} else if (p !== 'all' && REAL_DATA.province_summaries[p] && REAL_DATA.province_summaries[p].climate_ja) {{
+                clim = REAL_DATA.province_summaries[p].climate_ja; climScope = `เฉลี่ยสถานีใน${{p}}`;
+            }}
+            const yrTxt = yr === 'all' ? 'เฉลี่ย 2 ปี' : `ปี ${{yr}}`;
+            const setBadge = (id, a, b, unit, digits, upGood) => {{
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (a === null || a === undefined || b === null || b === undefined) {{ el.textContent = 'เทียบไม่ได้'; el.className = 'kpi-delta-pill'; return; }}
+                const d = b - a;
+                el.textContent = `${{d > 0 ? '▲' : d < 0 ? '▼' : '■'}} ${{Math.abs(d).toFixed(digits)}}${{unit}} (2022→23)`;
+                el.className = 'kpi-delta-pill ' + (d === 0 ? '' : ((d > 0) === upGood ? 'kpi-delta-up' : 'kpi-delta-down'));
+            }};
+            tempVal = clim.temp[yr]; humVal = clim.humidity[yr]; windVal = clim.wind[yr];
+            setBadge('tab1_kpiTempBadge', clim.temp['2022'], clim.temp['2023'], '°C', 1, false);
+            setBadge('tab1_kpiHumidityBadge', clim.humidity['2022'], clim.humidity['2023'], '%', 1, true);
+            setBadge('tab1_kpiWindBadge', clim.wind['2022'], clim.wind['2023'], '', 2, true);
+            document.getElementById('tab1_kpiTempSub').textContent = `${{climScope}} • ม.ค.–ส.ค. ${{yrTxt}}`;
+            document.getElementById('tab1_kpiHumiditySub').textContent = `ความชื้นสัมพัทธ์ • ${{climScope}} • ม.ค.–ส.ค. ${{yrTxt}}`;
+            const w22 = clim.wind['2022'], w23 = clim.wind['2023'];
+            document.getElementById('tab1_kpiWindSub').textContent = (w22 && w23 && (w23 / w22 > 2 || w22 / w23 > 2))
+                ? `⚠️ ปี 2023 ต่างจาก 2022 ราว ${{(Math.max(w22, w23) / Math.min(w22, w23)).toFixed(1)}} เท่า ในแหล่งเดียวกัน — อาจเปลี่ยนวิธีวัด/หน่วย ควรตรวจกับ สวพส.`
+                : `${{climScope}} • ม.ค.–ส.ค. ${{yrTxt}}`;
+
+            // ผลผลิต: ค่าตามปีที่เลือก + ป้าย % เปลี่ยน 2022→2023 (ทุกตำบลที่มีรายงานในขอบเขต)
+            const yScope = tCode !== 'all' ? REAL_DATA.tambons.filter(t => t.tambon_code_6 === tCode)
+                : p !== 'all' ? REAL_DATA.tambons.filter(t => t.province_name === p) : REAL_DATA.tambons;
+            const yMean = (y) => {{ const v = yScope.map(t => t[`yield_${{y}}`]).filter(x => x !== null && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }};
+            const y22 = yMean('2022'), y23 = yMean('2023');
+            if (tCode === 'all') yieldVal = yr === '2022' ? y22 : yr === '2023' ? y23 : ((y22 !== null && y23 !== null) ? (y22 + y23) / 2 : (y22 !== null ? y22 : y23));
+            const yb = document.getElementById('tab1_kpiYieldBadge');
+            if (y22 && y23) {{
+                const pc = (y23 - y22) / y22 * 100;
+                yb.textContent = `${{pc > 0 ? '▲' : pc < 0 ? '▼' : '■'}} ${{Math.abs(pc).toFixed(1)}}% (2022→23)`;
+                yb.className = 'kpi-delta-pill ' + (pc >= 0 ? 'kpi-delta-up' : 'kpi-delta-down');
+            }} else {{ yb.textContent = 'เทียบไม่ได้'; yb.className = 'kpi-delta-pill'; }}
+            document.getElementById('tab1_kpiYieldSub').textContent = tCode !== 'all' ? `ตำบลที่เลือก • ${{yrTxt}}`
+                : `เฉลี่ยตำบลที่มีรายงาน (DOAE) ${{p !== 'all' ? 'ใน' + p : '9 จังหวัด'}} • ${{yrTxt}}`;
+
             // Animate Count-up numbers (0.8–1.0s)
             const rainEl = document.getElementById('tab1_kpiRain');
             const rainBadgeEl = document.getElementById('tab1_kpiRainBadge');
@@ -4031,9 +4174,10 @@ def get_halloween_html() -> str:
             }} else {{
                 animateCountUp(rainEl, rainVal, 900, 1);
             }}
-            animateCountUp(document.getElementById('tab1_kpiTemp'), tempVal, 900, 1);
-            animateCountUp(document.getElementById('tab1_kpiHumidity'), humVal, 900, 1);
-            animateCountUp(document.getElementById('tab1_kpiWind'), windVal, 900, 2);
+            const countOrNa = (id, v, dg) => {{ const el = document.getElementById(id); if (v === null || v === undefined || isNaN(v)) el.textContent = 'ไม่มีข้อมูล'; else animateCountUp(el, v, 900, dg); }};
+            countOrNa('tab1_kpiTemp', tempVal, 1);
+            countOrNa('tab1_kpiHumidity', humVal, 1);
+            countOrNa('tab1_kpiWind', windVal, 2);
 
             const yieldEl = document.getElementById('tab1_kpiYield');
             if (yieldVal === null || !tambonHasRice) {{
@@ -5158,7 +5302,7 @@ def get_halloween_html() -> str:
         updateTab3CascadingTambons();
 
         function updateTab3Components() {{
-            if (state.activeTab !== 'page3') return;
+            if (state.activeTab !== 'page3' && state.activeTab !== 'page6') return;
             let tbs = REAL_DATA.tambons;
             if (state.tab3.province !== 'all') tbs = tbs.filter(t => t.province_name === state.tab3.province);
             if (state.tab3.tambon !== 'all') tbs = tbs.filter(t => t.tambon_code_6 === state.tab3.tambon);
@@ -5169,8 +5313,25 @@ def get_halloween_html() -> str:
 
             const mean22 = valid22.length > 0 ? (valid22.reduce((a, b) => a + b.yield_2022, 0) / valid22.length) : null;
             const mean23 = valid23.length > 0 ? (valid23.reduce((a, b) => a + b.yield_2023, 0) / valid23.length) : null;
-            const incCnt = tbs.filter(t => t.direction === 'เพิ่มขึ้น (+)').length;
-            const decCnt = tbs.filter(t => t.direction === 'ลดลง (-)').length;
+            const paired = tbs.filter(t => t.delta_yield !== null && !isNaN(t.delta_yield));
+            const incCnt = paired.filter(t => t.direction === 'เพิ่มขึ้น (+)').length;
+            const decCnt = paired.filter(t => t.direction === 'ลดลง (-)').length;
+            const pct = (k) => paired.length ? `${{Math.round(k / paired.length * 100)}}%` : '0%';
+            const meanOf = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+            const sgn = (v) => Math.abs(v) < 0.05 ? '0.0' : `${{v > 0 ? '+' : '−'}}${{Math.abs(v).toFixed(1)}}`;
+            const incMean = meanOf(paired.filter(t => t.direction === 'เพิ่มขึ้น (+)').map(t => t.delta_yield));
+            const decMean = meanOf(paired.filter(t => t.direction === 'ลดลง (-)').map(t => t.delta_yield));
+            const ds = paired.map(t => t.delta_yield).sort((a, b) => a - b);
+            const med = ds.length ? (ds.length % 2 ? ds[(ds.length - 1) / 2] : (ds[ds.length / 2 - 1] + ds[ds.length / 2]) / 2) : null;
+            document.getElementById('tab6_kpiPaired').textContent = paired.length;
+            document.getElementById('tab6_kpiPairedNote').textContent = `จาก ${{count}} ตำบลในตัวกรอง (ที่เหลือมีรายงานปีเดียวหรือไม่มี)`;
+            document.getElementById('tab6_incPct').textContent = pct(incCnt);
+            document.getElementById('tab6_decPct').textContent = pct(decCnt);
+            document.getElementById('tab6_incSub').textContent = incMean !== null ? `เพิ่มขึ้นเฉลี่ย ${{sgn(incMean)}} กก./ไร่` : 'ไม่มีตำบลที่เพิ่มขึ้นในตัวกรองนี้';
+            document.getElementById('tab6_decSub').textContent = decMean !== null ? `ลดลงเฉลี่ย ${{sgn(decMean)}} กก./ไร่ • คงที่ ${{paired.length - incCnt - decCnt}} ตำบล` : `ไม่มีตำบลที่ลดลง • คงที่ ${{paired.length - incCnt - decCnt}} ตำบล`;
+            const avgD = meanOf(ds);
+            document.getElementById('tab6_kpiMedian').textContent = avgD !== null ? sgn(avgD) : 'คำนวณไม่ได้';
+            document.getElementById('tab6_kpiMedianNote').textContent = avgD !== null ? `เฉลี่ย ${{paired.length}} ตำบล • มัธยฐาน ${{sgn(med)}} (ตำบลคงที่ ${{paired.length - incCnt - decCnt}} แห่ง)` : 'ไม่มีตำบลที่รายงานครบ 2 ปี';
 
             document.getElementById('tab3_kpiTambonCount').textContent = count;
             const repNote = document.getElementById('tab3_kpiReportedNote');
@@ -5180,10 +5341,14 @@ def get_halloween_html() -> str:
             document.getElementById('tab3_kpiInc').textContent = incCnt;
             document.getElementById('tab3_kpiDec').textContent = decCnt;
 
-            renderTab3ProvinceCharts();
-            renderRiceDumbbellChart(tbs);
-            renderRiceRankedBarChart(tbs);
-            renderRiceTambonTable();
+            if (state.activeTab === 'page3') {{
+                renderTab3ProvinceCharts();
+                renderRiceRankedBarChart(tbs);
+            }} else {{
+                renderRiceDumbbellChart(tbs);
+                renderTab6ProvChange();
+                renderRiceTambonTable();
+            }}
         }}
 
         // ผลผลิตเฉลี่ยรายตำบล และพื้นที่ปลูกรวม แยกจังหวัด (จากทะเบียน DOAE 921 ตำบล)
@@ -5339,41 +5504,47 @@ def get_halloween_html() -> str:
             }});
         }}
 
+        // อันดับตำบลตามระดับผลผลิตต่อไร่ (10 สูงสุด + 10 ต่ำสุด) — ตอบคำถามที่ 3
         function renderRiceRankedBarChart(tbs) {{
             const canvas = document.getElementById('chartRiceRankedBar');
             if (!canvas) return;
-            const ctx = canvas.getContext('2d');
             if (chartRiceRankedBar) chartRiceRankedBar.destroy();
-
-            if (state.tab3.tambon !== 'all') {{
-                const t = tbs[0];
-                if (!t || t.delta_yield === null || isNaN(t.delta_yield)) {{
-                    showChartEmptyState('chartRiceRankedBar', 'ไม่มีรายงานการเปลี่ยนแปลง', `ตำบล${{t ? t.tambon_name : state.tab3.tambon}} ไม่มีข้อมูลผลผลิตครบ 2 ปีเพื่อคำนวณส่วนต่าง`, 'สถานะ: ข้อมูลไม่ครบ');
-                    return;
-                }}
-            }}
-
-            const validDeltas = tbs.filter(t => t.delta_yield !== null && !isNaN(t.delta_yield));
-            if (validDeltas.length === 0) {{
-                showChartEmptyState('chartRiceRankedBar', 'ไม่มีข้อมูลการเปลี่ยนแปลง', 'ไม่พบตำบลที่มีข้อมูลผลผลิตครบทั้ง 2 ปีเพื่อเปรียบเทียบการเปลี่ยนแปลง', 'ไม่มีข้อมูล');
+            const yr = state.tab3.year;
+            const val = (t) => {{
+                const ys = (yr === 'all' ? ['2022', '2023'] : [yr]).map(y => t[`yield_${{y}}`]).filter(v => v !== null && !isNaN(v));
+                return ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : null;
+            }};
+            // เลือกตำบลเดียว → จัดอันดับภายในจังหวัดของตำบลนั้น และไฮไลต์
+            const selCode = state.tab3.tambon !== 'all' ? state.tab3.tambon : null;
+            const selT = selCode ? REAL_DATA.tambons.find(t => t.tambon_code_6 === selCode) : null;
+            const base = (selT ? REAL_DATA.tambons.filter(t => t.province_name === selT.province_name) : tbs)
+                .map(t => ({{ t, v: val(t) }})).filter(r => r.v !== null).sort((a, b) => b.v - a.v);
+            const lbl = document.getElementById('lblRankScope');
+            if (base.length === 0) {{
+                if (lbl) lbl.textContent = '';
+                showChartEmptyState('chartRiceRankedBar', 'ไม่มีรายงานผลผลิต', `ไม่มีตำบลที่รายงานผลผลิตข้าวนาปี (${{yearLabel(yr)}}) ในตัวกรองนี้`, 'ไม่มีข้อมูล');
                 return;
             }}
-
             clearChartEmptyState('chartRiceRankedBar');
-
-            const sorted = [...validDeltas].sort((a, b) => b.delta_yield - a.delta_yield).slice(0, 25);
-            const labels = sorted.map(t => `${{t.tambon_name}} (${{t.province_name}})`);
-            const deltas = sorted.map(t => t.delta_yield);
-            const colors = sorted.map(t => (t.delta_yield > 0 ? '#22c55e' : t.delta_yield < 0 ? '#ef4444' : '#eab308'));
-
-            chartRiceRankedBar = new Chart(ctx, {{
+            base.forEach((r, k) => r.rank = k + 1);
+            let rows = base.length <= 20 ? base : [...base.slice(0, 10), ...base.slice(-10)];
+            if (selT && !rows.some(r => r.t.tambon_code_6 === selCode)) {{
+                const hit = base.find(r => r.t.tambon_code_6 === selCode);
+                if (hit) rows = [...rows, hit].sort((a, b) => a.rank - b.rank);
+            }}
+            const half = base.length / 2;
+            if (lbl) lbl.textContent = selT
+                ? `(ตำบล${{selT.tambon_name}} อันดับ ${{(base.find(r => r.t.tambon_code_6 === selCode) || {{}}).rank || '—'}} จาก ${{base.length}} ตำบลใน${{selT.province_name}} • ${{yearLabel(yr)}})`
+                : `(${{base.length <= 20 ? 'ทั้งหมด' : '10 สูงสุด และ 10 ต่ำสุด จาก'}} ${{base.length}} ตำบลที่มีรายงาน • ${{yearLabel(yr)}})`;
+            const labels = rows.map(r => `#${{r.rank}} ${{r.t.tambon_name}} (${{r.t.province_name}})`);
+            chartRiceRankedBar = new Chart(canvas.getContext('2d'), {{
                 type: 'bar',
                 data: {{
-                    labels: labels,
+                    labels,
                     datasets: [{{
-                        label: 'Δ ผลผลิต (2023 - 2022) กก./ไร่',
-                        data: deltas,
-                        backgroundColor: colors,
+                        label: 'ผลผลิตต่อไร่ (กก./ไร่)',
+                        data: rows.map(r => Math.round(r.v * 10) / 10),
+                        backgroundColor: rows.map(r => r.t.tambon_code_6 === selCode ? '#4ade80' : (r.rank <= half ? '#FF8A32' : '#A778E8')),
                         borderRadius: 4
                     }}]
                 }},
@@ -5382,12 +5553,56 @@ def get_halloween_html() -> str:
                     responsive: true,
                     maintainAspectRatio: false,
                     ...chartDrill(el => {{
-                        const t = sorted[el.index];
-                        return () => dispatchTab3Filter({{ province: t.province_name, tambon: t.tambon_code_6 }});
+                        const t = rows[el.index].t;
+                        return () => dispatchTab3Filter({{ province: t.province_name, tambon: t.tambon_code_6 === selCode ? 'all' : t.tambon_code_6 }});
                     }}),
-                    plugins: {{ legend: {{ display: false }} }},
+                    plugins: {{ legend: {{ display: false }}, tooltip: {{ callbacks: {{ label: (c) => `${{c.raw}} กก./ไร่ • อันดับ ${{rows[c.dataIndex].rank}} จาก ${{base.length}}` }} }} }},
                     scales: {{
-                        x: {{ ticks: {{ color: '#A59DB5' }} }},
+                        x: {{ title: {{ display: true, text: 'ผลผลิตต่อไร่ (กก./ไร่)', color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
+                        y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}
+                    }}
+                }}
+            }});
+        }}
+
+        // การเปลี่ยนแปลงรายจังหวัด (เฉลี่ยแบบจับคู่: เฉพาะตำบลที่รายงานครบ 2 ปี) — ตอบคำถามที่ 4
+        let chartTab6ProvChange = null;
+        function renderTab6ProvChange() {{
+            const sel = state.tab3.province;
+            const byProv = {{}};
+            REAL_DATA.tambons.filter(t => t.delta_yield !== null && !isNaN(t.delta_yield)).forEach(t => {{
+                const r = byProv[t.province_name] || (byProv[t.province_name] = {{ ds: [], inc: 0, dec: 0 }});
+                r.ds.push(t.delta_yield);
+                if (t.direction === 'เพิ่มขึ้น (+)') r.inc++;
+                if (t.direction === 'ลดลง (-)') r.dec++;
+            }});
+            const rows = Object.entries(byProv).map(([name, r]) => ({{ name, n: r.ds.length, inc: r.inc, dec: r.dec, mean: r.ds.reduce((a, b) => a + b, 0) / r.ds.length }}))
+                .sort((a, b) => b.mean - a.mean);
+            if (chartTab6ProvChange) chartTab6ProvChange.destroy();
+            if (rows.length === 0) {{
+                showChartEmptyState('chartTab6ProvChange', 'ไม่มีตำบลที่รายงานครบ 2 ปี', 'คำนวณการเปลี่ยนแปลงรายจังหวัดไม่ได้', 'ไม่มีข้อมูล');
+                return;
+            }}
+            clearChartEmptyState('chartTab6ProvChange');
+            const dim = (name, c) => (sel === 'all' || sel === name) ? c : 'rgba(167, 120, 232, 0.18)';
+            chartTab6ProvChange = new Chart(document.getElementById('chartTab6ProvChange').getContext('2d'), {{
+                type: 'bar',
+                data: {{
+                    labels: rows.map(r => `${{r.name}} (n=${{r.n}})`),
+                    datasets: [{{ label: 'Δ ผลผลิตเฉลี่ย (กก./ไร่)', data: rows.map(r => Math.round(r.mean * 10) / 10),
+                        backgroundColor: rows.map(r => dim(r.name, r.mean >= 0 ? '#4ade80' : '#f87171')), borderRadius: 4 }}]
+                }},
+                options: {{
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    ...chartDrill(el => () => dispatchTab3Filter({{ province: rows[el.index].name === sel ? 'all' : rows[el.index].name }})),
+                    plugins: {{ legend: {{ display: false }}, tooltip: {{ callbacks: {{ label: (c) => {{
+                        const r = rows[c.dataIndex];
+                        return [`Δ เฉลี่ย ${{r.mean >= 0 ? '+' : ''}}${{r.mean.toFixed(1)}} กก./ไร่`, `เพิ่ม ${{r.inc}} • ลด ${{r.dec}} • คงที่ ${{r.n - r.inc - r.dec}} จาก ${{r.n}} ตำบล`];
+                    }} }} }} }},
+                    scales: {{
+                        x: {{ title: {{ display: true, text: 'Δ ผลผลิต 2023 − 2022 (กก./ไร่)', color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
                         y: {{ ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }} }}
                     }}
                 }}
@@ -5416,8 +5631,8 @@ def get_halloween_html() -> str:
                 const dirColor = t.direction === 'เพิ่มขึ้น (+)' ? '#22c55e' : t.direction === 'ลดลง (-)' ? '#ef4444' : '#eab308';
                 const y22Str = (t.yield_2022 !== null && !isNaN(t.yield_2022)) ? t.yield_2022.toFixed(1) : '<span class="badge-missing">ไม่มีรายงาน</span>';
                 const y23Str = (t.yield_2023 !== null && !isNaN(t.yield_2023)) ? t.yield_2023.toFixed(1) : '<span class="badge-missing">ไม่มีรายงาน</span>';
-                const deltaStr = (t.delta_yield !== null && !isNaN(t.delta_yield)) ? `<span style="color:${{dirColor}}; font-weight:bold;">${{t.delta_yield > 0 ? '+' : ''}}${{t.delta_yield.toFixed(1)}}</span>` : '<span style="color:#A59DB5;">-</span>';
-                const hrdiDeltaStr = (t.delta_hrdi !== null && t.delta_hrdi !== undefined && !isNaN(t.delta_hrdi)) ? t.delta_hrdi.toFixed(1) : '<span style="color:#A59DB5;">-</span>';
+                const deltaStr = (t.delta_yield !== null && !isNaN(t.delta_yield)) ? `<span style="color:${{dirColor}}; font-weight:bold;">${{t.delta_yield > 0 ? '+' : ''}}${{t.delta_yield.toFixed(1)}}</span>` : '<span style="color:#A59DB5;">ไม่ครบ 2 ปี</span>';
+                const hrdiDeltaStr = (t.delta_hrdi !== null && t.delta_hrdi !== undefined && !isNaN(t.delta_hrdi)) ? t.delta_hrdi.toFixed(1) : '<span style="color:#A59DB5;">ไม่มีสถานีจับคู่</span>';
 
                 let badgeClass = 'badge-missing';
                 if (t.coverage_status === 'observed_both') badgeClass = 'badge-obs';
@@ -5605,10 +5820,90 @@ def get_halloween_html() -> str:
             ].join('');
         }}
 
+        // คำตอบคำถามที่ 5: ข้อความ + forest plot + ระดับหลักฐาน คำนวณจากผลใน dashboard_relationship_compare.csv ทั้งหมด
+        let chartForest = null;
+        function renderVerdictHero() {{
+            const comp = cmpRows(), win = cmpWin();
+            const get = (sub, src) => comp.find(r => r.subset === sub && r.rain_source === src);
+            const h = get('all_panel', 'HRDI'), i = get('all_panel', 'HII'), d = get('all_panel', 'HRDI_minus_HII');
+            const hS = get('exclude_station_far_from_tambon', 'HRDI'), iS = get('exclude_station_far_from_tambon', 'HII'), dS = get('exclude_station_far_from_tambon', 'HRDI_minus_HII');
+            const head = document.getElementById('vhHeadline');
+            if (!h || !i || !d) {{
+                head.textContent = 'คำนวณไม่ได้';
+                document.getElementById('vhSub').textContent = 'ไม่พบผลการคำนวณเปรียบเทียบ (dashboard_relationship_compare.csv)';
+                return;
+            }}
+            const f2 = (v) => `${{v >= 0 ? '+' : '−'}}${{Math.abs(v).toFixed(2)}}`;
+            const crosses = (r) => r.ci95_low < 0 && r.ci95_high > 0;
+            const strength = (rho) => {{
+                const a = Math.abs(rho);
+                return a < 0.1 ? 'แทบไม่มีความสัมพันธ์' : a < 0.3 ? 'ความสัมพันธ์อ่อน' : a < 0.5 ? 'ความสัมพันธ์ปานกลาง' : 'ความสัมพันธ์ค่อนข้างแรง';
+            }};
+            const dir = (rho) => Math.abs(rho) < 0.1 ? '' : rho > 0 ? ' (ฝนเพิ่ม ผลผลิตมีแนวโน้มเพิ่ม)' : ' (ฝนเพิ่ม ผลผลิตมีแนวโน้มลด)';
+
+            document.getElementById('vhScope').innerHTML = `ตอบจาก <strong>${{h.n_tambons}} ตำบลใน ${{h.n_provinces}} จังหวัด</strong> ที่มีทั้งฝน HRDI ฝน HII และผลผลิตครบ 2 ปี • ใช้ตำบลชุดเดียวกัน ฝนช่วงเดียวกัน (${{win.long}}) • วัดว่า "ปีที่ฝนเปลี่ยน ผลผลิตเปลี่ยนตามหรือไม่" (Δ 2022→2023)`;
+
+            const winner = Math.abs(h.spearman_rho) > Math.abs(i.spearman_rho) ? 'HRDI' : 'HII';
+            if (crosses(d)) {{
+                head.textContent = 'ยังตัดสินไม่ได้ว่าแหล่งใดสัมพันธ์มากกว่า';
+                document.getElementById('vhSub').innerHTML = `${{crosses(h) && crosses(i) ? 'ทั้งสองแหล่งยังไม่มีความสัมพันธ์กับผลผลิตที่ชัดเจน (95% CI คร่อม 0) และ' : ''}}ค่า ρ ของสองแหล่งต่างกันเพียง ${{Math.abs(d.spearman_rho).toFixed(2)}} ซึ่งเล็กเกินกว่าจะบอกได้ว่าแหล่งใดดีกว่า`;
+            }} else {{
+                head.textContent = `ฝน ${{winner}} สัมพันธ์กับผลผลิตมากกว่า`;
+                document.getElementById('vhSub').innerHTML = `ผลต่าง ρ = ${{f2(d.spearman_rho)}} (95% CI ${{f2(d.ci95_low)}} ถึง ${{f2(d.ci95_high)}}) ไม่คร่อม 0`;
+            }}
+            const tile = (r, rhoId, txtId, extra) => {{
+                document.getElementById(rhoId).textContent = `ρ = ${{f2(r.spearman_rho)}}`;
+                document.getElementById(txtId).innerHTML = `${{strength(r.spearman_rho)}}${{dir(r.spearman_rho)}}<br>95% CI ${{f2(r.ci95_low)}} ถึง ${{f2(r.ci95_high)}}${{crosses(r) ? ' • คร่อม 0' : ''}}${{extra}}`;
+            }};
+            tile(h, 'vhRhoHrdi', 'vhTxtHrdi', h.includes_estimates ? `<br>รวมค่าประมาณ ${{Math.round(h.hrdi_estimated_share * 100)}}% ของสถานี-เดือน` : '');
+            document.getElementById('vhNote').innerHTML = h.includes_estimates
+                ? `<strong>โหมดครบ 12 เดือน:</strong> ฝน HRDI รวมค่าประมาณ (ก.ย.–ธ.ค. 2023 ฯลฯ) ใช้ดูความไวเท่านั้น • ผลหลักคือโหมดข้อมูลต้นทาง (พ.ค.–ส.ค.) • ฝน HII เป็นค่าจริงครบ 12 เดือน`
+                : 'ผลเชิงสำรวจจากข้อมูล 2 ปี ไม่ใช่เหตุและผล • รายละเอียดวิธีการดูแท็บ i';
+            tile(i, 'vhRhoHii', 'vhTxtHii', `<br>ค่าฝนต่างกันจริง ${{i.distinct_rain_values}} ค่า (1 ค่า/จังหวัด)`);
+
+            // forest plot
+            const rows = [
+                [h, 'HRDI', 'all'], [i, 'HII', 'all'], [d, 'ผลต่าง HRDI − HII', 'all'],
+                [hS, 'HRDI', 'sens'], [iS, 'HII', 'sens'], [dS, 'ผลต่าง HRDI − HII', 'sens']
+            ].filter(r => r[0]);
+            const labels = rows.map(([r, name, sub]) => `${{name}} • ${{sub === 'all' ? `${{r.n_tambons}} ตำบล` : `${{r.n_tambons}} (ตัดสถานีไกล)`}}`);
+            const col = (name, a) => name === 'HRDI' ? `rgba(196,165,245,${{a}})` : name === 'HII' ? `rgba(125,211,252,${{a}})` : `rgba(255,138,50,${{a}})`;
+            const zeroLine = {{ id: 'zeroLine', afterDatasetsDraw(c) {{
+                const x = c.scales.x.getPixelForValue(0), a = c.chartArea, g = c.ctx;
+                g.save(); g.strokeStyle = 'rgba(247,240,232,0.7)'; g.setLineDash([5, 4]); g.lineWidth = 1.5;
+                g.beginPath(); g.moveTo(x, a.top); g.lineTo(x, a.bottom); g.stroke(); g.restore();
+            }} }};
+            if (chartForest) chartForest.destroy();
+            chartForest = new Chart(document.getElementById('chartForest').getContext('2d'), {{
+                type: 'bar',
+                data: {{
+                    labels,
+                    datasets: [
+                        {{ type: 'bar', label: '95% CI', data: rows.map(([r]) => [r.ci95_low, r.ci95_high]), backgroundColor: rows.map(([, n, sub]) => col(n, sub === 'all' ? 0.55 : 0.28)), barThickness: 10, borderRadius: 5 }},
+                        {{ type: 'scatter', label: 'ρ', data: rows.map(([r], x) => ({{ x: r.spearman_rho, y: labels[x] }})), backgroundColor: '#ffffff', borderColor: '#1a0f2b', borderWidth: 2, pointRadius: 6 }}
+                    ]
+                }},
+                plugins: [zeroLine],
+                options: {{
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {{
+                        legend: {{ display: false }},
+                        tooltip: {{ callbacks: {{ label: (c) => {{ const r = rows[c.dataIndex][0]; return `ρ = ${{f2(r.spearman_rho)}} • 95% CI ${{f2(r.ci95_low)}} ถึง ${{f2(r.ci95_high)}} • n = ${{r.n_tambons}}`; }} }} }}
+                    }},
+                    scales: {{
+                        x: {{ type: 'linear', min: -1, max: 1, title: {{ display: true, text: '← ฝนมาก ผลผลิตลด     Spearman ρ     ฝนมาก ผลผลิตเพิ่ม →', color: '#A59DB5' }}, ticks: {{ color: '#A59DB5', stepSize: 0.5 }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
+                        y: {{ type: 'category', labels, ticks: {{ color: '#F7F0E8', font: {{ size: 12 }} }}, grid: {{ display: false }} }}
+                    }}
+                }}
+            }});
+        }}
+
         // กราฟคู่ HRDI | HII: Δ ฝน พ.ค.–ส.ค. vs Δ ผลผลิต บน 26 ตำบลชุดเดียวกัน (ค่า ρ/CI จาก src/59)
         let chartCmpHrdi = null, chartCmpHii = null;
         function renderCompareScatter() {{
-            const comp = REAL_DATA.relationship_compare || [];
+            const comp = cmpRows(), win = cmpWin();
             const get = (sub, src) => comp.find(r => r.subset === sub && r.rain_source === src);
             const f2 = (v) => `${{v >= 0 ? '+' : '−'}}${{Math.abs(v).toFixed(2)}}`;
             const ciTxt = (r) => `${{f2(r.ci95_low)}} ถึง ${{f2(r.ci95_high)}}`;
@@ -5625,7 +5920,7 @@ def get_halloween_html() -> str:
                     return null;
                 }}
                 clearChartEmptyState(canvasId);
-                stat.innerHTML = `<strong>${{src === 'HRDI' ? 'ฝนสถานีบนพื้นที่สูง (HRDI)' : 'ฝนระดับจังหวัด (HII)'}}: ρ = ${{f2(r.spearman_rho)}}</strong><br>95% CI ${{ciTxt(r)}} • n = ${{r.n_tambons}} ตำบล / ${{r.n_provinces}} จังหวัด • ระดับตำบล • Δ พ.ค.–ส.ค. 2022→2023 • ${{note}}`;
+                stat.innerHTML = `<strong>${{src === 'HRDI' ? 'ฝนสถานีบนพื้นที่สูง (HRDI)' : 'ฝนระดับจังหวัด (HII)'}}: ρ = ${{f2(r.spearman_rho)}}</strong><br>95% CI ${{ciTxt(r)}} • n = ${{r.n_tambons}} ตำบล / ${{r.n_provinces}} จังหวัด • ระดับตำบล • Δ ${{win.short}} 2022→2023 • ${{note}}`;
                 return new Chart(document.getElementById(canvasId).getContext('2d'), {{
                     type: 'scatter',
                     data: {{ datasets: [{{ label: `${{src}} (n = ${{r.n_tambons}})`, data: pts, backgroundColor: color, borderColor: '#ffffff', borderWidth: 1, pointRadius: 6 }}] }},
@@ -5637,15 +5932,17 @@ def get_halloween_html() -> str:
                             tooltip: {{ callbacks: {{ title: (c) => c[0].raw.title, label: (c) => [`Δ ฝน: ${{c.raw.x.toFixed(0)}} มม.`, `Δ ผลผลิต: ${{c.raw.y.toFixed(1)}} กก./ไร่`] }} }}
                         }},
                         scales: {{
-                            x: {{ title: {{ display: true, text: `Δ ฝน ${{src}} พ.ค.–ส.ค. (มม.)`, color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
+                            x: {{ title: {{ display: true, text: `Δ ฝน ${{src}} ${{win.short}} (มม.)`, color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }},
                             y: {{ title: {{ display: true, text: 'Δ ผลผลิต (กก./ไร่)', color: '#A59DB5' }}, ticks: {{ color: '#A59DB5' }}, grid: {{ color: 'rgba(167,120,232,0.08)' }} }}
                         }}
                     }}
                 }});
             }};
             const hii = get('all_panel', 'HII');
-            chartCmpHrdi = draw('chartCmpHrdi', chartCmpHrdi, 'delta_hrdi', 'HRDI', '#A778E8', 'cmpStatHrdi', 'ส่วนใหญ่เป็นค่า OpenWeatherMap ณ พิกัดสถานี');
-            chartCmpHii = draw('chartCmpHii', chartCmpHii, 'delta_hii', 'HII', '#38bdf8', 'cmpStatHii', `ค่าฝนต่างกันจริงเพียง ${{hii ? hii.distinct_rain_values : '?'}} ค่า (1 ค่าต่อจังหวัด) จึงมีน้ำหนักเท่ากับ ${{hii ? hii.distinct_rain_values : '?'}} จุด`);
+            const cmpIntro = document.getElementById('cmpIntro');
+            if (cmpIntro) cmpIntro.innerHTML = `ทดสอบแยกกันบน <strong>ตำบลชุดเดียวกัน</strong> ช่วงฝนเดียวกัน (${{win.long}}) และเกณฑ์เดียวกัน (การเปลี่ยนแปลง 2022→2023) — ผลนี้มาจาก 26 ตำบลใน 6 จังหวัด <strong>ไม่ใช่ตัวแทนทั้ง 9 จังหวัด</strong>`;
+            chartCmpHrdi = draw('chartCmpHrdi', chartCmpHrdi, win.kh, 'HRDI', '#A778E8', 'cmpStatHrdi', isObsMode() ? 'ส่วนใหญ่เป็นค่า OpenWeatherMap ณ พิกัดสถานี' : 'รวมค่าประมาณบางเดือน (ใช้ดูความไว)');
+            chartCmpHii = draw('chartCmpHii', chartCmpHii, win.ki, 'HII', '#38bdf8', 'cmpStatHii', `ค่าฝนต่างกันจริงเพียง ${{hii ? hii.distinct_rain_values : '?'}} ค่า (1 ค่าต่อจังหวัด) จึงมีน้ำหนักเท่ากับ ${{hii ? hii.distinct_rain_values : '?'}} จุด`);
 
             const d = get('all_panel', 'HRDI_minus_HII');
             const h = get('all_panel', 'HRDI');
@@ -5664,6 +5961,7 @@ def get_halloween_html() -> str:
 
         function renderTab4ScatterPlot() {{
             if (state.activeTab !== 'page4') return;
+            renderVerdictHero();
             renderFindings();
             renderCompareScatter();
             renderTab4Quadrant();
@@ -5916,7 +6214,7 @@ def get_halloween_html() -> str:
                 kpi('🗺️', 'ทุกสถานี (50)', allSt.filter(r => r.status === 'inside').length, 'อยู่ในตำบลที่บันทึก', `อีก ${{allSt.length - allSt.filter(r => r.status === 'inside').length}} สถานี: ตำบลต่าง / ไม่มีรหัสตำบล (ไม่ได้ใช้วิเคราะห์ทั้งหมด)`)
             ].join('');
 
-            const comp = (REAL_DATA.relationship_compare || []);
+            const comp = (REAL_DATA.relationship_compare || []).filter(r => r.rain_window === 'May-Aug');
             const sens = comp.find(r => r.subset === 'exclude_station_far_from_tambon' && r.rain_source === 'HRDI');
             const main = comp.find(r => r.subset === 'all_panel' && r.rain_source === 'HRDI');
             const f2 = (v) => `${{v >= 0 ? '+' : '−'}}${{Math.abs(v).toFixed(2)}}`;
@@ -6001,7 +6299,10 @@ def get_halloween_html() -> str:
                     }}, 150);
                 }} else if (targetTab === 'page2') {{
                     updateTab2Components();
-                }} else if (targetTab === 'page3') {{
+                }} else if (targetTab === 'page3' || targetTab === 'page6') {{
+                    // ตัวกรองข้าวชุดเดียวใช้ร่วมแท็บ 3 และ 4: ย้ายไปไว้ใต้หัวคำถามของแท็บที่เปิด
+                    const bar = document.getElementById('riceFilterBar');
+                    targetSec.querySelector('.tab-question').after(bar);
                     updateTab3Components();
                 }} else if (targetTab === 'page4') {{
                     renderTab4ScatterPlot();

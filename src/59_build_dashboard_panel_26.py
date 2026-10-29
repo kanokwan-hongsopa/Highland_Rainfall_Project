@@ -215,6 +215,47 @@ for label, df in [("all_panel", changes),
         {**base, "rain_source": "HRDI_minus_HII", "spearman_rho": rho(df, "hrdi_change", "yield_change") - rho(df, "hii_change", "yield_change"),
          "ci95_low": d_lo, "ci95_high": d_hi, "distinct_rain_values": None},
     ]
+# 8b. โหมดสำรวจ: ฝนทั้งปี ม.ค.–ธ.ค. (HRDI รวมค่าประมาณ ก.ย.–ธ.ค. 2023 ฯลฯ / HII ค่าจริงครบ 12 เดือน)
+exp = pd.read_csv(DATA / "analysis_ready" / "HRDI_2022_2023_12months_EXPLORATORY.csv", encoding="utf-8-sig")
+exp = exp.rename(columns={"CODE_REF": "station_code", "YEAR": "year", "MONTH_NUM": "month"}).merge(links, on="station_code", how="inner")
+assert set(links["station_code"]) <= set(exp["station_code"]), "missing exploratory station data"
+exp_m = exp.groupby(["tambon_code_6", "year", "month"], as_index=False)["rainfall_completed_exploratory_mm"].mean()
+assert (exp_m.groupby(["tambon_code_6", "year"])["month"].nunique() == 12).all(), "incomplete exploratory months"
+hrdi12 = exp_m.groupby(["tambon_code_6", "year"])["rainfall_completed_exploratory_mm"].sum().unstack()
+est_share = exp.groupby("tambon_code_6")["completion_status"].apply(lambda s: float((s != "observed").mean()))
+hii12 = hii.groupby(["province_id", "year"]).agg(rain=("avg_rain_mm", "sum"), n=("month", "nunique"))
+assert (hii12["n"] == 12).all()
+hii12 = hii12["rain"].unstack()
+tambon12 = changes[["tambon_code_6", "province_id", "yield_change"]].copy()
+tambon12["hrdi_12m_2022"] = tambon12["tambon_code_6"].map(hrdi12[2022])
+tambon12["hrdi_12m_2023"] = tambon12["tambon_code_6"].map(hrdi12[2023])
+tambon12["hii_12m_2022"] = tambon12["province_id"].map(hii12[2022])
+tambon12["hii_12m_2023"] = tambon12["province_id"].map(hii12[2023])
+tambon12["hrdi_change"] = tambon12["hrdi_12m_2023"] - tambon12["hrdi_12m_2022"]
+tambon12["hii_change"] = tambon12["hii_12m_2023"] - tambon12["hii_12m_2022"]
+tambon12["hrdi_estimated_share"] = tambon12["tambon_code_6"].map(est_share)
+assert tambon12.notna().all().all()
+(tambon12.rename(columns={"hrdi_change": "delta_hrdi_12m", "hii_change": "delta_hii_12m"})
+ .drop(columns="yield_change").round(4)
+ .to_csv(DASHBOARD / "dashboard_tambon_rain_12m.csv", index=False, encoding="utf-8-sig"))
+
+for row in compare_rows:
+    row["includes_estimates"] = False
+for label, df in [("all_panel", tambon12),
+                  ("exclude_station_far_from_tambon", tambon12[~tambon12["tambon_code_6"].astype(str).isin(far_tambons)])]:
+    (hr_lo, hr_hi), (hi_lo, hi_hi), (d_lo, d_hi) = paired_bootstrap(df)
+    base = {"subset": label, "n_tambons": len(df), "n_provinces": df["province_id"].nunique(),
+            "rain_window": "Jan-Dec", "measure": "change_2023_minus_2022", "excluded_tambons": ";".join(sorted(far_tambons)) if label != "all_panel" else "",
+            "includes_estimates": True, "hrdi_estimated_share": float(df["hrdi_estimated_share"].mean())}
+    compare_rows += [
+        {**base, "rain_source": "HRDI", "spearman_rho": rho(df, "hrdi_change", "yield_change"), "ci95_low": hr_lo, "ci95_high": hr_hi,
+         "distinct_rain_values": df["hrdi_change"].nunique()},
+        {**base, "rain_source": "HII", "spearman_rho": rho(df, "hii_change", "yield_change"), "ci95_low": hi_lo, "ci95_high": hi_hi,
+         "distinct_rain_values": df["hii_change"].nunique()},
+        {**base, "rain_source": "HRDI_minus_HII", "spearman_rho": rho(df, "hrdi_change", "yield_change") - rho(df, "hii_change", "yield_change"),
+         "ci95_low": d_lo, "ci95_high": d_hi, "distinct_rain_values": None},
+    ]
+
 compare = pd.DataFrame(compare_rows)
 compare.to_csv(DASHBOARD / "dashboard_relationship_compare.csv", index=False, encoding="utf-8-sig")
 
