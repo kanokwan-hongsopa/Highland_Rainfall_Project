@@ -50,6 +50,10 @@ PANEL_TAMBONS_GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "
 UNIT_VERIFICATION_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "unit_verification.json"
 SPATIAL_CHECK_FILE = Path(__file__).resolve().parent.parent / "data" / "analysis_ready" / "station_tambon_spatial_check.csv"
 RELATIONSHIP_COMPARE_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_relationship_compare.csv"
+RICE_QA_FLAGS_FILE = Path(__file__).resolve().parent.parent / "data" / "analysis_ready" / "rice_yield_qa_flags.csv"
+RICE_SENS_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_rice_sensitivity.csv"
+RICE_PROV_SENS_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_rice_province_sensitivity.csv"
+ZERO_SENSOR_SHARE = 0.05  # สถานีที่ฝน ม.ค.–ส.ค. ต่ำกว่า 5% ของค่ากลางสถานีอื่นในปีเดียวกัน = สงสัยเครื่องวัดเสีย
 TAMBON_RAIN_12M_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_tambon_rain_12m.csv"
 # ช่วงเปรียบเทียบฝนระหว่างปีด้วยข้อมูลต้นทางเท่านั้น: ม.ค.–ส.ค. (ปี 2023 ไม่มีข้อมูลจริงหลัง ส.ค.)
 OBS_COMPARE_MONTHS = 8
@@ -286,6 +290,46 @@ def get_halloween_payload() -> str:
                 "monthly_demo_24": m_exp_24,
             })
 
+    # 1.1 ตรวจสถานีที่ฝนเป็นศูนย์ผิดปกติ (เครื่องวัดเสีย) — ไม่ลบข้อมูล แค่ไม่นับในค่าเฉลี่ยหลัก
+    def _obs_avg(stas, y):
+        v = [x[f"annual_obs_{y}"] for x in stas]
+        return round(sum(v) / len(v), 1) if v else None
+    comp_before = [x for x in station_list if x["obs_compare_complete"]]
+    rain_qa_before = {"stations": len(comp_before), "rain_2022": _obs_avg(comp_before, 2022), "rain_2023": _obs_avg(comp_before, 2023)}
+    rain_qa_flagged = []
+    for st in comp_before:
+        notes = []
+        for y in (2022, 2023):
+            others = sorted(x[f"annual_obs_{y}"] for x in comp_before if x is not st)
+            med = others[len(others) // 2] if others else None
+            if med and st[f"annual_obs_{y}"] < ZERO_SENSOR_SHARE * med:
+                notes.append(f"ปี {y}: {st[f'annual_obs_{y}']:.1f} มม. เทียบค่ากลางสถานีอื่น {med:.1f} มม.")
+        if notes:
+            st["qa_station_flag"] = "zero_rain_sensor"
+            st["qa_station_note"] = "ฝน ม.ค.–ส.ค. ต่ำกว่า 5% ของค่ากลางสถานีอื่น (" + "; ".join(notes) + ") สงสัยเครื่องวัดฝนเสีย ไม่นับในค่าเฉลี่ยหลัก"
+            st["obs_compare_complete"] = False
+            rain_qa_flagged.append({"name": st["name"], "province": st["province"], "source": st.get("data_source_label", ""),
+                                    "rain_2022": st["annual_obs_2022"], "rain_2023": st["annual_obs_2023"], "note": st["qa_station_note"]})
+    for st in station_list:
+        if st.get("qa_station_flag"):
+            st["annual_obs_2022"] = st["annual_obs_2023"] = st["annual_obs_all"] = None  # ค่าเดิมเก็บไว้ใน rain_station_qa
+    comp_after = [x for x in station_list if x["obs_compare_complete"]]
+    # แหล่งข้อมูลฝนของสถานีในชุด 26 ตำบล ช่วง พ.ค.–ส.ค. (ใช้ตอบว่าวิเคราะห์เฉพาะเครื่องวัดจริงได้หรือไม่)
+    panel_rain_source = {}
+    _pr = RICE_QA_FLAGS_FILE.parent / "rice_hrdi_tambon_panel_observed.csv"
+    _po = RICE_QA_FLAGS_FILE.parent / "hrdi_station_monthly_observed.csv"
+    if _pr.exists() and _po.exists():
+        _rice = pd.read_csv(_pr, encoding="utf-8-sig")
+        _rice = _rice[_rice["tambon_code_6"] != 500109]
+        _codes = {c.strip() for v in _rice["station_codes"].astype(str) for c in v.replace(";", ",").split(",") if c.strip()}
+        _o = pd.read_csv(_po, encoding="utf-8-sig")
+        _o = _o[_o["station_code"].isin(_codes) & _o["month"].between(5, 8) & _o["year"].isin([2022, 2023])]
+        panel_rain_source = {"stations": len(_codes), "rows": int(len(_o)),
+                             "by_source": {str(k): int(v) for k, v in _o["source_type"].value_counts().items()}}
+    rain_station_qa = {"rule": "ฝน ม.ค.–ส.ค. ของสถานี < 5% ของค่ากลางสถานีอื่นที่ข้อมูลครบในปีเดียวกัน",
+                       "flagged": rain_qa_flagged, "before": rain_qa_before,
+                       "after": {"stations": len(comp_after), "rain_2022": _obs_avg(comp_after, 2022), "rain_2023": _obs_avg(comp_after, 2023)}}
+
     # 2. ข้อมูลรายเดือน HII ระดับจังหวัด (24 เดือน) และรายสถานี
     monthly_trends = []
     if not hii_df.empty:
@@ -314,6 +358,12 @@ def get_halloween_payload() -> str:
         piv_y = r921_df.pivot(index=["province_name", "amphoe_name", "tambon_code_6", "tambon_name"], columns="year", values="yield_kg_per_rai").reset_index()
         piv_s = r921_df.pivot(index=["province_name", "amphoe_name", "tambon_code_6", "tambon_name"], columns="year", values="data_status").reset_index()
         piv_a = r921_df.pivot(index=["province_name", "amphoe_name", "tambon_code_6", "tambon_name"], columns="year", values="plant_area_rai").reset_index()
+        piv_h = r921_df.pivot(index=["province_name", "amphoe_name", "tambon_code_6", "tambon_name"], columns="year", values="harvest_area_rai").reset_index()
+        piv_p = r921_df.pivot(index=["province_name", "amphoe_name", "tambon_code_6", "tambon_name"], columns="year", values="production_kg").reset_index()
+        qa_map = {}
+        if RICE_QA_FLAGS_FILE.exists():
+            for _, q in pd.read_csv(RICE_QA_FLAGS_FILE, encoding="utf-8-sig").iterrows():
+                qa_map[(str(q["tambon_code_6"]), int(q["year"]))] = str(q["qa_flag"])
 
         for idx, row in piv_y.iterrows():
             p_name = str(row["province_name"])
@@ -366,6 +416,12 @@ def get_halloween_payload() -> str:
                 "delta_yield": round(float(delta_y), 2) if delta_y is not None else None,
                 "area_2022": round(float(a22), 1) if pd.notna(a22) else None,
                 "area_2023": round(float(a23), 1) if pd.notna(a23) else None,
+                "harvest_area_2022": round(float(piv_h.iloc[idx].get(2022)), 2) if pd.notna(piv_h.iloc[idx].get(2022)) else None,
+                "harvest_area_2023": round(float(piv_h.iloc[idx].get(2023)), 2) if pd.notna(piv_h.iloc[idx].get(2023)) else None,
+                "production_2022": round(float(piv_p.iloc[idx].get(2022)), 1) if pd.notna(piv_p.iloc[idx].get(2022)) else None,
+                "production_2023": round(float(piv_p.iloc[idx].get(2023)), 1) if pd.notna(piv_p.iloc[idx].get(2023)) else None,
+                "qa_flag_2022": qa_map.get((t_code, 2022), ""),
+                "qa_flag_2023": qa_map.get((t_code, 2023), ""),
                 "status_2022": str(s22),
                 "status_2023": str(s23),
                 "coverage_status": cov_status,
@@ -493,7 +549,7 @@ def get_halloween_payload() -> str:
 
         for m_idx in range(12):
             # รายเดือนแบบจับคู่: ใช้เฉพาะสถานีที่มีค่าต้นทางเดือนนั้นทั้งสองปี และเฉพาะ ม.ค.–ส.ค.
-            paired = [s for s in p_stas if m_idx < OBS_COMPARE_MONTHS
+            paired = [s for s in p_stas if m_idx < OBS_COMPARE_MONTHS and not s.get("qa_station_flag")
                       and s["monthly_obs_2022"][m_idx] is not None and s["monthly_obs_2023"][m_idx] is not None]
             obs_vals_22 = [s["monthly_obs_2022"][m_idx] for s in paired]
             obs_vals_23 = [s["monthly_obs_2023"][m_idx] for s in paired]
@@ -596,7 +652,7 @@ def get_halloween_payload() -> str:
     hrdi_obs_23_overall = round(sum(s["annual_obs_2023"] for s in comp_all) / len(comp_all), 1) if comp_all else None
     paired_overall = {"2022": [], "2023": [], "n": []}
     for m_idx in range(12):
-        both = [s for s in station_list if m_idx < OBS_COMPARE_MONTHS
+        both = [s for s in station_list if m_idx < OBS_COMPARE_MONTHS and not s.get("qa_station_flag")
                 and s["monthly_obs_2022"][m_idx] is not None and s["monthly_obs_2023"][m_idx] is not None]
         for y in ("2022", "2023"):
             paired_overall[y].append(round(sum(s[f"monthly_obs_{y}"][m_idx] for s in both) / len(both), 1) if both else None)
@@ -661,6 +717,11 @@ def get_halloween_payload() -> str:
         "obs_compare_window": {"label": "ม.ค.–ส.ค.", "months": OBS_COMPARE_MONTHS, "stations": len(comp_all)},
         "unit_verification": json.loads(UNIT_VERIFICATION_FILE.read_text(encoding="utf-8"))["sources"] if UNIT_VERIFICATION_FILE.exists() else {},
         "spatial_check": pd.read_csv(SPATIAL_CHECK_FILE, encoding="utf-8-sig", dtype=str).fillna("").to_dict(orient="records") if SPATIAL_CHECK_FILE.exists() else [],
+        "rain_station_qa": rain_station_qa,
+        "panel_rain_source": panel_rain_source,
+        "rice_qa_flags": pd.read_csv(RICE_QA_FLAGS_FILE, encoding="utf-8-sig").astype(object).where(lambda d: d.notna(), None).to_dict(orient="records") if RICE_QA_FLAGS_FILE.exists() else [],
+        "rice_sensitivity": pd.read_csv(RICE_SENS_FILE, encoding="utf-8-sig").astype(object).where(lambda d: d.notna(), None).to_dict(orient="records") if RICE_SENS_FILE.exists() else [],
+        "rice_province_sensitivity": pd.read_csv(RICE_PROV_SENS_FILE, encoding="utf-8-sig").astype(object).where(lambda d: d.notna(), None).to_dict(orient="records") if RICE_PROV_SENS_FILE.exists() else [],
         "relationship_compare": pd.read_csv(RELATIONSHIP_COMPARE_FILE, encoding="utf-8-sig").astype(object).where(lambda d: d.notna(), None).to_dict(orient="records") if RELATIONSHIP_COMPARE_FILE.exists() else [],
         "overview_center": OVERVIEW_CENTER,
         "stations": station_list,

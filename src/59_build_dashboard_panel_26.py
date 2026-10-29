@@ -256,6 +256,35 @@ for label, df in [("all_panel", tambon12),
          "ci95_low": d_lo, "ci95_high": d_hi, "distinct_rain_values": None},
     ]
 
+# 8c. ความเป็นอิสระของตัวอย่าง: ตำบลในจังหวัดเดียวกันไม่อิสระต่อกัน (HII มีค่าเดียวต่อจังหวัด)
+# จึงเพิ่ม CI แบบสุ่มทั้งจังหวัด (cluster bootstrap) และนับตำบลที่ใช้สถานีชุดเดียวกัน
+def cluster_bootstrap(df, reps=5000, seed=42):
+    rng = np.random.default_rng(seed)
+    groups = {p: g for p, g in df.groupby("province_id")}
+    keys = list(groups)
+    hr, hi = [], []
+    for _ in range(reps):
+        s = pd.concat([groups[k] for k in rng.choice(keys, len(keys), replace=True)])
+        if s["hrdi_change"].nunique() > 1 and s["hii_change"].nunique() > 1 and s["yield_change"].nunique() > 1:
+            hr.append(rho(s, "hrdi_change", "yield_change"))
+            hi.append(rho(s, "hii_change", "yield_change"))
+    hr, hi = np.array(hr), np.array(hi)
+    pct = lambda x: (float(np.percentile(x, 2.5)), float(np.percentile(x, 97.5)))
+    return {"HRDI": pct(hr), "HII": pct(hi), "HRDI_minus_HII": pct(hr - hi)}
+
+
+station_sets = links.groupby("tambon_code_6")["station_code"].apply(lambda s: ",".join(sorted(s)))
+shared = int(station_sets.duplicated(keep=False).sum())
+frames = {("May-Aug", "all_panel"): changes,
+          ("May-Aug", "exclude_station_far_from_tambon"): changes[~changes["tambon_code_6"].astype(str).isin(far_tambons)],
+          ("Jan-Dec", "all_panel"): tambon12,
+          ("Jan-Dec", "exclude_station_far_from_tambon"): tambon12[~tambon12["tambon_code_6"].astype(str).isin(far_tambons)]}
+cl = {k: cluster_bootstrap(v) for k, v in frames.items()}
+for row in compare_rows:
+    lo, hi_ = cl[(row["rain_window"], row["subset"])][row["rain_source"]]
+    row.update(ci95_cluster_low=lo, ci95_cluster_high=hi_, n_clusters=row["n_provinces"],
+               tambons_sharing_station_set=shared)
+
 compare = pd.DataFrame(compare_rows)
 compare.to_csv(DASHBOARD / "dashboard_relationship_compare.csv", index=False, encoding="utf-8-sig")
 
