@@ -50,10 +50,26 @@ PANEL_TAMBONS_GEOJSON_FILE = Path(__file__).resolve().parent.parent / "data" / "
 UNIT_VERIFICATION_FILE = Path(__file__).resolve().parent.parent / "data" / "reference" / "unit_verification.json"
 SPATIAL_CHECK_FILE = Path(__file__).resolve().parent.parent / "data" / "analysis_ready" / "station_tambon_spatial_check.csv"
 RELATIONSHIP_COMPARE_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_relationship_compare.csv"
+TAMBON_RAIN_12M_FILE = Path(__file__).resolve().parent.parent / "data" / "dashboard" / "dashboard_tambon_rain_12m.csv"
 # ช่วงเปรียบเทียบฝนระหว่างปีด้วยข้อมูลต้นทางเท่านั้น: ม.ค.–ส.ค. (ปี 2023 ไม่มีข้อมูลจริงหลัง ส.ค.)
 OBS_COMPARE_MONTHS = 8
 COMPLETENESS_DIR = Path(__file__).resolve().parent.parent / "data" / "completeness"
 ANALYSIS_READY_DIR = Path(__file__).resolve().parent.parent / "data" / "analysis_ready"
+
+
+def climate_by_year(df: pd.DataFrame) -> dict:
+    """อุณหภูมิ/ความชื้น/ลม เฉลี่ยรายปี เฉพาะ ม.ค.–ส.ค. (ปี 2023 ไม่มีข้อมูลหลัง ส.ค. จึงเทียบช่วงเดียวกัน)"""
+    out = {}
+    w = df[df["month"] <= OBS_COMPARE_MONTHS] if not df.empty else df
+    for key, col in (("temp", "TEMP"), ("humidity", "HUMIDITY"), ("wind", "WIND_SPEED")):
+        v = {}
+        for y in (2022, 2023):
+            vals = w.loc[w["year"] == y, col] if not w.empty else pd.Series(dtype=float)
+            v[str(y)] = round(float(vals.mean()), 2) if vals.notna().any() else None
+        both = [v[y] for y in ("2022", "2023") if v[y] is not None]
+        v["all"] = round(sum(both) / len(both), 2) if both else None
+        out[key] = v
+    return out
 
 
 def is_suspect_observed(rain, hist_median) -> bool:
@@ -246,6 +262,7 @@ def get_halloween_payload() -> str:
                 "mean_temp": round(mean_temp, 1),
                 "mean_humidity": round(mean_humidity, 1),
                 "mean_wind": round(mean_wind, 2),
+                "climate_ja": climate_by_year(climate_df[climate_df["STA_TH"] == sta_name]),
                 # Observed values
                 "annual_obs_2022": annual_obs_22,
                 "annual_obs_2023": annual_obs_23,
@@ -361,7 +378,10 @@ def get_halloween_payload() -> str:
     rice_df = load_rice_tambon_data()
     diff_df = get_within_tambon_changes(rice_df, geo_df)
     balanced_tambon_items = []
+    rain12 = (pd.read_csv(TAMBON_RAIN_12M_FILE, encoding="utf-8-sig", dtype={"tambon_code_6": str}).set_index("tambon_code_6")
+              if TAMBON_RAIN_12M_FILE.exists() else pd.DataFrame())
     for _, row in diff_df.iterrows():
+        r12 = rain12.loc[str(row["tambon_code_6"])] if str(row["tambon_code_6"]) in rain12.index else None
         balanced_tambon_items.append({
             "tambon_code_6": str(row["tambon_code_6"]),
             "province_id": str(row["province_id"]),
@@ -380,6 +400,9 @@ def get_halloween_payload() -> str:
             "delta_hii": round(float(row["delta_hii"]), 2),
             "delta_hrdi_feb_jul": round(float(row["delta_hrdi_feb_jul"]), 2) if "delta_hrdi_feb_jul" in row and pd.notna(row["delta_hrdi_feb_jul"]) else None,
             "delta_hii_feb_jul": round(float(row["delta_hii_feb_jul"]), 2) if "delta_hii_feb_jul" in row and pd.notna(row["delta_hii_feb_jul"]) else None,
+            "delta_hrdi_12m": round(float(r12["delta_hrdi_12m"]), 2) if r12 is not None else None,
+            "delta_hii_12m": round(float(r12["delta_hii_12m"]), 2) if r12 is not None else None,
+            "hrdi_estimated_share_12m": round(float(r12["hrdi_estimated_share"]), 4) if r12 is not None else None,
             "direction": str(row["yield_change_direction"])
         })
 
@@ -539,6 +562,7 @@ def get_halloween_payload() -> str:
             "temp": round(temp_avg, 1),
             "humidity": round(hum_avg, 1),
             "wind": round(wind_avg, 2),
+            "climate_ja": climate_by_year(c_p),
             "tambon_count": int(r_p["tambon_code_6"].nunique()) if not r_p.empty else 0
         }
 
@@ -585,6 +609,7 @@ def get_halloween_payload() -> str:
         "mean_humidity": round(float(climate_df["HUMIDITY"].mean()), 1) if climate_df["HUMIDITY"].notna().sum() > 0 else 0.0,
         "mean_wind": round(float(climate_df["WIND_SPEED"].mean()), 2) if climate_df["WIND_SPEED"].notna().sum() > 0 else 0.0,
         "mean_yield": round(overall_mean_yield, 1),
+        "climate_ja": climate_by_year(climate_df),
         "total_provinces": 9,
         "total_stations": len(station_list),
         "total_tambons": len(tambon_items),

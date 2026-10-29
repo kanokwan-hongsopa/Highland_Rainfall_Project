@@ -19,9 +19,10 @@
     "HRDI": {
       "dataset": "hrdi_met (สถาบันวิจัยและพัฒนาพื้นที่สูง)",
       "variable": "RAINFALL",
-      "unit": "ไม่ระบุ (คาดว่า มม./เดือน)",
-      "status": "unconfirmed",
-      "evidence": "metadata ไม่มี unit_of_measure; คำอธิบายระบุว่าเป็นค่ารายเดือน ปี 2562–2566 จัดเก็บจากสถานีของ สวพส. และ 'ปรับปรุงชุดข้อมูลโดย OpenWeatherMap.org'"
+      "unit": "มม. (ยืนยันบางส่วน; รายเดือน)",
+      "status": "partial",
+      "evidence": "metadata ของ สวพส. ไม่มี unit_of_measure แต่คำอธิบายชุดข้อมูลระบุว่า 'ปรับปรุงชุดข้อมูลโดย OpenWeatherMap.org' และคอลัมน์ DATA SOURCE ระบุ OpenWeatherMap 883 จาก 983 แถว (2022–2023); เอกสาร API ของ OpenWeatherMap (https://openweathermap.org/current) ระบุว่าปริมาณฝนมีหน่วย มม. เท่านั้น จึงยืนยันหน่วย มม. ได้สำหรับแถวที่มาจาก OpenWeatherMap; แถวจากเครื่องวัดของ สวพส. และวิธีรวมเป็นรายเดือนยังไม่มีเอกสารยืนยัน",
+      "external_reference": "https://openweathermap.org/current (checked 2026-10-29)"
     }
   }
 }
