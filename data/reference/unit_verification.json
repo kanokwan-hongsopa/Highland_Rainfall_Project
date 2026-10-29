@@ -1,0 +1,27 @@
+{
+  "checked_on": "2026-10-29",
+  "method": "data.go.th CKAN API package_show (fields unit_of_measure / notes / resource descriptions)",
+  "sources": {
+    "HII": {
+      "dataset": "spatial-rain (สถาบันสารสนเทศทรัพยากรน้ำ)",
+      "variable": "AvgRain / MinRain / MaxRain",
+      "unit": "มม.",
+      "status": "confirmed",
+      "evidence": "unit_of_measure = 'มิลลิเมตร (mm)'; ฝนเฉลี่ยรายเดือนรายจังหวัด วิเคราะห์จากสถานีกรมอุตุนิยมวิทยาด้วยวิธี IDW"
+    },
+    "DOAE": {
+      "dataset": "plant01_65 และไฟล์ปี 2566 (กรมส่งเสริมการเกษตร)",
+      "variable": "area_plant / area_harvest / product_harvest / product_avg",
+      "unit": "พื้นที่ = ไร่; ผลผลิต = กก. (อนุมาน); ผลผลิตต่อไร่ = กก./ไร่",
+      "status": "partial",
+      "evidence": "unit_of_measure = 'ไร่' ยืนยันหน่วยพื้นที่; หน่วยน้ำหนักไม่ระบุใน metadata แต่ product_avg = product_harvest / area_harvest ทุกแถว (เช่น 122,500 / 175 = 700) และอยู่ในช่วงผลผลิตข้าวต่อไร่ปกติ จึงอนุมานว่าเป็น กก."
+    },
+    "HRDI": {
+      "dataset": "hrdi_met (สถาบันวิจัยและพัฒนาพื้นที่สูง)",
+      "variable": "RAINFALL",
+      "unit": "ไม่ระบุ (คาดว่า มม./เดือน)",
+      "status": "unconfirmed",
+      "evidence": "metadata ไม่มี unit_of_measure; คำอธิบายระบุว่าเป็นค่ารายเดือน ปี 2562–2566 จัดเก็บจากสถานีของ สวพส. และ 'ปรับปรุงชุดข้อมูลโดย OpenWeatherMap.org'"
+    }
+  }
+}
